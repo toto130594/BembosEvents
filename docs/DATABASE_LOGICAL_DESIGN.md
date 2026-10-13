@@ -282,6 +282,315 @@ Definir los horarios disponibles para cada salón en días específicos de la se
 
 ---
 
+# 8. ENTIDAD: PAQUETE
+
+## Propósito
+
+Representar los paquetes base disponibles para una reserva de evento.
+
+## Atributos
+
+| Atributo | Descripción |
+|----------|-------------|
+| `idPaquete` | Identificador único interno del paquete. |
+| `nombre` | Nombre comercial del paquete. |
+| `descripcion` | Descripción del contenido del paquete. |
+| `precioBase` | Precio base del paquete. |
+| `cantidadPersonasBase` | Cantidad de personas incluida como base. |
+| `activo` | Indica si el paquete está disponible. |
+
+## Claves
+
+- **PK:** `idPaquete`
+
+## Reglas de Negocio
+
+1. `precioBase` no debe ser negativo.
+2. `cantidadPersonasBase` debe ser positiva.
+3. Los paquetes inactivos no deben ofrecerse para nuevas reservas.
+
+## Relaciones
+
+- Un Paquete puede utilizarse en múltiples Reservas.
+- Una Reserva puede tener 0 o 1 Paquete.
+
+---
+
+# 9. ENTIDAD: TEMATICA
+
+## Propósito
+
+Representar las temáticas o estilos disponibles para personalizar una reserva de evento.
+
+## Atributos
+
+| Atributo | Descripción |
+|----------|-------------|
+| `idTematica` | Identificador único interno de la temática. |
+| `nombre` | Nombre de la temática. |
+| `descripcion` | Descripción de la temática. |
+| `precioAdicional` | Importe adicional asociado a la temática. |
+| `activo` | Indica si la temática está disponible. |
+
+## Claves
+
+- **PK:** `idTematica`
+
+## Reglas de Negocio
+
+1. `precioAdicional` no debe ser negativo.
+2. Las temáticas inactivas no deben ofrecerse para nuevas reservas.
+
+## Relaciones
+
+- Una Tematica puede utilizarse en múltiples Reservas.
+- Una Reserva puede tener 0 o 1 Tematica.
+
+---
+
+# 10. ENTIDAD: SERVICIO_ADICIONAL
+
+## Propósito
+
+Representar los servicios opcionales que pueden agregarse a una reserva de evento.
+
+## Atributos
+
+| Atributo | Descripción |
+|----------|-------------|
+| `idServicioAdicional` | Identificador único interno del servicio adicional. |
+| `nombre` | Nombre del servicio adicional. |
+| `descripcion` | Descripción del servicio adicional. |
+| `precio` | Precio actual del servicio adicional. |
+| `activo` | Indica si el servicio está disponible. |
+
+## Claves
+
+- **PK:** `idServicioAdicional`
+
+## Reglas de Negocio
+
+1. `precio` no debe ser negativo.
+2. Los servicios inactivos no deben ofrecerse para nuevas reservas.
+3. El precio definitivo aplicado a una reserva se conservará posteriormente en ReservaServicio mediante `precioUnitario`.
+
+## Relaciones
+
+- Un ServicioAdicional puede asociarse a múltiples Reservas mediante ReservaServicio.
+- Una Reserva puede contener múltiples ServiciosAdicionales mediante ReservaServicio.
+- La relación Reserva ↔ ServicioAdicional es N:M y se resuelve mediante ReservaServicio.
+
+---
+
+# 11. ENTIDAD: RESERVA
+
+## Propósito
+
+Representar la reserva de un evento realizada por un cliente.
+
+## Atributos
+
+| Atributo | Descripción |
+|----------|-------------|
+| `idReserva` | Identificador único interno de la reserva. |
+| `codigoReserva` | Código público único e independiente del ID interno. |
+| `idCliente` | Referencia al cliente que realiza la reserva. |
+| `idSede` | Referencia a la sede donde se realizará el evento. |
+| `idSalon` | Referencia al salón reservado. |
+| `idPaquete` | Referencia opcional al paquete seleccionado. |
+| `idTematica` | Referencia opcional a la temática seleccionada. |
+| `fechaEvento` | Fecha programada del evento. |
+| `horaInicio` | Hora de inicio del evento. |
+| `horaFin` | Hora de finalización del evento. |
+| `cantidadInvitados` | Cantidad prevista de invitados. |
+| `montoBase` | Monto base de la reserva. |
+| `montoServicios` | Total correspondiente a servicios adicionales. |
+| `montoTotal` | Importe total de la reserva. |
+| `porcentajeDeposito` | Porcentaje requerido como depósito. |
+| `montoDeposito` | Importe requerido como depósito. |
+| `estado` | Estado actual de la reserva. |
+| `fechaCreacion` | Fecha de creación de la reserva. |
+| `fechaActualizacion` | Fecha de última actualización. |
+
+## Claves
+
+- **PK:** `idReserva`
+- **Único:** `codigoReserva`
+
+## Relaciones
+
+- **FK:** `idCliente → Cliente.idCliente`
+- **FK:** `idSede → Sede.idSede`
+- **FK:** `idSalon → Salon.idSalon`
+- **FK opcional:** `idPaquete → Paquete.idPaquete`
+- **FK opcional:** `idTematica → Tematica.idTematica`
+
+- Una Reserva pertenece a un Cliente.
+- Una Reserva se realiza en una Sede.
+- Una Reserva utiliza un Salon.
+- Una Reserva puede tener 0 o 1 Paquete.
+- Una Reserva puede tener 0 o 1 Tematica.
+- Una Reserva puede contener múltiples ServiciosAdicionales mediante ReservaServicio.
+- Una Reserva puede tener múltiples Pagos.
+- Una Reserva puede tener múltiples registros en HistorialReserva.
+
+## Reglas de Negocio
+
+1. `codigoReserva` debe ser único e independiente de `idReserva`.
+2. `cantidadInvitados` debe ser mayor que 0.
+3. `cantidadInvitados` no puede superar la capacidad del Salon.
+4. `horaInicio` debe ser anterior a `horaFin`.
+5. `montoBase` no debe ser negativo.
+6. `montoServicios` no debe ser negativo.
+7. `montoTotal` no debe ser negativo.
+8. `porcentajeDeposito` no debe ser negativo.
+9. `montoDeposito` no debe ser negativo.
+10. `montoBase + montoServicios = montoTotal`.
+11. El backend es la fuente de verdad para precios y cálculos monetarios.
+
+La disponibilidad del salón debe considerar:
+
+`inicioExistente < finNuevo`
+
+AND
+
+`finExistente > inicioNuevo`
+
+El código público puede seguir conceptualmente un formato como:
+
+`BEM-2026-000001`
+
+y no depende del ID interno de la reserva.
+
+---
+
+# 12. ENTIDAD: RESERVA_SERVICIO
+
+## Propósito
+
+Representar la relación entre una Reserva y los ServiciosAdicionales seleccionados.
+
+## Atributos
+
+| Atributo | Descripción |
+|----------|-------------|
+| `idReservaServicio` | Identificador único interno del detalle. |
+| `idReserva` | Referencia a la reserva. |
+| `idServicioAdicional` | Referencia al servicio adicional. |
+| `cantidad` | Cantidad contratada del servicio. |
+| `precioUnitario` | Precio aplicado al servicio al momento de la reserva. |
+| `subtotal` | Importe correspondiente al detalle. |
+
+## Claves
+
+- **PK:** `idReservaServicio`
+
+## Relaciones
+
+- **FK:** `idReserva → Reserva.idReserva`
+- **FK:** `idServicioAdicional → ServicioAdicional.idServicioAdicional`
+
+- Una Reserva puede tener múltiples ReservaServicio.
+- Un ServicioAdicional puede aparecer en múltiples ReservaServicio.
+- ReservaServicio resuelve la relación N:M entre Reserva y ServicioAdicional.
+
+## Reglas de Negocio
+
+1. `cantidad` debe ser mayor que 0.
+2. `precioUnitario` no debe ser negativo.
+3. `subtotal` no debe ser negativo.
+4. `precioUnitario` conserva el precio aplicado al momento de la reserva aunque el precio actual de ServicioAdicional cambie.
+5. Conceptualmente:
+
+`cantidad * precioUnitario = subtotal`
+
+---
+
+# 13. ENTIDAD: PAGO
+
+## Propósito
+
+Registrar los pagos asociados a una Reserva.
+
+## Atributos
+
+| Atributo | Descripción |
+|----------|-------------|
+| `idPago` | Identificador único interno del pago. |
+| `idReserva` | Referencia a la reserva asociada. |
+| `monto` | Importe del pago. |
+| `metodoPago` | Método utilizado para realizar el pago. |
+| `estadoPago` | Estado actual del pago. |
+| `referenciaExterna` | Identificador o referencia proveniente de un proveedor externo. |
+| `fechaPago` | Fecha efectiva del pago. |
+| `fechaCreacion` | Fecha de creación del registro. |
+
+## Claves
+
+- **PK:** `idPago`
+
+## Relaciones
+
+- **FK:** `idReserva → Reserva.idReserva`
+
+- Una Reserva puede tener múltiples Pagos.
+- Cada Pago pertenece a una sola Reserva.
+
+## Reglas de Negocio
+
+1. `monto` debe ser mayor que 0.
+2. `referenciaExterna` permitirá futuras integraciones con proveedores de pago.
+3. Una Reserva puede recibir pagos parciales o múltiples pagos.
+4. Los estados de pago serán definidos formalmente en FASE 1.4.
+
+No implementar Mercado Pago todavía.
+
+---
+
+# 14. ENTIDAD: HISTORIAL_RESERVA
+
+## Propósito
+
+Registrar los cambios relevantes en el ciclo de vida de una Reserva para mantener trazabilidad y auditoría.
+
+## Atributos
+
+| Atributo | Descripción |
+|----------|-------------|
+| `idHistorialReserva` | Identificador único interno del registro de historial. |
+| `idReserva` | Referencia a la reserva asociada. |
+| `estadoAnterior` | Estado anterior de la reserva. |
+| `estadoNuevo` | Nuevo estado de la reserva. |
+| `observacion` | Descripción opcional del motivo o detalle del cambio. |
+| `fechaCambio` | Fecha y hora en la que ocurrió el cambio. |
+| `idUsuarioResponsable` | Usuario responsable del cambio cuando corresponda. |
+
+## Claves
+
+- **PK:** `idHistorialReserva`
+
+## Relaciones
+
+- **FK:** `idReserva → Reserva.idReserva`
+- **FK opcional:** `idUsuarioResponsable → Usuario.idUsuario`
+
+- Una Reserva puede tener múltiples registros de HistorialReserva.
+- Cada HistorialReserva pertenece a una sola Reserva.
+- Un Usuario puede ser responsable de múltiples cambios de historial.
+- idUsuarioResponsable puede ser opcional cuando el cambio sea generado automáticamente por el sistema.
+
+## Reglas de Negocio
+
+1. Cada cambio relevante de estado de una Reserva debe poder registrarse en HistorialReserva.
+2. `fechaCambio` identifica el momento en que ocurrió la modificación.
+3. `estadoAnterior` permite conocer el estado previo.
+4. `estadoNuevo` representa el estado resultante.
+5. `observacion` puede registrar el motivo o contexto del cambio.
+6. HistorialReserva no reemplaza el estado actual almacenado en Reserva.
+7. Su propósito es mantener trazabilidad y auditoría.
+
+---
+
 # Resumen de Relaciones (Primeras 7 Entidades)
 
 | Relación | Entidad 1 | Entidad 2 | Cardinalidad Lógica | Descripción |
