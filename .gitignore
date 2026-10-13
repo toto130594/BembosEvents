@@ -1,0 +1,33 @@
+# Visual Studio Code
+.vscode/
+
+# JetBrains
+.idea/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Java / Maven
+backend/target/
+*.class
+
+# .NET
+frontend/bin/
+frontend/obj/
+
+# Logs
+*.log
+
+# Variables y secretos
+.env
+.env.*
+application-local.properties
+application-local.yml
+application-local.yaml
+
+# Claude Code - configuración solo de esta PC
+.claude/settings.local.json
+
+# Archivos temporales de pruebas
+.claude/test-*.txt
