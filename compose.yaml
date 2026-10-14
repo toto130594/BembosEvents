@@ -51,6 +51,31 @@ services:
       - master
     restart: "no"
 
+  db-migrate-01:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+      - SQLCMDPASSWORD=${BEMBOS_SQL_PASSWORD:?Define BEMBOS_SQL_PASSWORD en .env}
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./database/migrations:/migrations:ro
+    entrypoint: /opt/mssql-tools18/bin/sqlcmd
+    command:
+      - -S
+      - sqlserver
+      - -U
+      - sa
+      - -C
+      - -b
+      - -d
+      - BembosEventsDB
+      - -i
+      - /migrations/001_create_tables_01_07.sql
+    restart: "no"
+
 volumes:
   bembos-sql-data:
     name: bembos-sql-data
