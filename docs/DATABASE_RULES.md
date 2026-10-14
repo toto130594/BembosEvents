@@ -116,6 +116,80 @@ Si ambas condiciones son verdaderas: existe conflicto de horario.
 
 ---
 
+## 8. RESTRICCIONES ESPECÍFICAS POR ENTIDAD
+
+### Rol
+
+- `nombre` es obligatorio.
+- `nombre` debe ser único.
+- `nombre` no debe estar vacío.
+- `activo` representa disponibilidad lógica del rol.
+- Desactivar un Rol no debe eliminar su historial de asignaciones.
+
+### Usuario
+
+- `nombres` es obligatorio.
+- `apellidos` es obligatorio.
+- `correo` es obligatorio.
+- `correo` debe ser único.
+- `passwordHash` es obligatorio para usuarios con autenticación.
+- `passwordHash` nunca almacena contraseña en texto plano.
+- `activo` permite deshabilitar el acceso sin eliminar al Usuario.
+- La desactivación no debe eliminar información histórica relacionada.
+
+### UsuarioRol
+
+- `idUsuario` es obligatorio.
+- `idRol` es obligatorio.
+- No puede repetirse la combinación:
+
+`idUsuario + idRol`
+
+- El Usuario referenciado debe existir.
+- El Rol referenciado debe existir.
+
+### Cliente
+
+- `idUsuario` puede ser opcional.
+- Si existe `idUsuario`, debe referenciar un Usuario válido.
+- Un Usuario puede tener como máximo un perfil Cliente.
+- `documentoIdentidad`, cuando se registre, no debe estar vacío.
+- No duplicar nombres, correo o teléfono provenientes de Usuario sin una justificación funcional.
+
+### Sede
+
+- `nombre` es obligatorio.
+- `direccion` es obligatoria.
+- Una Sede puede tener múltiples Salones.
+- `activo` permite retirar una Sede de nuevas operaciones sin eliminar su historial.
+- Una Sede desactivada no debe ofrecerse para nuevas reservas.
+
+### Salon
+
+- `idSede` es obligatorio.
+- Cada Salon pertenece exactamente a una Sede.
+- `nombre` es obligatorio.
+- `capacidad` debe ser mayor que 0.
+- Un Salon inactivo no debe ofrecerse para nuevas reservas.
+- La desactivación del Salon no debe eliminar reservas históricas.
+
+### HorarioSalon
+
+- `idSalon` es obligatorio.
+- `diaSemana` es obligatorio.
+- `horaInicio` es obligatoria.
+- `horaFin` es obligatoria.
+- `horaInicio` debe ser anterior a `horaFin`.
+- Cada HorarioSalon pertenece exactamente a un Salon.
+- Horarios inactivos no deben considerarse disponibles para nuevas reservas.
+
+No definir todavía tipos SQL.
+No crear CHECK constraints físicos.
+No crear índices.
+No definir ON DELETE u ON UPDATE.
+
+---
+
 ## 8. PROHIBIDO
 
 NO escribir:
