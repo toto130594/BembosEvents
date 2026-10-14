@@ -43,27 +43,24 @@ COMPLETADA antes de iniciar diseño funcional.
 
 ## FASE 1 — Diseño de base de datos
 
+**Estado:** COMPLETADA ✅
+
 Objetivo:
 
 Diseñar el modelo conceptual y lógico antes de crear SQL.
 
-Definir:
+Definido:
 
-- entidades;
-- atributos;
-- relaciones;
-- cardinalidades;
-- claves;
-- constraints;
-- normalización;
-- índices;
-- estados;
-- reglas de integridad;
-- modelo de reservas;
-- modelo de pagos;
-- auditoría.
+- Modelo conceptual (FASE 1.1) aprobado;
+- Modelo lógico con 14 entidades (FASE 1.2A/1.2B) aprobado;
+- Reglas y restricciones (FASE 1.3) aprobadas;
+- Estados e índices candidatos (FASE 1.4) documentados;
+- Auditoría final (FASE 1.5) aprobada;
+- Cierre de fase (FASE 1.6) confirmado.
 
-No crear todavía tablas SQL.
+Entidades: Rol, Usuario, UsuarioRol, Cliente, Sede, Salon, HorarioSalon, Paquete, Tematica, ServicioAdicional, Reserva, ReservaServicio, Pago, HistorialReserva.
+
+No crear todavía tablas SQL ni migraciones físicas.
 
 ---
 
