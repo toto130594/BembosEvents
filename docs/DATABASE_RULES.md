@@ -183,10 +183,153 @@ Si ambas condiciones son verdaderas: existe conflicto de horario.
 - Cada HorarioSalon pertenece exactamente a un Salon.
 - Horarios inactivos no deben considerarse disponibles para nuevas reservas.
 
-No definir todavía tipos SQL.
-No crear CHECK constraints físicos.
-No crear índices.
-No definir ON DELETE u ON UPDATE.
+### Paquete
+
+- `nombre` es obligatorio.
+- `precioBase` no debe ser negativo.
+- `cantidadPersonasBase` debe ser mayor que 0.
+- `activo` indica si el paquete puede ofrecerse para nuevas reservas.
+- Desactivar un Paquete no debe eliminar Reservas históricas que lo utilicen.
+
+### Tematica
+
+- `nombre` es obligatorio.
+- `precioAdicional` no debe ser negativo.
+- `activo` indica si puede ofrecerse para nuevas reservas.
+- Desactivar una Tematica no debe eliminar Reservas históricas relacionadas.
+
+### ServicioAdicional
+
+- `nombre` es obligatorio.
+- `precio` no debe ser negativo.
+- `activo` indica si puede ofrecerse para nuevas reservas.
+- Los cambios futuros de precio no deben alterar el `precioUnitario` ya almacenado en ReservaServicio.
+
+### Reserva
+
+- `codigoReserva` es obligatorio.
+- `codigoReserva` debe ser único.
+- `codigoReserva` es independiente de `idReserva`.
+
+Son obligatorios:
+
+- `idCliente`
+- `idSede`
+- `idSalon`
+- `fechaEvento`
+- `horaInicio`
+- `horaFin`
+- `cantidadInvitados`
+- `estado`
+
+Son opcionales:
+
+- `idPaquete`
+- `idTematica`
+
+Reglas:
+
+- `cantidadInvitados` debe ser mayor que 0.
+- `cantidadInvitados` no puede superar `Salon.capacidad`.
+- `horaInicio` debe ser anterior a `horaFin`.
+- No puede existir superposición de Reservas para el mismo Salon.
+
+Superposición:
+
+inicioExistente < finNuevo
+AND
+finExistente > inicioNuevo
+
+Si ambas condiciones son verdaderas:
+hay conflicto.
+
+- `montoBase` no debe ser negativo.
+- `montoServicios` no debe ser negativo.
+- `montoTotal` no debe ser negativo.
+- `porcentajeDeposito` no debe ser negativo.
+- `montoDeposito` no debe ser negativo.
+
+Conceptualmente:
+
+montoBase + montoServicios = montoTotal
+
+El backend es la fuente de verdad para precios y montos.
+
+### ReservaServicio
+
+Son obligatorios:
+
+- `idReserva`
+- `idServicioAdicional`
+- `cantidad`
+- `precioUnitario`
+
+Reglas:
+
+- `cantidad` debe ser mayor que 0.
+- `precioUnitario` no debe ser negativo.
+- `subtotal` no debe ser negativo.
+
+Conceptualmente:
+
+cantidad * precioUnitario = subtotal
+
+- `precioUnitario` conserva el precio aplicado al momento de la Reserva.
+- cambios posteriores en ServicioAdicional.precio no deben alterar registros históricos.
+
+### Pago
+
+Son obligatorios:
+
+- `idReserva`
+- `monto`
+- `estadoPago`
+
+Reglas:
+
+- `monto` debe ser mayor que 0.
+- Una Reserva puede tener múltiples Pagos.
+- Cada Pago pertenece a una sola Reserva.
+- `referenciaExterna` puede ser opcional.
+- No implementar reglas específicas de Mercado Pago todavía.
+- Los estados definitivos serán revisados en FASE 1.4.
+
+### HistorialReserva
+
+Son obligatorios:
+
+- `idReserva`
+- `estadoNuevo`
+- `fechaCambio`
+
+Opcionales cuando corresponda:
+
+- `estadoAnterior`
+- `observacion`
+- `idUsuarioResponsable`
+
+Reglas:
+
+- cada HistorialReserva pertenece a una Reserva.
+- una Reserva puede tener múltiples registros de historial.
+- `estadoNuevo` representa el estado resultante.
+- `estadoAnterior` representa el estado previo cuando exista.
+- `idUsuarioResponsable` puede ser nulo para cambios automáticos del sistema.
+- el historial no reemplaza el estado actual de Reserva.
+- los registros históricos deben conservar trazabilidad.
+
+No definir todavía:
+
+- tipos SQL
+- CHECK físicos
+- UNIQUE físicos
+- FOREIGN KEY físicas
+- ON DELETE
+- ON UPDATE
+- índices
+- enums definitivos
+- tablas catálogo
+- migraciones Flyway
 
 ---
 
