@@ -1,0 +1,21 @@
+# Archivos de compilación
+target/
+
+# Control de versiones
+.git/
+.gitignore
+
+# Archivos del sistema
+Dockerfile
+.dockerignore
+
+# Logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Mac OS
+.DS_Store
