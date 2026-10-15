@@ -126,6 +126,31 @@ services:
       - /migrations/003_constraints.sql
     restart: "no"
 
+  db-migrate-04:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+      - SQLCMDPASSWORD=${BEMBOS_SQL_PASSWORD:?Define BEMBOS_SQL_PASSWORD en .env}
+    depends_on:
+      db-migrate-03:
+        condition: service_completed_successfully
+    volumes:
+      - ./database/migrations:/migrations:ro
+    entrypoint: /opt/mssql-tools18/bin/sqlcmd
+    command:
+      - -S
+      - sqlserver
+      - -U
+      - sa
+      - -C
+      - -b
+      - -d
+      - BembosEventsDB
+      - -i
+      - /migrations/004_indexes.sql
+    restart: "no"
+
 volumes:
   bembos-sql-data:
     name: bembos-sql-data

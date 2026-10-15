@@ -115,6 +115,13 @@ BEGIN
 END;
 GO
 
+-- Reserva.fechaEvento - consultas por fecha de evento
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Reserva') AND name = N'IX_Reserva_fechaEvento')
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_Reserva_fechaEvento] ON [dbo].[Reserva] ([fechaEvento])
+END;
+GO
+
 -- Pago.estadoPago - pagos por estado
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Pago') AND name = N'IX_Pago_estadoPago')
 BEGIN
@@ -129,10 +136,18 @@ BEGIN
 END;
 GO
 
--- HistorialReserva.fechaCambio - consultar cronológicamente el historial de una Reserva
-IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.HistorialReserva') AND name = N'IX_HistorialReserva_fechaCambio')
+-- HistorialReserva.idReserva + fechaCambio - consultar cronológicamente el historial de una Reserva
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.HistorialReserva') AND name = N'IX_HistorialReserva_idReserva_fechaCambio')
 BEGIN
-    CREATE NONCLUSTERED INDEX [IX_HistorialReserva_fechaCambio] ON [dbo].[HistorialReserva] ([fechaCambio])
+    CREATE NONCLUSTERED INDEX [IX_HistorialReserva_idReserva_fechaCambio]
+    ON [dbo].[HistorialReserva] ([idReserva], [fechaCambio])
+END;
+GO
+
+-- UsuarioRol.idRol - facilitar búsqueda por rol
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.UsuarioRol') AND name = N'IX_UsuarioRol_idRol')
+BEGIN
+    CREATE NONCLUSTERED INDEX [IX_UsuarioRol_idRol] ON [dbo].[UsuarioRol] ([idRol])
 END;
 GO
 

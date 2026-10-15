@@ -65,3 +65,53 @@ BEGIN
     CHECK ([horaInicio] < [horaFin]);
 END;
 GO
+
+-- =============================================
+-- CONSTRAINT: UX_Usuario_correo
+-- =============================================
+-- Un usuario puede tener como máximo un correo electrónico.
+-- Restricción UNIQUE idempotente para evitar duplicados de correo.
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = N'UX_Usuario_correo'
+      AND object_id = OBJECT_ID(N'dbo.Usuario')
+)
+BEGIN
+    CREATE UNIQUE INDEX [UX_Usuario_correo]
+    ON [dbo].[Usuario]([correo]);
+END;
+GO
+
+-- =============================================
+-- CONSTRAINT: UX_UsuarioRol_idUsuario_idRol
+-- =============================================
+-- Un usuario puede tener como máximo un rol por tipo de rol.
+-- Impide que un mismo usuario tenga asignado dos veces el mismo rol.
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = N'UX_UsuarioRol_idUsuario_idRol'
+      AND object_id = OBJECT_ID(N'dbo.UsuarioRol')
+)
+BEGIN
+    CREATE UNIQUE INDEX [UX_UsuarioRol_idUsuario_idRol]
+    ON [dbo].[UsuarioRol]([idUsuario], [idRol]);
+END;
+GO
+
+-- =============================================
+-- CONSTRAINT: UX_Rol_nombre
+-- =============================================
+-- Un rol debe tener un nombre único en todo el sistema.
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = N'UX_Rol_nombre'
+      AND object_id = OBJECT_ID(N'dbo.Rol')
+)
+BEGIN
+    CREATE UNIQUE INDEX [UX_Rol_nombre]
+    ON [dbo].[Rol]([nombre]);
+END;
+GO
