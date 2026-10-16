@@ -6,6 +6,8 @@ Sistema para la gestion de eventos, reservas, pagos, sedes, salones y usuarios.
 
 **Fase actual:** FASE 7.6 - Auditoria definitiva de API REST.
 
+**Subfase actual:** FASE 7.6C.2 - Disponibilidad publica.
+
 **Siguiente fase:** FASE 7.7 - Seguridad por sede completa.
 
 Actualmente el backend dispone de:
@@ -175,6 +177,7 @@ No ejecutar docker compose down -v salvo que se quiera destruir intencionalmente
 - docs/ROADMAP.md
 - docs/ARCHITECTURE.md
 - docs/API.md
+- docs/REST_CONTRACT.md
 - docs/SECURITY.md
 - docs/BUSINESS_RULES.md
 - docs/PROJECT_RULES.md

@@ -3,5 +3,11 @@ package com.bembosevents.repository;
 import com.bembosevents.entity.HorarioSalon;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface HorarioSalonRepository extends JpaRepository<HorarioSalon, Integer> {
+import java.util.List;
+
+public interface HorarioSalonRepository
+        extends JpaRepository<HorarioSalon, Integer> {
+
+    List<HorarioSalon> findBySalon_IdSalonAndActivoTrue(
+            Integer idSalon);
 }

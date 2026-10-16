@@ -91,3 +91,38 @@ FASE 7.6 - Auditoria REST definitiva.
 - Definition of Done documental activada.
 - README, reglas, arquitectura, API y seguridad sincronizados.
 - FASE 7.6 pasa a ser la fase activa.
+
+### FASE 7.6B - Contrato REST
+
+- Contrato REST definitivo documentado.
+- Endpoints existentes clasificados.
+- Endpoints tecnicos marcados para retiro.
+- Catalogos publicos definidos.
+- Flujo real de reservas definido.
+- Flujo BackOffice de reservas definido.
+- Contrato base de pagos definido.
+- Aprobacion de pagos reservada al flujo seguro del proveedor.
+- Seguridad por sede integrada al contrato.
+- REST_CONTRACT.md agregado.
+
+
+### FASE 7.6C.1
+
+- Catalogos publicos de lectura implementados.
+- Sedes publicas.
+- Salones por sede.
+- Horarios por salon.
+- Paquetes.
+- Tematicas.
+- Servicios adicionales.
+- Solo registros activos son visibles publicamente.
+- Recursos inexistentes o inactivos responden 404.
+- Rutas GET publicas configuradas en Spring Security.
+
+
+### FASE 7.6C.2
+
+- Consulta publica de disponibilidad implementada.
+- Se valida horario operativo del salon.
+- Se reutiliza ReservaService para detectar solapamientos.
+- Query parameters invalidos responden 400.

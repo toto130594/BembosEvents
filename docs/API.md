@@ -1,3 +1,13 @@
+# Contrato definitivo
+
+El contrato REST objetivo aprobado para FASE 7.6 se encuentra en:
+
+docs/REST_CONTRACT.md
+
+API.md conserva tambien el inventario y contexto de los endpoints tecnicos existentes.
+
+---
+
 # API REST - Bembos Events
 
 ## Estado del documento
@@ -544,3 +554,52 @@ Cada endpoint actual sera clasificado como:
 - PENDIENTE.
 
 El resultado sera el contrato REST definitivo antes de desarrollar el frontend ASP.NET Core MVC.
+
+
+## FASE 7.6C.1 - Catalogos publicos implementados
+
+Disponibles sin autenticacion:
+
+- GET /api/sedes
+- GET /api/sedes/{idSede}
+- GET /api/sedes/{idSede}/salones
+- GET /api/salones/{idSalon}
+- GET /api/salones/{idSalon}/horarios
+- GET /api/paquetes
+- GET /api/paquetes/{idPaquete}
+- GET /api/tematicas
+- GET /api/tematicas/{idTematica}
+- GET /api/servicios-adicionales
+- GET /api/servicios-adicionales/{idServicioAdicional}
+
+Solo se exponen recursos activos.
+
+La disponibilidad del salon se implementa en FASE 7.6C.2.
+
+
+## FASE 7.6C.2 - Disponibilidad publica
+
+```http
+GET /api/salones/{idSalon}/disponibilidad?fecha=2026-10-19&horaInicio=14:00&horaFin=18:00
+```
+
+La operacion:
+
+- exige salon activo.
+- exige sede activa.
+- valida el horario configurado del salon.
+- reutiliza ReservaService para detectar solapamientos.
+- no crea ni modifica reservas.
+
+Ejemplo disponible:
+
+```json
+{
+  "idSalon": 1,
+  "fecha": "2026-10-19",
+  "horaInicio": "14:00:00",
+  "horaFin": "18:00:00",
+  "disponible": true,
+  "motivo": "Disponible"
+}
+```

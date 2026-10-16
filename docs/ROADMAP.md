@@ -103,6 +103,8 @@ Estado: COMPLETADA.
 
 Estado: ACTUAL.
 
+Subfase actual: 7.6B - Contrato REST definitivo.
+
 Objetivo:
 
 Definir la API REST definitiva antes del frontend.

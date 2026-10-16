@@ -7,6 +7,7 @@ import com.bembosevents.security.UsuarioDetailsService;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -42,8 +43,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(
-            JwtAuthenticationFilter filter) {
+    public FilterRegistrationBean<JwtAuthenticationFilter>
+            jwtFilterRegistration(
+                    JwtAuthenticationFilter filter) {
 
         FilterRegistrationBean<JwtAuthenticationFilter> registration =
                 new FilterRegistrationBean<>(filter);
@@ -111,6 +113,20 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/api/auth/**",
                                         "/error")
+                                .permitAll()
+
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/api/sedes",
+                                        "/api/sedes/**",
+                                        "/api/salones",
+                                        "/api/salones/**",
+                                        "/api/paquetes",
+                                        "/api/paquetes/**",
+                                        "/api/tematicas",
+                                        "/api/tematicas/**",
+                                        "/api/servicios-adicionales",
+                                        "/api/servicios-adicionales/**")
                                 .permitAll()
 
                                 .requestMatchers(
