@@ -1,251 +1,199 @@
-# Bembos Events
+# Bembos Events - Reglas de Desarrollo
 
-## Objetivo
-Sistema académico para gestión y reserva de fiestas/eventos.
+Estas reglas son obligatorias para cualquier agente que modifique este repositorio.
 
-## Arquitectura
+## Plataforma
 
-Navegador
-→ ASP.NET Core MVC
-→ HTTP/JSON
-→ Spring Boot REST API
-→ Service
-→ Repository
-→ JPA/Hibernate
-→ Microsoft SQL Server
+- Java 21.
+- Spring Boot 3.4.x.
+- Windows PowerShell 5.1.
+- Microsoft SQL Server.
+- Docker.
 
-Reglas:
+No cambiar Java 21 sin autorizacion explicita.
 
-- El frontend nunca se conecta directamente a SQL Server.
-- Spring Boot es la única capa que accede a la base de datos.
-- Backend es la fuente de verdad para precios, disponibilidad y reglas.
-- No confiar en precios enviados desde frontend.
+## Arquitectura backend
 
-## Orden de desarrollo
+Preferir:
 
-1. Diseño de base de datos.
-2. SQL Server.
-3. Backend Spring Boot.
-4. JPA + Flyway.
-5. Reglas de negocio.
-6. REST API.
-7. Seguridad.
-8. Reservas y cotización.
-9. Tests backend.
-10. Frontend ASP.NET Core MVC.
-11. Integración frontend/backend.
-12. Mercado Pago Sandbox.
-13. Administración.
-14. Docker y auditoría.
+```text
+Controller
+  ->
+Service interface
+  ->
+ServiceImpl
+  ->
+Repository
+  ->
+Database
+```
 
-No avanzar de fase sin autorización del usuario.
+La logica de negocio no debe vivir en Controllers.
+
+## Constructores
+
+Usar constructores explicitos en Controllers, Services y componentes Spring.
+
+No usar @RequiredArgsConstructor mientras exista el problema de diagnostico VS Code/JDT observado en este entorno.
+
+## Lombok y entidades JPA
+
+Permitido:
+
+- @Getter
+- @Setter
+- @NoArgsConstructor
+
+Evitar:
+
+- @Data en entidades.
+- equals/hashCode automaticos sobre relaciones JPA.
 
 ## Base de datos
 
-Motor:
-Microsoft SQL Server
+Flyway es la fuente de verdad del esquema.
 
-Nombre:
-BembosEventsDB
+Todo cambio estructural nuevo requiere una nueva migracion.
 
-Entidades previstas:
+No modificar migraciones ya aplicadas para representar cambios nuevos.
 
-- Rol
-- Usuario
-- UsuarioRol
-- Cliente
-- Sede
-- Salon
-- HorarioSalon
-- Paquete
-- Tematica
-- ServicioAdicional
-- Reserva
-- ReservaServicio
-- Pago
-- HistorialReserva
+## Seguridad
 
-Dinero:
+Nunca versionar:
 
-SQL Server:
-DECIMAL
+- .env
+- passwords.
+- JWT.
+- JWT_SECRET.
+- API keys.
+- secretos MFA.
 
-Java:
-BigDecimal
-
-Nunca usar double para dinero.
-
-## Backend
-
-Tecnologías:
-
-- Java
-- Spring Boot
-- Spring Web
-- Spring Data JPA
-- Hibernate
-- Bean Validation
-- Maven
-- Flyway
-
-Seguridad posteriormente:
-
-- Spring Security
-- JWT
-- BCrypt
-
-Estructura futura:
-
-controller/
-service/
-service/impl/
-repository/
-entity/
-dto/request/
-dto/response/
-mapper/
-exception/
-security/
-config/
-util/
-
-Nunca exponer entidades JPA directamente desde controllers.
-
-Usar DTOs.
+Los permisos siempre se validan en backend.
 
 ## Roles
 
-Iniciales:
+CLIENTE:
+- sin BackOffice.
 
-CLIENTE
-ENCARGADO_LOCAL
-ADMINISTRADOR
+ENCARGADO_LOCAL:
+- acceso solo a su sede.
 
-Preparar arquitectura para:
+ADMINISTRADOR:
+- acceso administrativo global.
 
-ASESOR_EVENTOS
-COORDINADOR_EVENTOS
-CAJERO
-SUPERVISOR
-GERENTE
+## UsuarioSede
 
-## Reglas de negocio
+Rol responde que puede hacer el usuario.
 
-### Aforo
+UsuarioSede responde donde puede hacerlo.
 
-cantidadInvitados <= capacidad del salón.
+## Reservas
 
-### Disponibilidad
+El backend decide definitivamente:
 
-No permitir reservas superpuestas para el mismo salón.
+- capacidad.
+- disponibilidad.
+- superposicion.
+- monto minimo.
+- precios.
+- deposito.
+- estados.
 
-Existe superposición cuando:
+## Pagos
 
-inicioExistente < finNuevo
+La validacion de transiciones debe ocurrir dentro del backend.
 
-Y:
+El frontend final no debe depender de endpoints tecnicos como validar-transicion.
 
-finExistente > inicioNuevo
+## IA
 
-Ejemplo existente:
+La IA nunca puede acceder directamente a SQL Server.
 
-15:00 - 18:00
+Debe utilizar APIs o Services controlados.
 
-Bloquear:
+La IA no decide definitivamente:
 
-14:00 - 16:00
-16:00 - 17:00
-17:00 - 20:00
-15:00 - 18:00
+- precios.
+- disponibilidad.
+- permisos.
+- capacidad.
+- aprobacion de pagos.
+- transiciones de estado.
 
-Permitir:
+## Chat futuro
 
-12:00 - 15:00
-18:00 - 20:00
+Debe soportar:
 
-### Consumo mínimo
+```text
+CLIENTE -> IA -> ENCARGADO_LOCAL
+```
 
-Valor inicial:
+Al escalar se conserva la misma conversacion.
 
-S/ 500
+## MFA futuro
 
-Debe ser configurable.
+Se utilizara TOTP.
 
-### Seña
+Politica objetivo:
 
-Valor inicial:
+- CLIENTE: opcional.
+- ENCARGADO_LOCAL: obligatorio.
+- ADMINISTRADOR: obligatorio.
 
-50%
+## Tests
 
-Debe ser configurable.
+- JUnit 5 como base.
+- Mockito solo cuando una dependencia requiera aislamiento.
+- Toda regla nueva debe tener pruebas apropiadas.
 
-### Reserva
+## Documentacion obligatoria
 
-Debe tener identificador público independiente del ID interno.
+Si cambia negocio -> docs/BUSINESS_RULES.md.
 
-Ejemplo:
+Si cambia API -> docs/API.md y Postman.
 
-BEM-2026-000001
+Si cambia seguridad -> docs/SECURITY.md.
 
-## Frontend futuro
+Si cambia arquitectura -> docs/ARCHITECTURE.md y docs/DECISIONS.md.
 
-Tecnologías:
+Si cambia una fase -> README.md, docs/ROADMAP.md y docs/CHANGELOG.md.
 
-- C#
-- ASP.NET Core MVC
-- Razor Views
-- ViewModels
-- Bootstrap 5
-- CSS
-- JavaScript
-- HttpClient
+## Definition of Done
 
-NO usar Razor Pages como arquitectura principal.
+Una tarea no esta terminada hasta revisar:
 
-## Mercado Pago
+1. Codigo.
+2. Tests.
+3. Build.
+4. Migraciones.
+5. Seguridad.
+6. API.
+7. Postman.
+8. README.
+9. Documentacion especifica.
+10. Git status.
+11. Commit.
 
-Usar únicamente Sandbox durante desarrollo.
+Documentacion desactualizada significa tarea incompleta.
 
-Access Token solamente en backend.
+## PowerShell
 
-Nunca exponer tokens en:
+Entorno principal: Windows PowerShell 5.1.
 
-- frontend
-- JavaScript
-- Git
-- repositorio público
+No usar &&.
 
-## Forma de trabajo
+Para bloques complejos usar & { ... }.
 
-Antes de modificar código:
+Evitar scripts gigantes cuando puedan dividirse en pasos pequenos.
 
-1. Leer archivos relacionados.
-2. Comprender implementación existente.
-3. Realizar cambio mínimo necesario.
-4. Ejecutar build/tests.
-5. Leer errores reales.
-6. Corregir.
-7. Volver a ejecutar build/tests.
+## Git
 
-Ciclo obligatorio:
+Antes de commit revisar:
 
-BUILD/TEST
-→ READ
-→ EDIT
-→ BUILD/TEST
+```powershell
+git status
+git diff
+git diff --cached
+```
 
-Repetir hasta obtener éxito.
-
-No declarar completado sin verificar.
-
-## Comportamiento del agente
-
-- Ejecutar herramientas reales.
-- No simular tool calls escribiendo JSON.
-- No preguntar información disponible en el repositorio.
-- No inventar propiedades.
-- No inventar rutas.
-- No cambiar de framework.
-- No introducir Python.
-- No agregar funcionalidades no solicitadas.
-- No avanzar a otra fase automáticamente.
+Nunca agregar secretos.

@@ -1,26 +1,203 @@
 # Bembos Events
 
-## Descripción
+Sistema para la gestion de eventos, reservas, pagos, sedes, salones y usuarios.
 
-**Bembos Events** es un sistema académico diseñado para la gestión y reserva de fiestas y eventos. El proyecto se enfoca en la creación de una plataforma robusta que permita a los usuarios gestionar reservas, paquetes, servicios adicionales y pagos de manera eficiente.
+## Estado actual
 
-## Arquitectura Resumida
+**Fase actual:** FASE 7.6 - Auditoria definitiva de API REST.
 
-El sistema está estructurado en capas:
-- **Frontend**: ASP.NET Core MVC con Razor Views y Bootstrap 5.
-- **Backend**: Spring Boot REST API.
-- **Base de Datos**: Microsoft SQL Server.
+**Siguiente fase:** FASE 7.7 - Seguridad por sede completa.
 
-La comunicación entre frontend y backend se realiza mediante HTTP/JSON. Spring Boot es la única capa que interactúa directamente con la base de datos.
+Actualmente el backend dispone de:
 
-## Estado Actual
+- Java 21.
+- Spring Boot 3.4.x.
+- Microsoft SQL Server 2022.
+- Flyway.
+- JPA / Hibernate.
+- JWT.
+- BCrypt.
+- Spring Security.
+- Roles CLIENTE, ENCARGADO_LOCAL y ADMINISTRADOR.
+- UsuarioSede para limitar al encargado por sede.
+- CRUD administrativo de usuarios.
+- BackOffice con acceso global para ADMINISTRADOR.
+- BackOffice restringido por sede para ENCARGADO_LOCAL.
+- Reglas iniciales de reservas y pagos.
+- Docker.
+- JUnit 5 y Mockito.
 
-**FASE 0**: Configuración inicial del proyecto.
+## Arquitectura
 
-El proyecto está en sus primeras etapas y se centra en el diseño de la base de datos y la configuración del backend.
+```text
+Browser
+   |
+   v
+ASP.NET Core MVC
+   | HTTP / JSON
+   v
+Spring Boot REST API
+   |
+   v
+Service
+   |
+   v
+Repository
+   |
+   v
+JPA / Hibernate
+   |
+   v
+SQL Server
+```
 
-## Próximos Pasos
+El frontend ASP.NET Core MVC se implementara posteriormente.
 
-1. Diseño de la base de datos.
-2. Configuración de SQL Server.
-3. Implementación del backend con Spring Boot.
+## Roles
+
+### CLIENTE
+
+- Registro publico.
+- Portal del cliente.
+- Sin acceso administrativo al BackOffice.
+
+### ENCARGADO_LOCAL
+
+- Acceso al BackOffice.
+- Debe tener una sede asignada.
+- Solo puede acceder a informacion de su sede.
+
+### ADMINISTRADOR
+
+- Acceso administrativo global.
+- Puede administrar usuarios.
+- Puede consultar todas las sedes.
+
+## Reservas
+
+El backend es la fuente de verdad para:
+
+- capacidad.
+- disponibilidad.
+- cruces de horario.
+- monto minimo.
+- precios.
+- deposito.
+- transiciones de estado.
+
+Estados:
+
+- PENDIENTE.
+- CONFIRMADA.
+- EN_PROCESO.
+- COMPLETADA.
+- CANCELADA.
+- EXPIRADA.
+
+## Pagos
+
+Estados:
+
+- PENDIENTE.
+- APROBADO.
+- RECHAZADO.
+- CANCELADO.
+- REEMBOLSADO.
+
+El endpoint /api/pagos/validar-transicion es actualmente tecnico.
+
+En FASE 7.6 se integrara esa regla dentro del endpoint real de cambio de estado.
+
+## Seguridad futura
+
+Planeado:
+
+- recuperacion de password.
+- verificacion de correo.
+- MFA mediante TOTP.
+- codigos de recuperacion.
+- refresh tokens.
+- gestion de sesiones.
+- rate limiting.
+- bloqueo temporal por intentos.
+- auditoria administrativa.
+
+## Chat e IA
+
+Arquitectura objetivo:
+
+```text
+CLIENTE
+   |
+   v
+IA
+   |
+   +---- resuelve consulta
+   |
+   +---- escala
+           |
+           v
+     ENCARGADO_LOCAL
+```
+
+La IA nunca accedera directamente a SQL Server.
+
+Toda operacion critica pasara por Services y reglas del backend.
+
+## Levantar backend
+
+```powershell
+docker compose up -d --build backend
+```
+
+Ver estado:
+
+```powershell
+docker compose ps
+```
+
+Ver logs:
+
+```powershell
+docker compose logs --tail=100 backend
+```
+
+No ejecutar docker compose down -v salvo que se quiera destruir intencionalmente la base local.
+
+## Validacion
+
+```powershell
+.\scripts\validate-backend.ps1
+```
+
+## Documentacion
+
+- docs/ROADMAP.md
+- docs/ARCHITECTURE.md
+- docs/API.md
+- docs/SECURITY.md
+- docs/BUSINESS_RULES.md
+- docs/PROJECT_RULES.md
+- docs/DECISIONS.md
+- docs/AI_CHAT.md
+- docs/CHANGELOG.md
+- docs/DATABASE_DESIGN.md
+
+## Definition of Done
+
+Una funcionalidad no esta terminada solamente porque compile.
+
+Debe comprobarse:
+
+1. Codigo.
+2. Tests.
+3. Build.
+4. Migraciones si aplica.
+5. Seguridad.
+6. API.
+7. Postman si aplica.
+8. README.
+9. Documentacion tecnica.
+10. Git.
+
+**Codigo actualizado con documentacion desactualizada = tarea incompleta.**

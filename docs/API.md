@@ -1,0 +1,546 @@
+# API REST - Bembos Events
+
+## Estado del documento
+
+Este documento refleja el estado actual de la API antes de la auditoria definitiva de FASE 7.6.
+
+Clasificacion utilizada:
+
+- [IMPLEMENTADO] Endpoint existente que forma parte del sistema actual.
+- [TECNICO] Endpoint creado para probar una regla de negocio.
+- [REVISAR] Endpoint existente cuya forma final debe definirse.
+- [PENDIENTE] Endpoint todavia no implementado.
+- [FUTURO] Funcionalidad prevista para fases posteriores.
+
+Base URL local:
+
+```text
+http://localhost:8080
+```
+
+# 1. Autenticacion
+
+## [IMPLEMENTADO] Registro publico
+
+```http
+POST /api/auth/registro
+```
+
+Objetivo:
+
+- registrar un nuevo usuario.
+- siempre asignar rol CLIENTE.
+
+Reglas:
+
+- el usuario no puede elegir rol.
+- el usuario no puede asignarse sede.
+- el password se almacena con BCrypt.
+
+Ejemplo:
+
+```json
+{
+  "nombres": "Juan",
+  "apellidos": "Perez",
+  "correo": "juan@example.com",
+  "telefono": "999999999",
+  "password": "Password123!"
+}
+```
+
+## [IMPLEMENTADO] Login
+
+```http
+POST /api/auth/login
+```
+
+Objetivo:
+
+- validar correo y password.
+- devolver JWT cuando las credenciales son correctas.
+
+Ejemplo:
+
+```json
+{
+  "correo": "juan@example.com",
+  "password": "Password123!"
+}
+```
+
+# 2. Usuarios administrativos
+
+Acceso:
+
+- ADMINISTRADOR.
+
+## [IMPLEMENTADO] Crear usuario
+
+```http
+POST /api/usuarios
+```
+
+Permite crear usuarios administrativos o clientes desde BackOffice.
+
+Para ENCARGADO_LOCAL se requiere una sede.
+
+## [IMPLEMENTADO] Listar usuarios
+
+```http
+GET /api/usuarios
+```
+
+## [IMPLEMENTADO] Consultar usuario
+
+```http
+GET /api/usuarios/{idUsuario}
+```
+
+## [IMPLEMENTADO] Actualizar usuario
+
+```http
+PUT /api/usuarios/{idUsuario}
+```
+
+## [IMPLEMENTADO] Cambiar rol
+
+```http
+PUT /api/usuarios/{idUsuario}/rol
+```
+
+## [IMPLEMENTADO] Cambiar estado
+
+```http
+PATCH /api/usuarios/{idUsuario}/estado
+```
+
+# 3. BackOffice - Sedes
+
+Acceso:
+
+- ADMINISTRADOR.
+- ENCARGADO_LOCAL.
+
+## [IMPLEMENTADO] Listar sedes accesibles
+
+```http
+GET /api/backoffice/sedes
+```
+
+Comportamiento:
+
+ADMINISTRADOR:
+
+- obtiene todas las sedes activas accesibles.
+
+ENCARGADO_LOCAL:
+
+- obtiene solamente su sede asignada.
+
+CLIENTE:
+
+- recibe 403 Forbidden.
+
+## [IMPLEMENTADO] Consultar sede
+
+```http
+GET /api/backoffice/sedes/{idSede}
+```
+
+Regla:
+
+- ADMINISTRADOR puede consultar cualquier sede autorizada.
+- ENCARGADO_LOCAL solamente puede consultar su sede.
+- intentar acceder a otra sede devuelve 403.
+
+# 4. Reservas - API tecnica actual
+
+Los siguientes endpoints existen actualmente para probar reglas del dominio.
+
+No representan necesariamente la API final que utilizara ASP.NET MVC.
+
+Politica de seguridad actual:
+
+- CLIENTE.
+- ENCARGADO_LOCAL.
+- ADMINISTRADOR.
+
+segun la configuracion de seguridad vigente.
+
+## [TECNICO] Validar capacidad
+
+```http
+POST /api/reservas/validar-capacidad
+```
+
+Ejemplo:
+
+```json
+{
+  "idSalon": 1,
+  "cantidadInvitados": 40
+}
+```
+
+Regla:
+
+```text
+cantidadInvitados <= capacidadSalon
+```
+
+## [TECNICO] Validar disponibilidad
+
+```http
+POST /api/reservas/validar-disponibilidad
+```
+
+Ejemplo:
+
+```json
+{
+  "idSalon": 1,
+  "fechaEvento": "2026-12-20",
+  "horaInicio": "14:00",
+  "horaFin": "18:00"
+}
+```
+
+Comprueba conflictos de horario.
+
+## [TECNICO] Validar monto minimo
+
+```http
+POST /api/reservas/validar-monto-minimo
+```
+
+## [TECNICO] Calcular monto total
+
+```http
+POST /api/reservas/calcular-monto-total
+```
+
+## [TECNICO] Calcular deposito
+
+```http
+POST /api/reservas/calcular-deposito
+```
+
+## [TECNICO] Validar transicion de reserva
+
+```http
+POST /api/reservas/validar-transicion
+```
+
+Ejemplo:
+
+```json
+{
+  "estadoActual": "PENDIENTE",
+  "nuevoEstado": "CONFIRMADA"
+}
+```
+
+Objetivo actual:
+
+- comprobar las reglas de transicion.
+
+Objetivo final:
+
+- la validacion debe ejecutarse internamente cuando se modifique realmente una reserva.
+
+# 5. Reservas - API objetivo
+
+Los nombres exactos seran confirmados durante FASE 7.6.
+
+## [PENDIENTE] Crear reserva
+
+Propuesta:
+
+```http
+POST /api/reservas
+```
+
+El backend debera validar dentro de una sola operacion:
+
+- cliente.
+- sede.
+- salon.
+- capacidad.
+- horario.
+- superposicion.
+- paquete.
+- tematica.
+- servicios adicionales.
+- precios.
+- monto minimo.
+- deposito.
+
+## [PENDIENTE] Mis reservas
+
+Propuesta:
+
+```http
+GET /api/reservas/mias
+```
+
+Solo debe devolver reservas pertenecientes al cliente autenticado.
+
+## [PENDIENTE] Consultar reserva
+
+Propuesta:
+
+```http
+GET /api/reservas/{idReserva}
+```
+
+La autorizacion dependera del usuario:
+
+- CLIENTE: solamente una reserva propia.
+- ENCARGADO_LOCAL: solamente reserva de su sede.
+- ADMINISTRADOR: alcance global.
+
+## [PENDIENTE] Cambiar estado de reserva
+
+Propuesta:
+
+```http
+PATCH /api/reservas/{idReserva}/estado
+```
+
+El backend debera:
+
+1. cargar reserva.
+2. comprobar permisos.
+3. comprobar sede.
+4. validar transicion.
+5. cambiar estado.
+6. registrar historial.
+7. persistir.
+
+# 6. Reservas BackOffice
+
+## [PENDIENTE] Listar reservas
+
+Propuesta:
+
+```http
+GET /api/backoffice/reservas
+```
+
+ADMINISTRADOR:
+
+- reservas globales.
+
+ENCARGADO_LOCAL:
+
+- solamente reservas de su sede.
+
+## [PENDIENTE] Consultar reserva BackOffice
+
+Propuesta:
+
+```http
+GET /api/backoffice/reservas/{idReserva}
+```
+
+# 7. Pagos - API tecnica actual
+
+Politica de seguridad actual:
+
+- ENCARGADO_LOCAL.
+- ADMINISTRADOR.
+
+## [TECNICO] Validar transicion de pago
+
+```http
+POST /api/pagos/validar-transicion
+```
+
+Ejemplo:
+
+```json
+{
+  "estadoActual": "PENDIENTE",
+  "nuevoEstado": "APROBADO"
+}
+```
+
+Este endpoint NO modifica ningun pago.
+
+Solamente valida si la transicion seria permitida.
+
+Debe considerarse temporal.
+
+# 8. Pagos - API objetivo
+
+## [PENDIENTE] Registrar pago
+
+Propuesta:
+
+```http
+POST /api/pagos
+```
+
+## [PENDIENTE] Pagos de una reserva
+
+Propuesta:
+
+```http
+GET /api/reservas/{idReserva}/pagos
+```
+
+## [PENDIENTE] Consultar pago
+
+Propuesta:
+
+```http
+GET /api/pagos/{idPago}
+```
+
+## [PENDIENTE] Cambiar estado de pago
+
+Propuesta:
+
+```http
+PATCH /api/pagos/{idPago}/estado
+```
+
+La operacion debera:
+
+1. buscar pago.
+2. buscar reserva relacionada.
+3. validar rol.
+4. validar sede.
+5. validar transicion.
+6. actualizar pago.
+7. registrar acciones relacionadas.
+
+Cuando este endpoint exista, validar-transicion dejara de ser necesario como endpoint publico.
+
+# 9. Catalogos
+
+## [PENDIENTE / REVISAR] Sedes publicas
+
+Debe existir una API publica adecuada para que el cliente consulte sedes disponibles.
+
+## [PENDIENTE / REVISAR] Salones
+
+Debe permitir consultar salones por sede.
+
+Propuesta:
+
+```http
+GET /api/sedes/{idSede}/salones
+```
+
+## [PENDIENTE / REVISAR] Horarios
+
+Debe permitir consultar disponibilidad y horarios de salon.
+
+## [PENDIENTE / REVISAR] Paquetes
+
+Debe permitir consultar paquetes activos.
+
+## [PENDIENTE / REVISAR] Tematicas
+
+Debe permitir consultar tematicas activas.
+
+## [PENDIENTE / REVISAR] Servicios adicionales
+
+Debe permitir consultar servicios adicionales activos.
+
+# 10. MFA - futuro
+
+Endpoints candidatos:
+
+```text
+POST   /api/auth/mfa/setup
+POST   /api/auth/mfa/activar
+POST   /api/auth/mfa/verificar
+DELETE /api/auth/mfa
+```
+
+Estos endpoints NO existen actualmente.
+
+# 11. Recuperacion de password - futuro
+
+Endpoints candidatos:
+
+```text
+POST /api/auth/password/solicitar
+POST /api/auth/password/restablecer
+```
+
+# 12. Chat - futuro
+
+API exacta pendiente de diseno.
+
+Debera soportar:
+
+- iniciar conversacion.
+- enviar mensaje.
+- historial.
+- escalar a humano.
+- asignar encargado.
+- cerrar conversacion.
+
+# 13. Errores HTTP
+
+Convenciones objetivo:
+
+```text
+200 OK
+201 Created
+204 No Content
+400 Bad Request
+401 Unauthorized
+403 Forbidden
+404 Not Found
+409 Conflict
+```
+
+FASE 7.6 definira cuando corresponde utilizar cada codigo.
+
+# 14. Regla fundamental
+
+El frontend nunca debe hacer una validacion previa y asumir que la operacion posterior sera valida.
+
+Ejemplo incorrecto:
+
+```text
+Frontend
+  -> validar-transicion
+  -> recibe OK
+  -> modificar estado
+```
+
+Flujo correcto:
+
+```text
+Frontend
+   |
+   v
+solicita cambio real
+   |
+   v
+Backend
+   |
+   +-- valida permisos
+   +-- valida sede
+   +-- valida transicion
+   +-- modifica
+   +-- persiste
+```
+
+# 15. Objetivo de FASE 7.6
+
+Cada endpoint actual sera clasificado como:
+
+- DEFINITIVO.
+- TECNICO.
+- REEMPLAZAR.
+- ELIMINAR.
+- PENDIENTE.
+
+El resultado sera el contrato REST definitivo antes de desarrollar el frontend ASP.NET Core MVC.

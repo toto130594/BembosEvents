@@ -27,9 +27,13 @@ application-local.properties
 application-local.yml
 application-local.yaml
 
-# Claude Code - configuración solo de esta PC
+# Claude Code - configuraciÃ³n solo de esta PC
 .claude/settings.local.json
 
 # Archivos temporales de pruebas
 .claude/test-*.txt
 .env
+
+# Postman local secrets
+postman/BembosEvents.local.postman_environment.json
+.local-backup/
