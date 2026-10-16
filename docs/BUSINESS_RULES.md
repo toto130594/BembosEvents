@@ -58,9 +58,17 @@ Para el MVP:
 
 # 3. Clientes
 
-Un Usuario puede estar asociado opcionalmente a un Cliente.
+Todo Usuario que posea el rol CLIENTE debe disponer de un perfil Cliente.
 
-Cuando existe relacion Usuario-Cliente, un Usuario no debe representar multiples perfiles Cliente.
+Un Usuario no puede representar multiples perfiles Cliente.
+
+Reglas de ciclo de vida:
+
+- registro publico: crea Usuario, UsuarioRol CLIENTE y Cliente activo.
+- ADMIN crea CLIENTE: crea tambien el perfil Cliente.
+- cambio de otro rol a CLIENTE: crea el perfil si no existe o reactiva el existente.
+- cambio de CLIENTE a otro rol: conserva el perfil historico y lo marca inactivo.
+- el perfil Cliente no se elimina fisicamente por un cambio de rol.
 
 # 4. Reservas
 

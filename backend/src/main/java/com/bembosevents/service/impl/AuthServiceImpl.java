@@ -3,9 +3,11 @@ package com.bembosevents.service.impl;
 import com.bembosevents.dto.auth.AuthResponse;
 import com.bembosevents.dto.auth.LoginRequest;
 import com.bembosevents.dto.auth.RegistroRequest;
+import com.bembosevents.entity.Cliente;
 import com.bembosevents.entity.Rol;
 import com.bembosevents.entity.Usuario;
 import com.bembosevents.entity.UsuarioRol;
+import com.bembosevents.repository.ClienteRepository;
 import com.bembosevents.repository.RolRepository;
 import com.bembosevents.repository.UsuarioRepository;
 import com.bembosevents.repository.UsuarioRolRepository;
@@ -19,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -30,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final UsuarioRepository usuarioRepository;
     private final RolRepository rolRepository;
     private final UsuarioRolRepository usuarioRolRepository;
+    private final ClienteRepository clienteRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final UsuarioDetailsService usuarioDetailsService;
@@ -39,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
             UsuarioRepository usuarioRepository,
             RolRepository rolRepository,
             UsuarioRolRepository usuarioRolRepository,
+            ClienteRepository clienteRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
             UsuarioDetailsService usuarioDetailsService,
@@ -47,6 +52,7 @@ public class AuthServiceImpl implements AuthService {
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
         this.usuarioRolRepository = usuarioRolRepository;
+        this.clienteRepository = clienteRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.usuarioDetailsService = usuarioDetailsService;
@@ -122,6 +128,20 @@ public class AuthServiceImpl implements AuthService {
 
         usuarioRolRepository.save(
                 usuarioRol);
+
+        Cliente cliente = new Cliente();
+
+        cliente.setUsuario(
+                usuarioGuardado);
+
+        cliente.setDocumentoIdentidad(null);
+
+        cliente.setFechaRegistro(
+                LocalDate.now());
+
+        cliente.setActivo(true);
+
+        clienteRepository.save(cliente);
     }
 
     @Override

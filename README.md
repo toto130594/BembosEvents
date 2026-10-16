@@ -6,9 +6,9 @@ Sistema para la gestion de eventos, reservas, pagos, sedes, salones y usuarios.
 
 **Fase actual:** FASE 7.6 - Auditoria definitiva de API REST.
 
-**Subfase actual:** FASE 7.6C.2 - Disponibilidad publica.
+**Subfase actual:** FASE 7.6D - Reservas del cliente. 7.6D.1 completada; 7.6D.2 es la siguiente implementacion.
 
-**Siguiente fase:** FASE 7.7 - Seguridad por sede completa.
+**Siguiente subfase:** FASE 7.6D.2 - Crear reserva real del cliente.
 
 Actualmente el backend dispone de:
 
@@ -23,6 +23,8 @@ Actualmente el backend dispone de:
 - Roles CLIENTE, ENCARGADO_LOCAL y ADMINISTRADOR.
 - UsuarioSede para limitar al encargado por sede.
 - CRUD administrativo de usuarios.
+- Perfil Cliente persistente para usuarios con rol CLIENTE.
+- Secuencia SQL Server para generar codigos publicos de reserva.
 - BackOffice con acceso global para ADMINISTRADOR.
 - BackOffice restringido por sede para ENCARGADO_LOCAL.
 - Reglas iniciales de reservas y pagos.

@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
@@ -32,6 +33,7 @@ public class UsuarioAdminServiceImpl implements UsuarioAdminService {
     private final RolRepository rolRepository;
     private final UsuarioRolRepository usuarioRolRepository;
     private final UsuarioSedeRepository usuarioSedeRepository;
+    private final ClienteRepository clienteRepository;
     private final SedeRepository sedeRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -40,6 +42,7 @@ public UsuarioAdminServiceImpl(
             RolRepository rolRepository,
             UsuarioRolRepository usuarioRolRepository,
             UsuarioSedeRepository usuarioSedeRepository,
+            ClienteRepository clienteRepository,
             SedeRepository sedeRepository,
             PasswordEncoder passwordEncoder) {
 
@@ -47,6 +50,7 @@ public UsuarioAdminServiceImpl(
         this.rolRepository = rolRepository;
         this.usuarioRolRepository = usuarioRolRepository;
         this.usuarioSedeRepository = usuarioSedeRepository;
+        this.clienteRepository = clienteRepository;
         this.sedeRepository = sedeRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -88,6 +92,10 @@ public UsuarioAdminServiceImpl(
         usuarioRol.setFechaAsignacion(ahora);
 
         usuarioRolRepository.save(usuarioRol);
+
+        if (CLIENTE.equals(nombreRol)) {
+            activarOCrearPerfilCliente(usuario);
+        }
 
         if (ENCARGADO_LOCAL.equals(nombreRol)) {
             crearAsignacionSede(usuario, sede, ahora);
@@ -176,6 +184,13 @@ public UsuarioAdminServiceImpl(
         nuevaAsignacionRol.setFechaAsignacion(ahora);
 
         usuarioRolRepository.save(nuevaAsignacionRol);
+
+        if (CLIENTE.equals(nombreRol)) {
+            activarOCrearPerfilCliente(usuario);
+        }
+        else {
+            desactivarPerfilClienteSiExiste(usuario);
+        }
 
         if (ENCARGADO_LOCAL.equals(nombreRol)) {
             crearAsignacionSede(
@@ -291,6 +306,48 @@ public UsuarioAdminServiceImpl(
         usuarioSedeRepository.save(usuarioSede);
     }
 
+    private void activarOCrearPerfilCliente(
+            Usuario usuario) {
+
+        Cliente cliente = clienteRepository
+                .findByUsuario_IdUsuario(
+                        usuario.getIdUsuario())
+                .orElseGet(() -> {
+
+                    Cliente nuevoCliente =
+                            new Cliente();
+
+                    nuevoCliente.setUsuario(
+                            usuario);
+
+                    nuevoCliente.setDocumentoIdentidad(
+                            null);
+
+                    nuevoCliente.setFechaRegistro(
+                            LocalDate.now());
+
+                    return nuevoCliente;
+                });
+
+        cliente.setActivo(true);
+
+        clienteRepository.save(cliente);
+    }
+
+    private void desactivarPerfilClienteSiExiste(
+            Usuario usuario) {
+
+        clienteRepository
+                .findByUsuario_IdUsuario(
+                        usuario.getIdUsuario())
+                .ifPresent(cliente -> {
+
+                    cliente.setActivo(false);
+
+                    clienteRepository.save(
+                            cliente);
+                });
+    }
     private UsuarioResponse construirResponse(Usuario usuario) {
 
         List<String> roles = usuarioRolRepository

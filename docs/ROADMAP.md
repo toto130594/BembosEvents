@@ -103,11 +103,19 @@ Estado: COMPLETADA.
 
 Estado: ACTUAL.
 
-Subfase actual: 7.6B - Contrato REST definitivo.
+Subfase actual: 7.6D.2 - Crear reserva real del cliente.
 
 Objetivo:
 
 Definir la API REST definitiva antes del frontend.
+
+Avance:
+
+- 7.6B - Contrato REST definitivo: COMPLETADA.
+- 7.6C.1 - Catalogos publicos: COMPLETADA.
+- 7.6C.2 - Disponibilidad publica: COMPLETADA.
+- 7.6D.1 - Consistencia Usuario/Cliente: COMPLETADA.
+- 7.6D.2 - Crear reserva real del cliente: ACTUAL.
 
 Revisar:
 

@@ -9,6 +9,7 @@ import com.bembosevents.entity.UsuarioRol;
 import com.bembosevents.repository.RolRepository;
 import com.bembosevents.repository.UsuarioRepository;
 import com.bembosevents.repository.UsuarioRolRepository;
+import com.bembosevents.repository.ClienteRepository;
 import com.bembosevents.security.JwtService;
 import com.bembosevents.security.UsuarioDetailsService;
 import com.bembosevents.service.impl.AuthServiceImpl;
@@ -30,6 +31,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -46,6 +48,8 @@ class AuthServiceImplTest {
 
     @Mock
     private UsuarioRolRepository usuarioRolRepository;
+    @Mock
+    private ClienteRepository clienteRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -126,7 +130,16 @@ class AuthServiceImplTest {
 
         verify(usuarioRolRepository)
                 .save(any(UsuarioRol.class));
-    }
+
+        verify(clienteRepository)
+                .save(argThat(cliente ->
+                        cliente.getUsuario() != null
+                                && Integer.valueOf(10).equals(
+                                        cliente.getUsuario().getIdUsuario())
+                                && cliente.getDocumentoIdentidad() == null
+                                && cliente.getFechaRegistro() != null
+                                && Boolean.TRUE.equals(cliente.getActivo())));
+}
 
     @Test
     void debeRechazarCorreoDuplicado() {

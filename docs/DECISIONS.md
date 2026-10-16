@@ -149,3 +149,25 @@ FASE 7.6 revisara cada endpoint y lo clasificara como:
 - reemplazar.
 - eliminar.
 - pendiente de implementar.
+
+
+## 2026-10-16 - Perfil Cliente persistente asociado al rol CLIENTE
+
+Decision:
+
+- un Usuario con rol CLIENTE debe disponer de un perfil Cliente.
+- el perfil no se elimina al retirar el rol; se marca inactivo.
+- si el rol CLIENTE vuelve a asignarse, el perfil se reactiva.
+- Cliente.idUsuario es unico cuando no es NULL.
+
+Motivo:
+
+Reserva requiere una identidad Cliente estable y trazable sin crear perfiles silenciosamente durante POST /api/reservas.
+
+## 2026-10-16 - Secuencia global para codigo de reserva
+
+Decision:
+
+- SQL Server genera el consecutivo mediante dbo.ReservaCodigoSequence.
+- Java construira el formato BEM-AAAA-NNNNNN.
+- no se utilizara MAX(id) + 1 por riesgo de concurrencia.

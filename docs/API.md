@@ -46,6 +46,7 @@ Reglas:
 - el usuario no puede elegir rol.
 - el usuario no puede asignarse sede.
 - el password se almacena con BCrypt.
+- se crea un perfil Cliente activo asociado al Usuario.
 
 Ejemplo:
 

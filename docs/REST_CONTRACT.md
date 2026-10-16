@@ -66,6 +66,8 @@ El registro publico siempre crea CLIENTE.
 
 No permite seleccionar rol.
 
+El Usuario registrado como CLIENTE dispone de un perfil Cliente activo asociado.
+
 # 3. Usuarios administrativos
 
 | Metodo | Endpoint | Acceso | Estado |

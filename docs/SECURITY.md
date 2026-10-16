@@ -41,6 +41,8 @@ El backend valida roles independientemente del frontend.
 
 El registro publico siempre crea CLIENTE.
 
+El registro publico crea tambien un perfil Cliente activo asociado al Usuario.
+
 Un usuario no puede utilizar el registro publico para convertirse en ADMINISTRADOR o ENCARGADO_LOCAL.
 
 ## Acceso por rol
@@ -278,6 +280,7 @@ IMPLEMENTADO:
 - Spring Security.
 - roles.
 - registro publico restringido a CLIENTE.
+- perfil Cliente sincronizado con el rol CLIENTE.
 - acceso administrativo por rol.
 - restriccion de sede en BackOffice de sedes.
 

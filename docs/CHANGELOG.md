@@ -126,3 +126,16 @@ FASE 7.6 - Auditoria REST definitiva.
 - Se valida horario operativo del salon.
 - Se reutiliza ReservaService para detectar solapamientos.
 - Query parameters invalidos responden 400.
+
+
+### FASE 7.6D.1 - Consistencia Usuario/Cliente
+
+- El registro publico CLIENTE crea tambien su perfil Cliente.
+- La creacion administrativa de CLIENTE crea su perfil Cliente.
+- Cambiar un usuario a CLIENTE crea o reactiva su perfil.
+- Cambiar un CLIENTE a otro rol conserva el perfil y lo desactiva.
+- Cliente.idUsuario queda protegido mediante indice UNIQUE filtrado.
+- Flyway V7 corrige CLIENTE existentes sin perfil.
+- Incorporada dbo.ReservaCodigoSequence para codigos publicos de reserva.
+- Flyway V7 validada fisicamente en SQL Server.
+- Tests y Docker build validados.
