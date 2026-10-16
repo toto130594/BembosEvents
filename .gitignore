@@ -32,3 +32,4 @@ application-local.yaml
 
 # Archivos temporales de pruebas
 .claude/test-*.txt
+.env

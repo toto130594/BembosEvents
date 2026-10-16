@@ -61,6 +61,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:sqlserver://sqlserver:1433;databaseName=BembosEventsDB;encrypt=true;trustServerCertificate=true
       SPRING_DATASOURCE_USERNAME: sa
       SPRING_DATASOURCE_PASSWORD: ${BEMBOS_SQL_PASSWORD:?Define BEMBOS_SQL_PASSWORD en .env}
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en .env}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-3600000}
+      RESERVA_MONTO_MINIMO: ${RESERVA_MONTO_MINIMO:-500.00}
+      RESERVA_PORCENTAJE_DEPOSITO: ${RESERVA_PORCENTAJE_DEPOSITO:-0.50}
     ports:
       - "8080:8080"
     restart: unless-stopped
