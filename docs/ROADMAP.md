@@ -103,7 +103,7 @@ Estado: COMPLETADA.
 
 Estado: ACTUAL.
 
-Subfase actual: 7.6D.2 - Crear reserva real del cliente.
+Subfase actual: 7.6D - Reservas del cliente.
 
 Objetivo:
 
@@ -115,7 +115,9 @@ Avance:
 - 7.6C.1 - Catalogos publicos: COMPLETADA.
 - 7.6C.2 - Disponibilidad publica: COMPLETADA.
 - 7.6D.1 - Consistencia Usuario/Cliente: COMPLETADA.
-- 7.6D.2 - Crear reserva real del cliente: ACTUAL.
+- 7.6D.2 - Crear reserva real del cliente: COMPLETADA.
+- 7.6D.3 - Mis reservas del cliente: COMPLETADA.
+- Siguiente: consulta de una reserva propia del cliente.
 
 Revisar:
 

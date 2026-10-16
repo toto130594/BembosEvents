@@ -5,6 +5,7 @@ import com.bembosevents.dto.catalogo.DisponibilidadSalonResponse;
 import com.bembosevents.dto.reserva.CrearReservaRequest;
 import com.bembosevents.dto.reserva.CrearReservaServicioRequest;
 import com.bembosevents.dto.reserva.ReservaCreadaResponse;
+import com.bembosevents.dto.reserva.ReservaResumenResponse;
 import com.bembosevents.entity.Cliente;
 import com.bembosevents.entity.HistorialReserva;
 import com.bembosevents.entity.Reserva;
@@ -33,6 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -591,5 +593,243 @@ class ReservaClienteServiceImplTest {
     private record Escenario(
             Cliente cliente,
             Usuario usuario) {
+    }
+
+    @Test
+    void debeListarSoloReservasDelClienteAutenticado() {
+
+        Usuario usuario =
+                mock(Usuario.class);
+
+        Cliente cliente =
+                mock(Cliente.class);
+
+        when(cliente.getUsuario())
+                .thenReturn(usuario);
+
+        when(cliente.getIdCliente())
+                .thenReturn(77);
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.of(cliente));
+
+        Reserva reciente =
+                crearReservaParaListado(
+                        102,
+                        "BEM-2026-000102",
+                        LocalDate.of(
+                                2026,
+                                12,
+                                22),
+                        LocalDateTime.of(
+                                2026,
+                                10,
+                                16,
+                                18,
+                                0));
+
+        Reserva anterior =
+                crearReservaParaListado(
+                        101,
+                        "BEM-2026-000101",
+                        LocalDate.of(
+                                2026,
+                                12,
+                                20),
+                        LocalDateTime.of(
+                                2026,
+                                10,
+                                16,
+                                17,
+                                0));
+
+        when(reservaRepository
+                .findByCliente_IdClienteOrderByFechaCreacionDesc(
+                        77))
+                .thenReturn(
+                        List.of(
+                                reciente,
+                                anterior));
+
+        List<ReservaResumenResponse> resultado =
+                reservaClienteService
+                        .misReservas(CORREO);
+
+        assertEquals(
+                2,
+                resultado.size());
+
+        assertEquals(
+                102,
+                resultado.get(0).idReserva());
+
+        assertEquals(
+                "BEM-2026-000102",
+                resultado.get(0).codigoReserva());
+
+        assertEquals(
+                101,
+                resultado.get(1).idReserva());
+
+        assertEquals(
+                "PENDIENTE",
+                resultado.get(0).estado());
+
+        assertEquals(
+                1,
+                resultado.get(0).idSede());
+
+        assertEquals(
+                10,
+                resultado.get(0).idSalon());
+
+        assertEquals(
+                0,
+                new BigDecimal("500.00")
+                        .compareTo(
+                                resultado.get(0)
+                                        .montoTotal()));
+
+        verify(reservaRepository)
+                .findByCliente_IdClienteOrderByFechaCreacionDesc(
+                        77);
+
+        verify(
+                reservaRepository,
+                never())
+                .findAll();
+    }
+
+    @Test
+    void debeDevolverListaVaciaCuandoClienteNoTieneReservas() {
+
+        Usuario usuario =
+                mock(Usuario.class);
+
+        Cliente cliente =
+                mock(Cliente.class);
+
+        when(cliente.getUsuario())
+                .thenReturn(usuario);
+
+        when(cliente.getIdCliente())
+                .thenReturn(77);
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.of(cliente));
+
+        when(reservaRepository
+                .findByCliente_IdClienteOrderByFechaCreacionDesc(
+                        77))
+                .thenReturn(
+                        List.of());
+
+        List<ReservaResumenResponse> resultado =
+                reservaClienteService
+                        .misReservas(CORREO);
+
+        assertTrue(
+                resultado.isEmpty());
+
+        verify(reservaRepository)
+                .findByCliente_IdClienteOrderByFechaCreacionDesc(
+                        77);
+    }
+
+    @Test
+    void debeRechazarConsultaSinPerfilClienteActivo() {
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.empty());
+
+        IllegalStateException exception =
+                assertThrows(
+                        IllegalStateException.class,
+                        () ->
+                                reservaClienteService
+                                        .misReservas(
+                                                CORREO));
+
+        assertEquals(
+                "El usuario autenticado no tiene un perfil Cliente activo",
+                exception.getMessage());
+
+        verify(
+                reservaRepository,
+                never())
+                .findByCliente_IdClienteOrderByFechaCreacionDesc(
+                        any());
+    }
+
+    private Reserva crearReservaParaListado(
+            Integer idReserva,
+            String codigoReserva,
+            LocalDate fechaEvento,
+            LocalDateTime fechaCreacion) {
+
+        Sede sede =
+                new Sede();
+
+        sede.setIdSede(1);
+
+        Salon salon =
+                new Salon();
+
+        salon.setIdSalon(10);
+        salon.setSede(sede);
+
+        Reserva reserva =
+                new Reserva();
+
+        reserva.setIdReserva(
+                idReserva);
+
+        reserva.setCodigoReserva(
+                codigoReserva);
+
+        reserva.setEstado(
+                "PENDIENTE");
+
+        reserva.setSede(
+                sede);
+
+        reserva.setSalon(
+                salon);
+
+        reserva.setFechaEvento(
+                fechaEvento);
+
+        reserva.setHoraInicio(
+                LocalTime.of(
+                        14,
+                        0));
+
+        reserva.setHoraFin(
+                LocalTime.of(
+                        18,
+                        0));
+
+        reserva.setCantidadInvitados(
+                40);
+
+        reserva.setMontoTotal(
+                new BigDecimal("500.00"));
+
+        reserva.setMontoDeposito(
+                new BigDecimal("250.00"));
+
+        reserva.setFechaCreacion(
+                fechaCreacion);
+
+        return reserva;
     }
 }

@@ -139,3 +139,31 @@ FASE 7.6 - Auditoria REST definitiva.
 - Incorporada dbo.ReservaCodigoSequence para codigos publicos de reserva.
 - Flyway V7 validada fisicamente en SQL Server.
 - Tests y Docker build validados.
+
+### FASE 7.6D.2 - Crear reserva real del cliente
+
+- Implementado POST /api/reservas para CLIENTE autenticado.
+- El backend identifica el Cliente desde el correo autenticado.
+- Sede, salon, capacidad y disponibilidad son validados por el backend.
+- Paquete, tematica y servicios adicionales se validan contra catalogos activos.
+- Los precios son obtenidos desde el backend y no desde el navegador.
+- ReservaServicio conserva precioUnitario y subtotal historicos.
+- El backend calcula monto base, servicios, total y deposito.
+- Los codigos publicos utilizan el formato BEM-YYYY-NNNNNN.
+- Se registra HistorialReserva al crear la reserva.
+- Tests especificos y regresion completa validados.
+- Docker build validado.
+
+### FASE 7.6D.3 - Mis reservas del cliente
+
+- Implementado GET /api/reservas/mias.
+- Requiere CLIENTE autenticado.
+- El Cliente se obtiene desde el correo de autenticacion.
+- El navegador no envia idCliente.
+- La consulta filtra exclusivamente por el Cliente autenticado.
+- Las reservas se ordenan por fechaCreacion descendente.
+- Un cliente sin reservas recibe 200 con una lista vacia.
+- Incorporado ReservaResumenResponse para no exponer entidades JPA.
+- Tests de Controller y Service validados.
+- Regresion completa del backend validada.
+- Docker build validado.

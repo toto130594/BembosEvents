@@ -16,6 +16,9 @@ public interface ReservaRepository
             LocalDate fechaEvento,
             Collection<String> estados);
 
+    List<Reserva> findByCliente_IdClienteOrderByFechaCreacionDesc(
+            Integer idCliente);
+
     @Query(
             value = "SELECT NEXT VALUE FOR dbo.ReservaCodigoSequence",
             nativeQuery = true)

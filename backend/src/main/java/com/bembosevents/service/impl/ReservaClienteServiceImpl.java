@@ -6,6 +6,7 @@ import com.bembosevents.dto.catalogo.DisponibilidadSalonResponse;
 import com.bembosevents.dto.reserva.CrearReservaRequest;
 import com.bembosevents.dto.reserva.CrearReservaServicioRequest;
 import com.bembosevents.dto.reserva.ReservaCreadaResponse;
+import com.bembosevents.dto.reserva.ReservaResumenResponse;
 import com.bembosevents.entity.Cliente;
 import com.bembosevents.entity.HistorialReserva;
 import com.bembosevents.entity.Paquete;
@@ -92,24 +93,7 @@ public class ReservaClienteServiceImpl
             String correoCliente,
             CrearReservaRequest request) {
 
-        if (correoCliente == null
-                || correoCliente.isBlank()) {
-
-            throw new IllegalArgumentException(
-                    "El cliente autenticado es obligatorio");
-        }
-
-        Cliente cliente = clienteRepository
-                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
-                        correoCliente.strip())
-                .orElseThrow(() ->
-                        new IllegalStateException(
-                                "El usuario autenticado no tiene un perfil Cliente activo"));
-
-        if (cliente.getUsuario() == null) {
-            throw new IllegalStateException(
-                    "El perfil Cliente no tiene un Usuario asociado");
-        }
+        Cliente cliente = buscarClienteAutenticado(correoCliente);
 
         Sede sede = sedeRepository
                 .findByIdSedeAndActivoTrue(
@@ -247,6 +231,48 @@ public class ReservaClienteServiceImpl
 
         return mapResponse(
                 reservaGuardada);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReservaResumenResponse> misReservas(
+            String correoCliente) {
+
+        Cliente cliente =
+                buscarClienteAutenticado(
+                        correoCliente);
+
+        return reservaRepository
+                .findByCliente_IdClienteOrderByFechaCreacionDesc(
+                        cliente.getIdCliente())
+                .stream()
+                .map(this::mapResumenResponse)
+                .toList();
+    }
+
+    private Cliente buscarClienteAutenticado(
+            String correoCliente) {
+
+        if (correoCliente == null
+                || correoCliente.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "El cliente autenticado es obligatorio");
+        }
+
+        Cliente cliente = clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        correoCliente.strip())
+                .orElseThrow(() ->
+                        new IllegalStateException(
+                                "El usuario autenticado no tiene un perfil Cliente activo"));
+
+        if (cliente.getUsuario() == null) {
+            throw new IllegalStateException(
+                    "El perfil Cliente no tiene un Usuario asociado");
+        }
+
+        return cliente;
     }
 
     private void validarSalonPerteneceSede(
@@ -459,6 +485,30 @@ public class ReservaClienteServiceImpl
 
         historialReservaRepository.save(
                 historial);
+    }
+
+    private ReservaResumenResponse mapResumenResponse(
+            Reserva reserva) {
+
+        return new ReservaResumenResponse(
+                reserva.getIdReserva(),
+                reserva.getCodigoReserva(),
+                reserva.getEstado(),
+                reserva.getSede().getIdSede(),
+                reserva.getSalon().getIdSalon(),
+                reserva.getPaquete() == null
+                        ? null
+                        : reserva.getPaquete().getIdPaquete(),
+                reserva.getTematica() == null
+                        ? null
+                        : reserva.getTematica().getIdTematica(),
+                reserva.getFechaEvento(),
+                reserva.getHoraInicio(),
+                reserva.getHoraFin(),
+                reserva.getCantidadInvitados(),
+                reserva.getMontoTotal(),
+                reserva.getMontoDeposito(),
+                reserva.getFechaCreacion());
     }
 
     private ReservaCreadaResponse mapResponse(

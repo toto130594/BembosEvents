@@ -147,8 +147,8 @@ Se reutilizaran desde ReservaService.
 
 | Metodo | Endpoint | Acceso | Estado |
 |---|---|---|---|
-| POST | /api/reservas | CLIENTE | IMPLEMENTAR |
-| GET | /api/reservas/mias | CLIENTE | IMPLEMENTAR |
+| POST | /api/reservas | CLIENTE | MANTENER |
+| GET | /api/reservas/mias | CLIENTE | MANTENER |
 | GET | /api/reservas/{idReserva} | CLIENTE propietario | IMPLEMENTAR |
 | POST | /api/reservas/{idReserva}/cancelacion | CLIENTE propietario | IMPLEMENTAR |
 
@@ -225,6 +225,27 @@ guardar ReservaServicio
         v
 guardar HistorialReserva
 ```
+
+## Mis reservas del cliente
+
+GET /api/reservas/mias
+
+Acceso:
+
+- CLIENTE autenticado.
+
+El backend identifica al Cliente utilizando el correo del usuario autenticado.
+
+El frontend no puede indicar ni sustituir idCliente.
+
+La consulta:
+
+- filtra exclusivamente por Cliente.idCliente.
+- no utiliza una consulta global de reservas.
+- ordena por fechaCreacion descendente.
+- responde 200 con una lista vacia cuando no existen reservas.
+
+La respuesta utiliza ReservaResumenResponse y no expone directamente la entidad JPA.
 
 # 8. Cancelacion por cliente
 

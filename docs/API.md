@@ -264,7 +264,7 @@ Objetivo final:
 
 Los nombres exactos seran confirmados durante FASE 7.6.
 
-## [PENDIENTE] Crear reserva
+## [IMPLEMENTADO] Crear reserva
 
 Propuesta:
 
@@ -287,7 +287,7 @@ El backend debera validar dentro de una sola operacion:
 - monto minimo.
 - deposito.
 
-## [PENDIENTE] Mis reservas
+## [IMPLEMENTADO] Mis reservas
 
 Propuesta:
 
@@ -295,7 +295,16 @@ Propuesta:
 GET /api/reservas/mias
 ```
 
-Solo debe devolver reservas pertenecientes al cliente autenticado.
+Solo devuelve reservas pertenecientes al cliente autenticado.
+
+Reglas:
+
+- requiere rol CLIENTE.
+- el cliente se obtiene a partir del correo autenticado.
+- el navegador no envia idCliente.
+- solamente se consultan reservas asociadas al Cliente autenticado.
+- las reservas se ordenan por fechaCreacion descendente.
+- si el cliente no tiene reservas responde 200 con una lista vacia.
 
 ## [PENDIENTE] Consultar reserva
 

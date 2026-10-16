@@ -2,6 +2,7 @@ package com.bembosevents.controller;
 
 import com.bembosevents.dto.reserva.CrearReservaRequest;
 import com.bembosevents.dto.reserva.ReservaCreadaResponse;
+import com.bembosevents.dto.reserva.ReservaResumenResponse;
 import com.bembosevents.exception.GlobalExceptionHandler;
 import com.bembosevents.service.ReservaClienteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,12 +22,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -208,5 +211,83 @@ class ReservaClienteControllerTest {
         assertEquals(
                 40,
                 request.cantidadInvitados());
+    }
+
+    @Test
+    void debeListarReservasDelClienteAutenticado()
+            throws Exception {
+
+        ReservaResumenResponse response =
+                new ReservaResumenResponse(
+                        101,
+                        "BEM-2026-000101",
+                        "PENDIENTE",
+                        1,
+                        10,
+                        null,
+                        null,
+                        LocalDate.of(
+                                2026,
+                                12,
+                                20),
+                        LocalTime.of(
+                                14,
+                                0),
+                        LocalTime.of(
+                                18,
+                                0),
+                        40,
+                        new BigDecimal("500.00"),
+                        new BigDecimal("250.00"),
+                        LocalDateTime.of(
+                                2026,
+                                10,
+                                16,
+                                16,
+                                0));
+
+        when(reservaClienteService
+                .misReservas(CORREO))
+                .thenReturn(
+                        List.of(response));
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        CORREO,
+                        null);
+
+        mockMvc.perform(
+                        get("/api/reservas/mias")
+                                .principal(authentication))
+                .andExpect(
+                        status().isOk())
+                .andExpect(
+                        jsonPath("$[0].idReserva")
+                                .value(101))
+                .andExpect(
+                        jsonPath("$[0].codigoReserva")
+                                .value(
+                                        "BEM-2026-000101"))
+                .andExpect(
+                        jsonPath("$[0].estado")
+                                .value("PENDIENTE"))
+                .andExpect(
+                        jsonPath("$[0].idSede")
+                                .value(1))
+                .andExpect(
+                        jsonPath("$[0].idSalon")
+                                .value(10))
+                .andExpect(
+                        jsonPath("$[0].cantidadInvitados")
+                                .value(40))
+                .andExpect(
+                        jsonPath("$[0].montoTotal")
+                                .value(500.00))
+                .andExpect(
+                        jsonPath("$[0].montoDeposito")
+                                .value(250.00));
+
+        verify(reservaClienteService)
+                .misReservas(CORREO);
     }
 }
