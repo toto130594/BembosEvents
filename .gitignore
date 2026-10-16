@@ -38,3 +38,5 @@ application-local.yaml
 postman/BembosEvents.local.postman_environment.json
 .local-backup/
 .local-output/
+
+/local-output/

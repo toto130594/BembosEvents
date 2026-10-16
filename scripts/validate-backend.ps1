@@ -31,17 +31,21 @@ $testFiles.BaseName | ForEach-Object {
 Write-Host ""
 Write-Host "EJECUTANDO TESTS..." -ForegroundColor Cyan
 
-docker run --rm `
-    -v "${PWD}\backend:/app" `
-    -w /app `
-    maven:3.9.9-eclipse-temurin-21 `
-    mvn clean "-Dtest=$tests" test -B
+$dockerCommand = (
+    'docker run --rm -v "{0}\backend:/app" -w /app ' +
+    'maven:3.9.9-eclipse-temurin-21 ' +
+    'mvn clean "-Dtest={1}" test -B 2>&1'
+) -f $PWD.Path, $tests
 
-if ($LASTEXITCODE -ne 0) {
+& cmd.exe /d /s /c $dockerCommand
+
+$dockerExitCode = $LASTEXITCODE
+
+if ($dockerExitCode -ne 0) {
 
     Write-Host ""
     Write-Host "TESTS FALLARON" -ForegroundColor Red
-    exit $LASTEXITCODE
+    exit $dockerExitCode
 }
 
 Write-Host ""
@@ -50,15 +54,19 @@ Write-Host "TESTS OK" -ForegroundColor Green
 Write-Host ""
 Write-Host "EJECUTANDO DOCKER BUILD..." -ForegroundColor Cyan
 
-docker build `
-    -t bembosevents-backend `
-    ./backend
+$dockerBuildCommand = (
+    'docker build -t bembosevents-backend "{0}\backend" 2>&1'
+) -f $PWD.Path
 
-if ($LASTEXITCODE -ne 0) {
+& cmd.exe /d /s /c $dockerBuildCommand
+
+$dockerBuildExitCode = $LASTEXITCODE
+
+if ($dockerBuildExitCode -ne 0) {
 
     Write-Host ""
     Write-Host "BUILD FALLIDO" -ForegroundColor Red
-    exit $LASTEXITCODE
+    exit $dockerBuildExitCode
 }
 
 Write-Host ""
