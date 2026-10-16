@@ -2,6 +2,7 @@ package com.bembosevents.service;
 
 import com.bembosevents.entity.UsuarioSede;
 import com.bembosevents.repository.UsuarioSedeRepository;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -16,18 +17,28 @@ public class SedeAccessService {
 
     private final UsuarioSedeRepository usuarioSedeRepository;
 
-public SedeAccessService(
+    public SedeAccessService(
             UsuarioSedeRepository usuarioSedeRepository) {
 
         this.usuarioSedeRepository = usuarioSedeRepository;
     }
 
-    public boolean esAdministrador(Authentication authentication) {
-        return tieneRol(authentication, ROLE_ADMINISTRADOR);
+    public boolean esAdministrador(
+            Authentication authentication) {
+
+        return tieneRol(
+                authentication,
+                ROLE_ADMINISTRADOR
+        );
     }
 
-    public boolean esEncargadoLocal(Authentication authentication) {
-        return tieneRol(authentication, ROLE_ENCARGADO_LOCAL);
+    public boolean esEncargadoLocal(
+            Authentication authentication) {
+
+        return tieneRol(
+                authentication,
+                ROLE_ENCARGADO_LOCAL
+        );
     }
 
     public boolean puedeAccederSede(
@@ -36,6 +47,7 @@ public SedeAccessService(
 
         if (authentication == null ||
                 !authentication.isAuthenticated()) {
+
             return false;
         }
 
@@ -58,23 +70,34 @@ public SedeAccessService(
             Authentication authentication,
             Integer idSede) {
 
-        if (!puedeAccederSede(authentication, idSede)) {
-            throw new SecurityException(
+        if (!puedeAccederSede(
+                authentication,
+                idSede
+        )) {
+
+            throw new AccessDeniedException(
                     "No tiene permisos para acceder a esta sede"
             );
         }
     }
 
-    public Integer obtenerSedeAsignada(String correo) {
-        UsuarioSede asignacion = usuarioSedeRepository
-                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(correo)
-                .orElseThrow(() ->
-                        new IllegalStateException(
-                                "El usuario no tiene una sede asignada"
-                        )
-                );
+    public Integer obtenerSedeAsignada(
+            String correo) {
 
-        return asignacion.getSede().getIdSede();
+        UsuarioSede asignacion =
+                usuarioSedeRepository
+                        .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                                correo
+                        )
+                        .orElseThrow(() ->
+                                new AccessDeniedException(
+                                        "El usuario no tiene una sede asignada"
+                                )
+                        );
+
+        return asignacion
+                .getSede()
+                .getIdSede();
     }
 
     private boolean tieneRol(
@@ -85,10 +108,13 @@ public SedeAccessService(
             return false;
         }
 
-        return authentication.getAuthorities()
+        return authentication
+                .getAuthorities()
                 .stream()
                 .anyMatch(authority ->
-                        rol.equals(authority.getAuthority())
+                        rol.equals(
+                                authority.getAuthority()
+                        )
                 );
     }
 }
