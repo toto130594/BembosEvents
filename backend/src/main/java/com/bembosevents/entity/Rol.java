@@ -1,10 +1,16 @@
 package com.bembosevents.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.util.List;
 
 @Entity
 @Table(name = "Rol")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Rol {
 
     @Id
@@ -22,45 +28,4 @@ public class Rol {
 
     @OneToMany(mappedBy = "rol")
     private List<UsuarioRol> usuarioRoles;
-
-    // Getters y Setters
-    public Integer getIdRol() {
-        return idRol;
-    }
-
-    public void setIdRol(Integer idRol) {
-        this.idRol = idRol;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
-
-    public List<UsuarioRol> getUsuarioRoles() {
-        return usuarioRoles;
-    }
-
-    public void setUsuarioRoles(List<UsuarioRol> usuarioRoles) {
-        this.usuarioRoles = usuarioRoles;
-    }
 }

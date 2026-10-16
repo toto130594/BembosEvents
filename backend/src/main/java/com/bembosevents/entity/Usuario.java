@@ -1,11 +1,18 @@
 package com.bembosevents.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "Usuario")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Usuario {
 
     @Id
@@ -46,99 +53,27 @@ public class Usuario {
     private List<HistorialReserva> historialReservas;
 
     // Getters y Setters
-    public Integer getIdUsuario() {
-        return idUsuario;
-    }
 
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
-    }
 
-    public String getNombres() {
-        return nombres;
-    }
 
-    public void setNombres(String nombres) {
-        this.nombres = nombres;
-    }
 
-    public String getApellidos() {
-        return apellidos;
-    }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
-    }
 
-    public String getCorreo() {
-        return correo;
-    }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
 
-    public String getTelefono() {
-        return telefono;
-    }
 
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
 
-    public String getPasswordHash() {
-        return passwordHash;
-    }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
 
-    public Boolean getActivo() {
-        return activo;
-    }
 
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
 
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
 
-    public LocalDateTime getFechaActualizacion() {
-        return fechaActualizacion;
-    }
 
-    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-        this.fechaActualizacion = fechaActualizacion;
-    }
 
-    public List<UsuarioRol> getUsuarioRoles() {
-        return usuarioRoles;
-    }
 
-    public void setUsuarioRoles(List<UsuarioRol> usuarioRoles) {
-        this.usuarioRoles = usuarioRoles;
-    }
 
-    public Cliente getCliente() {
-        return cliente;
-    }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
 
-    public List<HistorialReserva> getHistorialReservas() {
-        return historialReservas;
-    }
 
-    public void setHistorialReservas(List<HistorialReserva> historialReservas) {
-        this.historialReservas = historialReservas;
-    }
 }

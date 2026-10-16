@@ -1,5 +1,9 @@
 package com.bembosevents.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,6 +13,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "Reserva")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Reserva {
 
     @Id
@@ -84,179 +91,47 @@ public class Reserva {
     private List<HistorialReserva> historialReservas;
 
     // Getters y Setters
-    public Integer getIdReserva() {
-        return idReserva;
-    }
 
-    public void setIdReserva(Integer idReserva) {
-        this.idReserva = idReserva;
-    }
 
-    public String getCodigoReserva() {
-        return codigoReserva;
-    }
 
-    public void setCodigoReserva(String codigoReserva) {
-        this.codigoReserva = codigoReserva;
-    }
 
-    public Cliente getCliente() {
-        return cliente;
-    }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
 
-    public Sede getSede() {
-        return sede;
-    }
 
-    public void setSede(Sede sede) {
-        this.sede = sede;
-    }
 
-    public Salon getSalon() {
-        return salon;
-    }
 
-    public void setSalon(Salon salon) {
-        this.salon = salon;
-    }
 
-    public Paquete getPaquete() {
-        return paquete;
-    }
 
-    public void setPaquete(Paquete paquete) {
-        this.paquete = paquete;
-    }
 
-    public Tematica getTematica() {
-        return tematica;
-    }
 
-    public void setTematica(Tematica tematica) {
-        this.tematica = tematica;
-    }
 
-    public LocalDate getFechaEvento() {
-        return fechaEvento;
-    }
 
-    public void setFechaEvento(LocalDate fechaEvento) {
-        this.fechaEvento = fechaEvento;
-    }
 
-    public LocalTime getHoraInicio() {
-        return horaInicio;
-    }
 
-    public void setHoraInicio(LocalTime horaInicio) {
-        this.horaInicio = horaInicio;
-    }
 
-    public LocalTime getHoraFin() {
-        return horaFin;
-    }
 
-    public void setHoraFin(LocalTime horaFin) {
-        this.horaFin = horaFin;
-    }
 
-    public Integer getCantidadInvitados() {
-        return cantidadInvitados;
-    }
 
-    public void setCantidadInvitados(Integer cantidadInvitados) {
-        this.cantidadInvitados = cantidadInvitados;
-    }
 
-    public BigDecimal getMontoBase() {
-        return montoBase;
-    }
 
-    public void setMontoBase(BigDecimal montoBase) {
-        this.montoBase = montoBase;
-    }
 
-    public BigDecimal getMontoServicios() {
-        return montoServicios;
-    }
 
-    public void setMontoServicios(BigDecimal montoServicios) {
-        this.montoServicios = montoServicios;
-    }
 
-    public BigDecimal getMontoTotal() {
-        return montoTotal;
-    }
 
-    public void setMontoTotal(BigDecimal montoTotal) {
-        this.montoTotal = montoTotal;
-    }
 
-    public BigDecimal getPorcentajeDeposito() {
-        return porcentajeDeposito;
-    }
 
-    public void setPorcentajeDeposito(BigDecimal porcentajeDeposito) {
-        this.porcentajeDeposito = porcentajeDeposito;
-    }
 
-    public BigDecimal getMontoDeposito() {
-        return montoDeposito;
-    }
 
-    public void setMontoDeposito(BigDecimal montoDeposito) {
-        this.montoDeposito = montoDeposito;
-    }
 
-    public String getEstado() {
-        return estado;
-    }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
 
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
 
-    public LocalDateTime getFechaActualizacion() {
-        return fechaActualizacion;
-    }
 
-    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
-        this.fechaActualizacion = fechaActualizacion;
-    }
 
-    public List<ReservaServicio> getReservaServicios() {
-        return reservaServicios;
-    }
 
-    public void setReservaServicios(List<ReservaServicio> reservaServicios) {
-        this.reservaServicios = reservaServicios;
-    }
 
-    public List<Pago> getPagos() {
-        return pagos;
-    }
 
-    public void setPagos(List<Pago> pagos) {
-        this.pagos = pagos;
-    }
 
-    public List<HistorialReserva> getHistorialReservas() {
-        return historialReservas;
-    }
 
-    public void setHistorialReservas(List<HistorialReserva> historialReservas) {
-        this.historialReservas = historialReservas;
-    }
 }

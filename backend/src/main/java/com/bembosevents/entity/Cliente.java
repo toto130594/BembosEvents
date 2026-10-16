@@ -1,11 +1,18 @@
 package com.bembosevents.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "Cliente")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Cliente {
 
     @Id
@@ -29,51 +36,15 @@ public class Cliente {
     private List<Reserva> reservas;
 
     // Getters y Setters
-    public Integer getIdCliente() {
-        return idCliente;
-    }
 
-    public void setIdCliente(Integer idCliente) {
-        this.idCliente = idCliente;
-    }
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
 
-    public String getDocumentoIdentidad() {
-        return documentoIdentidad;
-    }
 
-    public void setDocumentoIdentidad(String documentoIdentidad) {
-        this.documentoIdentidad = documentoIdentidad;
-    }
 
-    public LocalDate getFechaRegistro() {
-        return fechaRegistro;
-    }
 
-    public void setFechaRegistro(LocalDate fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
-    }
 
-    public Boolean getActivo() {
-        return activo;
-    }
 
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
 
-    public List<Reserva> getReservas() {
-        return reservas;
-    }
 
-    public void setReservas(List<Reserva> reservas) {
-        this.reservas = reservas;
-    }
 }

@@ -1,11 +1,18 @@
 package com.bembosevents.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Pago")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Pago {
 
     @Id
@@ -35,67 +42,19 @@ public class Pago {
     private LocalDateTime fechaCreacion;
 
     // Getters y Setters
-    public Integer getIdPago() {
-        return idPago;
-    }
 
-    public void setIdPago(Integer idPago) {
-        this.idPago = idPago;
-    }
 
-    public Reserva getReserva() {
-        return reserva;
-    }
 
-    public void setReserva(Reserva reserva) {
-        this.reserva = reserva;
-    }
 
-    public BigDecimal getMonto() {
-        return monto;
-    }
 
-    public void setMonto(BigDecimal monto) {
-        this.monto = monto;
-    }
 
-    public String getMetodoPago() {
-        return metodoPago;
-    }
 
-    public void setMetodoPago(String metodoPago) {
-        this.metodoPago = metodoPago;
-    }
 
-    public String getEstadoPago() {
-        return estadoPago;
-    }
 
-    public void setEstadoPago(String estadoPago) {
-        this.estadoPago = estadoPago;
-    }
 
-    public String getReferenciaExterna() {
-        return referenciaExterna;
-    }
 
-    public void setReferenciaExterna(String referenciaExterna) {
-        this.referenciaExterna = referenciaExterna;
-    }
 
-    public LocalDateTime getFechaPago() {
-        return fechaPago;
-    }
 
-    public void setFechaPago(LocalDateTime fechaPago) {
-        this.fechaPago = fechaPago;
-    }
 
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
 }

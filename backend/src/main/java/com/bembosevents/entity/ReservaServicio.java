@@ -1,10 +1,17 @@
 package com.bembosevents.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "ReservaServicio")
+@Getter
+@Setter
+@NoArgsConstructor
 public class ReservaServicio {
 
     @Id
@@ -29,51 +36,15 @@ public class ReservaServicio {
     private BigDecimal subtotal;
 
     // Getters y Setters
-    public Integer getIdReservaServicio() {
-        return idReservaServicio;
-    }
 
-    public void setIdReservaServicio(Integer idReservaServicio) {
-        this.idReservaServicio = idReservaServicio;
-    }
 
-    public Reserva getReserva() {
-        return reserva;
-    }
 
-    public void setReserva(Reserva reserva) {
-        this.reserva = reserva;
-    }
 
-    public ServicioAdicional getServicioAdicional() {
-        return servicioAdicional;
-    }
 
-    public void setServicioAdicional(ServicioAdicional servicioAdicional) {
-        this.servicioAdicional = servicioAdicional;
-    }
 
-    public Integer getCantidad() {
-        return cantidad;
-    }
 
-    public void setCantidad(Integer cantidad) {
-        this.cantidad = cantidad;
-    }
 
-    public BigDecimal getPrecioUnitario() {
-        return precioUnitario;
-    }
 
-    public void setPrecioUnitario(BigDecimal precioUnitario) {
-        this.precioUnitario = precioUnitario;
-    }
 
-    public BigDecimal getSubtotal() {
-        return subtotal;
-    }
 
-    public void setSubtotal(BigDecimal subtotal) {
-        this.subtotal = subtotal;
-    }
 }

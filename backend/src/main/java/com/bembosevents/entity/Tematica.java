@@ -1,11 +1,18 @@
 package com.bembosevents.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
 @Table(name = "Tematica")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Tematica {
 
     @Id
@@ -28,51 +35,15 @@ public class Tematica {
     private List<Reserva> reservas;
 
     // Getters y Setters
-    public Integer getIdTematica() {
-        return idTematica;
-    }
 
-    public void setIdTematica(Integer idTematica) {
-        this.idTematica = idTematica;
-    }
 
-    public String getNombre() {
-        return nombre;
-    }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 
-    public BigDecimal getPrecioAdicional() {
-        return precioAdicional;
-    }
 
-    public void setPrecioAdicional(BigDecimal precioAdicional) {
-        this.precioAdicional = precioAdicional;
-    }
 
-    public Boolean getActivo() {
-        return activo;
-    }
 
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
 
-    public List<Reserva> getReservas() {
-        return reservas;
-    }
 
-    public void setReservas(List<Reserva> reservas) {
-        this.reservas = reservas;
-    }
 }

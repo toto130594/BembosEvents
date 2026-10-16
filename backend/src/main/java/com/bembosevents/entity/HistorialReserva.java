@@ -1,10 +1,17 @@
 package com.bembosevents.entity;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "HistorialReserva")
+@Getter
+@Setter
+@NoArgsConstructor
 public class HistorialReserva {
 
     @Id
@@ -32,59 +39,17 @@ public class HistorialReserva {
     private Usuario usuarioResponsable;
 
     // Getters y Setters
-    public Integer getIdHistorialReserva() {
-        return idHistorialReserva;
-    }
 
-    public void setIdHistorialReserva(Integer idHistorialReserva) {
-        this.idHistorialReserva = idHistorialReserva;
-    }
 
-    public Reserva getReserva() {
-        return reserva;
-    }
 
-    public void setReserva(Reserva reserva) {
-        this.reserva = reserva;
-    }
 
-    public String getEstadoAnterior() {
-        return estadoAnterior;
-    }
 
-    public void setEstadoAnterior(String estadoAnterior) {
-        this.estadoAnterior = estadoAnterior;
-    }
 
-    public String getEstadoNuevo() {
-        return estadoNuevo;
-    }
 
-    public void setEstadoNuevo(String estadoNuevo) {
-        this.estadoNuevo = estadoNuevo;
-    }
 
-    public String getObservacion() {
-        return observacion;
-    }
 
-    public void setObservacion(String observacion) {
-        this.observacion = observacion;
-    }
 
-    public LocalDateTime getFechaCambio() {
-        return fechaCambio;
-    }
 
-    public void setFechaCambio(LocalDateTime fechaCambio) {
-        this.fechaCambio = fechaCambio;
-    }
 
-    public Usuario getUsuarioResponsable() {
-        return usuarioResponsable;
-    }
 
-    public void setUsuarioResponsable(Usuario usuarioResponsable) {
-        this.usuarioResponsable = usuarioResponsable;
-    }
 }
