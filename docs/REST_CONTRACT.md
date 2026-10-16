@@ -149,7 +149,7 @@ Se reutilizaran desde ReservaService.
 |---|---|---|---|
 | POST | /api/reservas | CLIENTE | MANTENER |
 | GET | /api/reservas/mias | CLIENTE | MANTENER |
-| GET | /api/reservas/{idReserva} | CLIENTE propietario | IMPLEMENTAR |
+| GET | /api/reservas/{idReserva} | CLIENTE propietario | MANTENER |
 | POST | /api/reservas/{idReserva}/cancelacion | CLIENTE propietario | IMPLEMENTAR |
 
 ## Crear reserva
@@ -246,6 +246,35 @@ La consulta:
 - responde 200 con una lista vacia cuando no existen reservas.
 
 La respuesta utiliza ReservaResumenResponse y no expone directamente la entidad JPA.
+
+## Consultar reserva propia - CLIENTE
+
+```http
+GET /api/reservas/{idReserva}
+```
+
+Acceso:
+
+- CLIENTE propietario.
+
+Reglas:
+
+- el Cliente se obtiene desde el correo autenticado.
+- el frontend no envia idCliente.
+- la busqueda utiliza idReserva + idCliente.
+- no se utiliza findById(idReserva) como mecanismo de autorizacion.
+- una reserva inexistente responde como recurso no encontrado.
+- una reserva de otro cliente responde de la misma forma para no revelar su existencia.
+
+Respuesta:
+
+- utiliza ReservaDetalleResponse.
+- incluye datos generales de la reserva.
+- incluye montos calculados al momento de crear la reserva.
+- incluye servicios adicionales.
+- los servicios conservan cantidad, precioUnitario historico y subtotal historico.
+
+El acceso de ENCARGADO_LOCAL y ADMINISTRADOR se implementara en FASE 7.6E.
 
 # 8. Cancelacion por cliente
 

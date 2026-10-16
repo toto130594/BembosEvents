@@ -6,6 +6,8 @@ import com.bembosevents.dto.catalogo.DisponibilidadSalonResponse;
 import com.bembosevents.dto.reserva.CrearReservaRequest;
 import com.bembosevents.dto.reserva.CrearReservaServicioRequest;
 import com.bembosevents.dto.reserva.ReservaCreadaResponse;
+import com.bembosevents.dto.reserva.ReservaDetalleResponse;
+import com.bembosevents.dto.reserva.ReservaDetalleServicioResponse;
 import com.bembosevents.dto.reserva.ReservaResumenResponse;
 import com.bembosevents.entity.Cliente;
 import com.bembosevents.entity.HistorialReserva;
@@ -249,6 +251,34 @@ public class ReservaClienteServiceImpl
                 .map(this::mapResumenResponse)
                 .toList();
     }
+    @Override
+    @Transactional(readOnly = true)
+    public ReservaDetalleResponse consultarPropia(
+            String correoCliente,
+            Integer idReserva) {
+
+        if (idReserva == null
+                || idReserva <= 0) {
+
+            throw new IllegalArgumentException(
+                    "El id de reserva debe ser positivo");
+        }
+
+        Cliente cliente =
+                buscarClienteAutenticado(
+                        correoCliente);
+
+        Reserva reserva = reservaRepository
+                .findByIdReservaAndCliente_IdCliente(
+                        idReserva,
+                        cliente.getIdCliente())
+                .orElseThrow(() ->
+                        new RecursoNoEncontradoException(
+                                "Reserva no encontrada"));
+
+        return mapDetalleResponse(
+                reserva);
+    }
 
     private Cliente buscarClienteAutenticado(
             String correoCliente) {
@@ -485,6 +515,53 @@ public class ReservaClienteServiceImpl
 
         historialReservaRepository.save(
                 historial);
+    }
+    private ReservaDetalleResponse mapDetalleResponse(
+            Reserva reserva) {
+
+        List<ReservaDetalleServicioResponse> servicios =
+                reserva.getReservaServicios() == null
+                        ? List.of()
+                        : reserva.getReservaServicios()
+                                .stream()
+                                .map(this::mapDetalleServicioResponse)
+                                .toList();
+
+        return new ReservaDetalleResponse(
+                reserva.getIdReserva(),
+                reserva.getCodigoReserva(),
+                reserva.getEstado(),
+                reserva.getSede().getIdSede(),
+                reserva.getSalon().getIdSalon(),
+                reserva.getPaquete() == null
+                        ? null
+                        : reserva.getPaquete().getIdPaquete(),
+                reserva.getTematica() == null
+                        ? null
+                        : reserva.getTematica().getIdTematica(),
+                reserva.getFechaEvento(),
+                reserva.getHoraInicio(),
+                reserva.getHoraFin(),
+                reserva.getCantidadInvitados(),
+                reserva.getMontoBase(),
+                reserva.getMontoServicios(),
+                reserva.getMontoTotal(),
+                reserva.getPorcentajeDeposito(),
+                reserva.getMontoDeposito(),
+                servicios,
+                reserva.getFechaCreacion(),
+                reserva.getFechaActualizacion());
+    }
+
+    private ReservaDetalleServicioResponse mapDetalleServicioResponse(
+            ReservaServicio detalle) {
+
+        return new ReservaDetalleServicioResponse(
+                detalle.getServicioAdicional()
+                        .getIdServicioAdicional(),
+                detalle.getCantidad(),
+                detalle.getPrecioUnitario(),
+                detalle.getSubtotal());
     }
 
     private ReservaResumenResponse mapResumenResponse(

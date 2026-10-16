@@ -2,6 +2,8 @@ package com.bembosevents.controller;
 
 import com.bembosevents.dto.reserva.CrearReservaRequest;
 import com.bembosevents.dto.reserva.ReservaCreadaResponse;
+import com.bembosevents.dto.reserva.ReservaDetalleResponse;
+import com.bembosevents.dto.reserva.ReservaDetalleServicioResponse;
 import com.bembosevents.dto.reserva.ReservaResumenResponse;
 import com.bembosevents.exception.GlobalExceptionHandler;
 import com.bembosevents.service.ReservaClienteService;
@@ -289,5 +291,106 @@ class ReservaClienteControllerTest {
 
         verify(reservaClienteService)
                 .misReservas(CORREO);
+    }
+
+    @Test
+    void debeConsultarReservaPropiaDelClienteAutenticado()
+            throws Exception {
+
+        ReservaDetalleServicioResponse servicio =
+                new ReservaDetalleServicioResponse(
+                        7,
+                        2,
+                        new BigDecimal("125.00"),
+                        new BigDecimal("250.00"));
+
+        ReservaDetalleResponse response =
+                new ReservaDetalleResponse(
+                        150,
+                        "BEM-2026-000150",
+                        "PENDIENTE",
+                        1,
+                        10,
+                        null,
+                        null,
+                        LocalDate.of(
+                                2026,
+                                12,
+                                20),
+                        LocalTime.of(
+                                14,
+                                0),
+                        LocalTime.of(
+                                18,
+                                0),
+                        40,
+                        new BigDecimal("500.00"),
+                        new BigDecimal("250.00"),
+                        new BigDecimal("750.00"),
+                        new BigDecimal("0.50"),
+                        new BigDecimal("375.00"),
+                        List.of(servicio),
+                        LocalDateTime.of(
+                                2026,
+                                10,
+                                16,
+                                17,
+                                0),
+                        LocalDateTime.of(
+                                2026,
+                                10,
+                                16,
+                                17,
+                                0));
+
+        when(reservaClienteService
+                .consultarPropia(
+                        CORREO,
+                        150))
+                .thenReturn(response);
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        CORREO,
+                        null);
+
+        mockMvc.perform(
+                        get("/api/reservas/150")
+                                .principal(authentication))
+                .andExpect(
+                        status().isOk())
+                .andExpect(
+                        jsonPath("$.idReserva")
+                                .value(150))
+                .andExpect(
+                        jsonPath("$.codigoReserva")
+                                .value(
+                                        "BEM-2026-000150"))
+                .andExpect(
+                        jsonPath("$.estado")
+                                .value("PENDIENTE"))
+                .andExpect(
+                        jsonPath("$.montoTotal")
+                                .value(750.00))
+                .andExpect(
+                        jsonPath("$.montoDeposito")
+                                .value(375.00))
+                .andExpect(
+                        jsonPath("$.serviciosAdicionales[0].idServicioAdicional")
+                                .value(7))
+                .andExpect(
+                        jsonPath("$.serviciosAdicionales[0].cantidad")
+                                .value(2))
+                .andExpect(
+                        jsonPath("$.serviciosAdicionales[0].precioUnitario")
+                                .value(125.00))
+                .andExpect(
+                        jsonPath("$.serviciosAdicionales[0].subtotal")
+                                .value(250.00));
+
+        verify(reservaClienteService)
+                .consultarPropia(
+                        CORREO,
+                        150);
     }
 }

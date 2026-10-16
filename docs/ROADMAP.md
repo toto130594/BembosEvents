@@ -103,7 +103,7 @@ Estado: COMPLETADA.
 
 Estado: ACTUAL.
 
-Subfase actual: 7.6D - Reservas del cliente.
+Subfase actual: 7.6D.5 - Cancelacion de una reserva propia del cliente.
 
 Objetivo:
 
@@ -117,8 +117,8 @@ Avance:
 - 7.6D.1 - Consistencia Usuario/Cliente: COMPLETADA.
 - 7.6D.2 - Crear reserva real del cliente: COMPLETADA.
 - 7.6D.3 - Mis reservas del cliente: COMPLETADA.
-- Siguiente: consulta de una reserva propia del cliente.
-
+- 7.6D.4 - Consultar una reserva propia: COMPLETADA.
+- 7.6D.5 - Cancelacion de una reserva propia: ACTUAL.
 Revisar:
 
 - Auth.

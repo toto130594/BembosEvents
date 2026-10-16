@@ -167,3 +167,20 @@ FASE 7.6 - Auditoria REST definitiva.
 - Tests de Controller y Service validados.
 - Regresion completa del backend validada.
 - Docker build validado.
+
+### FASE 7.6D.4 - Consultar reserva propia
+
+- Implementado GET /api/reservas/{idReserva} para CLIENTE propietario.
+- El Cliente se obtiene desde el correo autenticado.
+- El frontend no envia idCliente.
+- La busqueda utiliza conjuntamente idReserva e idCliente.
+- No se utiliza findById(idReserva) como mecanismo de autorizacion.
+- Una reserva inexistente se trata como recurso no encontrado.
+- Una reserva de otro cliente se trata de la misma forma para no revelar su existencia.
+- Incorporado ReservaDetalleResponse.
+- Incorporado ReservaDetalleServicioResponse.
+- El detalle conserva cantidad, precioUnitario y subtotal historicos de los servicios adicionales.
+- Tests especificos validados.
+- Regresion completa del backend validada.
+- Docker build validado.
+- El acceso de ENCARGADO_LOCAL y ADMINISTRADOR permanece pendiente para FASE 7.6E.

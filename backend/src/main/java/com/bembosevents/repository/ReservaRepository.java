@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface ReservaRepository
         extends JpaRepository<Reserva, Integer> {
@@ -19,7 +20,11 @@ public interface ReservaRepository
     List<Reserva> findByCliente_IdClienteOrderByFechaCreacionDesc(
             Integer idCliente);
 
-    @Query(
+
+    Optional<Reserva> findByIdReservaAndCliente_IdCliente(
+            Integer idReserva,
+            Integer idCliente);
+@Query(
             value = "SELECT NEXT VALUE FOR dbo.ReservaCodigoSequence",
             nativeQuery = true)
     Long siguienteValorCodigoReserva();

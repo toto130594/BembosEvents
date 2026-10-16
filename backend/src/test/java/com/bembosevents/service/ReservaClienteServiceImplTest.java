@@ -5,6 +5,7 @@ import com.bembosevents.dto.catalogo.DisponibilidadSalonResponse;
 import com.bembosevents.dto.reserva.CrearReservaRequest;
 import com.bembosevents.dto.reserva.CrearReservaServicioRequest;
 import com.bembosevents.dto.reserva.ReservaCreadaResponse;
+import com.bembosevents.dto.reserva.ReservaDetalleResponse;
 import com.bembosevents.dto.reserva.ReservaResumenResponse;
 import com.bembosevents.entity.Cliente;
 import com.bembosevents.entity.HistorialReserva;
@@ -15,6 +16,7 @@ import com.bembosevents.entity.Sede;
 import com.bembosevents.entity.ServicioAdicional;
 import com.bembosevents.entity.Usuario;
 import com.bembosevents.exception.ConflictoReservaException;
+import com.bembosevents.exception.RecursoNoEncontradoException;
 import com.bembosevents.repository.ClienteRepository;
 import com.bembosevents.repository.HistorialReservaRepository;
 import com.bembosevents.repository.PaqueteRepository;
@@ -831,5 +833,318 @@ class ReservaClienteServiceImplTest {
                 fechaCreacion);
 
         return reserva;
+    }
+
+    @Test
+    void debeConsultarDetalleDeReservaPropia() {
+
+        Usuario usuario =
+                mock(Usuario.class);
+
+        Cliente cliente =
+                mock(Cliente.class);
+
+        when(cliente.getUsuario())
+                .thenReturn(usuario);
+
+        when(cliente.getIdCliente())
+                .thenReturn(77);
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.of(cliente));
+
+        Sede sede =
+                new Sede();
+
+        sede.setIdSede(1);
+
+        Salon salon =
+                new Salon();
+
+        salon.setIdSalon(10);
+        salon.setSede(sede);
+
+        ServicioAdicional servicio =
+                new ServicioAdicional();
+
+        servicio.setIdServicioAdicional(7);
+
+        ReservaServicio detalle =
+                new ReservaServicio();
+
+        detalle.setServicioAdicional(
+                servicio);
+
+        detalle.setCantidad(
+                2);
+
+        detalle.setPrecioUnitario(
+                new BigDecimal("125.00"));
+
+        detalle.setSubtotal(
+                new BigDecimal("250.00"));
+
+        Reserva reserva =
+                new Reserva();
+
+        reserva.setIdReserva(
+                150);
+
+        reserva.setCodigoReserva(
+                "BEM-2026-000150");
+
+        reserva.setEstado(
+                "PENDIENTE");
+
+        reserva.setSede(
+                sede);
+
+        reserva.setSalon(
+                salon);
+
+        reserva.setFechaEvento(
+                LocalDate.of(
+                        2026,
+                        12,
+                        20));
+
+        reserva.setHoraInicio(
+                LocalTime.of(
+                        14,
+                        0));
+
+        reserva.setHoraFin(
+                LocalTime.of(
+                        18,
+                        0));
+
+        reserva.setCantidadInvitados(
+                40);
+
+        reserva.setMontoBase(
+                new BigDecimal("500.00"));
+
+        reserva.setMontoServicios(
+                new BigDecimal("250.00"));
+
+        reserva.setMontoTotal(
+                new BigDecimal("750.00"));
+
+        reserva.setPorcentajeDeposito(
+                new BigDecimal("0.50"));
+
+        reserva.setMontoDeposito(
+                new BigDecimal("375.00"));
+
+        reserva.setReservaServicios(
+                List.of(detalle));
+
+        reserva.setFechaCreacion(
+                LocalDateTime.of(
+                        2026,
+                        10,
+                        16,
+                        17,
+                        0));
+
+        reserva.setFechaActualizacion(
+                LocalDateTime.of(
+                        2026,
+                        10,
+                        16,
+                        17,
+                        0));
+
+        when(reservaRepository
+                .findByIdReservaAndCliente_IdCliente(
+                        150,
+                        77))
+                .thenReturn(
+                        Optional.of(reserva));
+
+        ReservaDetalleResponse resultado =
+                reservaClienteService
+                        .consultarPropia(
+                                CORREO,
+                                150);
+
+        assertEquals(
+                150,
+                resultado.idReserva());
+
+        assertEquals(
+                "BEM-2026-000150",
+                resultado.codigoReserva());
+
+        assertEquals(
+                "PENDIENTE",
+                resultado.estado());
+
+        assertEquals(
+                1,
+                resultado.idSede());
+
+        assertEquals(
+                10,
+                resultado.idSalon());
+
+        assertEquals(
+                0,
+                new BigDecimal("750.00")
+                        .compareTo(
+                                resultado.montoTotal()));
+
+        assertEquals(
+                1,
+                resultado.serviciosAdicionales()
+                        .size());
+
+        assertEquals(
+                7,
+                resultado.serviciosAdicionales()
+                        .get(0)
+                        .idServicioAdicional());
+
+        assertEquals(
+                0,
+                new BigDecimal("125.00")
+                        .compareTo(
+                                resultado
+                                        .serviciosAdicionales()
+                                        .get(0)
+                                        .precioUnitario()));
+
+        verify(reservaRepository)
+                .findByIdReservaAndCliente_IdCliente(
+                        150,
+                        77);
+
+        verify(
+                reservaRepository,
+                never())
+                .findById(150);
+    }
+
+    @Test
+    void debeOcultarReservaAjenaComoNoEncontrada() {
+
+        Usuario usuario =
+                mock(Usuario.class);
+
+        Cliente cliente =
+                mock(Cliente.class);
+
+        when(cliente.getUsuario())
+                .thenReturn(usuario);
+
+        when(cliente.getIdCliente())
+                .thenReturn(77);
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.of(cliente));
+
+        when(reservaRepository
+                .findByIdReservaAndCliente_IdCliente(
+                        200,
+                        77))
+                .thenReturn(
+                        Optional.empty());
+
+        RecursoNoEncontradoException exception =
+                assertThrows(
+                        RecursoNoEncontradoException.class,
+                        () ->
+                                reservaClienteService
+                                        .consultarPropia(
+                                                CORREO,
+                                                200));
+
+        assertEquals(
+                "Reserva no encontrada",
+                exception.getMessage());
+
+        verify(reservaRepository)
+                .findByIdReservaAndCliente_IdCliente(
+                        200,
+                        77);
+
+        verify(
+                reservaRepository,
+                never())
+                .findById(200);
+    }
+
+    @Test
+    void debeResponderNoEncontradaCuandoReservaNoExiste() {
+
+        Usuario usuario =
+                mock(Usuario.class);
+
+        Cliente cliente =
+                mock(Cliente.class);
+
+        when(cliente.getUsuario())
+                .thenReturn(usuario);
+
+        when(cliente.getIdCliente())
+                .thenReturn(77);
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.of(cliente));
+
+        when(reservaRepository
+                .findByIdReservaAndCliente_IdCliente(
+                        99999,
+                        77))
+                .thenReturn(
+                        Optional.empty());
+
+        RecursoNoEncontradoException exception =
+                assertThrows(
+                        RecursoNoEncontradoException.class,
+                        () ->
+                                reservaClienteService
+                                        .consultarPropia(
+                                                CORREO,
+                                                99999));
+
+        assertEquals(
+                "Reserva no encontrada",
+                exception.getMessage());
+
+        verify(reservaRepository)
+                .findByIdReservaAndCliente_IdCliente(
+                        99999,
+                        77);
+    }
+
+    @Test
+    void debeRechazarIdReservaNoPositivo() {
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () ->
+                                reservaClienteService
+                                        .consultarPropia(
+                                                CORREO,
+                                                0));
+
+        assertEquals(
+                "El id de reserva debe ser positivo",
+                exception.getMessage());
+
+        verifyNoInteractions(
+                clienteRepository,
+                reservaRepository);
     }
 }

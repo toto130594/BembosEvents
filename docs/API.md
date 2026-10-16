@@ -306,20 +306,28 @@ Reglas:
 - las reservas se ordenan por fechaCreacion descendente.
 - si el cliente no tiene reservas responde 200 con una lista vacia.
 
-## [PENDIENTE] Consultar reserva
-
-Propuesta:
+## [IMPLEMENTADO - CLIENTE] Consultar reserva
 
 ```http
 GET /api/reservas/{idReserva}
 ```
 
-La autorizacion dependera del usuario:
+Estado actual:
 
-- CLIENTE: solamente una reserva propia.
-- ENCARGADO_LOCAL: solamente reserva de su sede.
-- ADMINISTRADOR: alcance global.
+- CLIENTE propietario: IMPLEMENTADO en FASE 7.6D.4.
+- ENCARGADO_LOCAL: PENDIENTE para FASE 7.6E.
+- ADMINISTRADOR: PENDIENTE para FASE 7.6E.
 
+Para CLIENTE:
+
+- requiere autenticacion con rol CLIENTE.
+- el Cliente se obtiene desde el correo autenticado.
+- el frontend no envia idCliente.
+- la consulta utiliza conjuntamente idReserva e idCliente.
+- solamente puede consultar una reserva propia.
+- una reserva inexistente responde como recurso no encontrado.
+- una reserva perteneciente a otro cliente responde de la misma forma para no revelar su existencia.
+- la respuesta utiliza ReservaDetalleResponse y no expone directamente la entidad JPA.
 ## [PENDIENTE] Cambiar estado de reserva
 
 Propuesta:
