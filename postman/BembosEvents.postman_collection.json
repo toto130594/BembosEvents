@@ -1324,6 +1324,594 @@
                                                   }
                                   }
                               ]
+                 },
+                 {
+                     "name":  "Pagos base 7.6F",
+                     "description":  "Pruebas REST definitivas de Pagos base. Mercado Pago permanece fuera de esta fase.",
+                     "item":  [
+                                  {
+                                      "name":  "CLIENTE",
+                                      "item":  [
+                                                   {
+                                                       "name":  "Preparar reserva propia para pagos",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027CLIENTE lista sus reservas\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(200);",
+                                                                                                     "});",
+                                                                                                     "",
+                                                                                                     "const reservas = pm.response.json();",
+                                                                                                     "pm.expect(reservas).to.be.an(\u0027array\u0027);",
+                                                                                                     "",
+                                                                                                     "pm.environment.unset(\u0027idReservaPagoCliente\u0027);",
+                                                                                                     "",
+                                                                                                     "if (reservas.length \u003e 0) {",
+                                                                                                     "    pm.environment.set(\u0027idReservaPagoCliente\u0027, reservas[0].idReserva);",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "GET",
+                                                                       "header":  [
+
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenCliente}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/reservas/mias",
+                                                                       "description":  "Obtiene una Reserva perteneciente al CLIENTE autenticado y guarda su id para las pruebas de Pagos."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   },
+                                                   {
+                                                       "name":  "Crear pago de reserva propia",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "prerequest",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "if (!pm.environment.get(\u0027idReservaPagoCliente\u0027)) {",
+                                                                                                     "    throw new Error(\u0027Ejecuta primero Preparar reserva propia para pagos y verifica que el CLIENTE tenga al menos una reserva\u0027);",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     },
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027CLIENTE crea un pago\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(201);",
+                                                                                                     "});",
+                                                                                                     "",
+                                                                                                     "const json = pm.response.json();",
+                                                                                                     "",
+                                                                                                     "pm.expect(String(json.idReserva)).to.eql(String(pm.environment.get(\u0027idReservaPagoCliente\u0027)));",
+                                                                                                     "pm.expect(json.estadoPago).to.eql(\u0027PENDIENTE\u0027);",
+                                                                                                     "pm.expect(json.referenciaExterna).to.eql(null);",
+                                                                                                     "pm.expect(json.fechaPago).to.eql(null);",
+                                                                                                     "pm.expect(json.fechaCreacion).to.not.eql(null);",
+                                                                                                     "",
+                                                                                                     "pm.environment.set(\u0027idPagoCliente\u0027, json.idPago);"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "POST",
+                                                                       "header":  [
+                                                                                      {
+                                                                                          "key":  "Content-Type",
+                                                                                          "value":  "application/json",
+                                                                                          "type":  "text"
+                                                                                      }
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenCliente}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "body":  {
+                                                                                    "mode":  "raw",
+                                                                                    "raw":  "{\n  \"monto\": 100.00,\n  \"metodoPago\": \"PRUEBA\"\n}",
+                                                                                    "options":  {
+                                                                                                    "raw":  {
+                                                                                                                "language":  "json"
+                                                                                                            }
+                                                                                                }
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/reservas/{{idReservaPagoCliente}}/pagos",
+                                                                       "description":  "El backend establece estado PENDIENTE, fechaCreacion y la relacion con la Reserva. No se envia estadoPago, referenciaExterna ni fechaPago."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   },
+                                                   {
+                                                       "name":  "Listar pagos de reserva propia",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "prerequest",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "if (!pm.environment.get(\u0027idReservaPagoCliente\u0027)) {",
+                                                                                                     "    throw new Error(\u0027Falta idReservaPagoCliente\u0027);",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     },
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027CLIENTE lista pagos de su Reserva\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(200);",
+                                                                                                     "});",
+                                                                                                     "",
+                                                                                                     "const pagos = pm.response.json();",
+                                                                                                     "pm.expect(pagos).to.be.an(\u0027array\u0027);",
+                                                                                                     "",
+                                                                                                     "pagos.forEach(p =\u003e {",
+                                                                                                     "    pm.expect(String(p.idReserva)).to.eql(String(pm.environment.get(\u0027idReservaPagoCliente\u0027)));",
+                                                                                                     "});",
+                                                                                                     "",
+                                                                                                     "const idPago = pm.environment.get(\u0027idPagoCliente\u0027);",
+                                                                                                     "if (idPago) {",
+                                                                                                     "    const creado = pagos.find(p =\u003e String(p.idPago) === String(idPago));",
+                                                                                                     "    pm.expect(creado).to.not.eql(undefined);",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "GET",
+                                                                       "header":  [
+
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenCliente}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/reservas/{{idReservaPagoCliente}}/pagos",
+                                                                       "description":  "Lista exclusivamente los Pagos de una Reserva perteneciente al CLIENTE."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   },
+                                                   {
+                                                       "name":  "Consultar pago propio",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "prerequest",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "if (!pm.environment.get(\u0027idPagoCliente\u0027)) {",
+                                                                                                     "    throw new Error(\u0027Ejecuta primero Crear pago de reserva propia\u0027);",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     },
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027CLIENTE consulta su propio pago\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(200);",
+                                                                                                     "});",
+                                                                                                     "",
+                                                                                                     "const json = pm.response.json();",
+                                                                                                     "pm.expect(String(json.idPago)).to.eql(String(pm.environment.get(\u0027idPagoCliente\u0027)));"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "GET",
+                                                                       "header":  [
+
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenCliente}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/pagos/{{idPagoCliente}}",
+                                                                       "description":  "Consulta un Pago perteneciente al CLIENTE autenticado."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   },
+                                                   {
+                                                       "name":  "CLIENTE no accede a validar transicion",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027CLIENTE no usa endpoint tecnico de transicion\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(403);",
+                                                                                                     "});"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "POST",
+                                                                       "header":  [
+                                                                                      {
+                                                                                          "key":  "Content-Type",
+                                                                                          "value":  "application/json",
+                                                                                          "type":  "text"
+                                                                                      }
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenCliente}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "body":  {
+                                                                                    "mode":  "raw",
+                                                                                    "raw":  "{\n  \"estadoActual\": \"PENDIENTE\",\n  \"nuevoEstado\": \"APROBADO\"\n}",
+                                                                                    "options":  {
+                                                                                                    "raw":  {
+                                                                                                                "language":  "json"
+                                                                                                            }
+                                                                                                }
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/pagos/validar-transicion",
+                                                                       "description":  "La regla GET /api/pagos/* para CLIENTE no debe abrir este POST tecnico."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   },
+                                                   {
+                                                       "name":  "CLIENTE no accede BackOffice pagos",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027CLIENTE no accede al BackOffice de Pagos\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(403);",
+                                                                                                     "});"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "GET",
+                                                                       "header":  [
+
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenCliente}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/backoffice/pagos",
+                                                                       "description":  "CLIENTE no posee acceso a endpoints BackOffice."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   }
+                                               ]
+                                  },
+                                  {
+                                      "name":  "ADMINISTRADOR",
+                                      "item":  [
+                                                   {
+                                                       "name":  "Listar todos los pagos",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027ADMIN lista todos los pagos\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(200);",
+                                                                                                     "});",
+                                                                                                     "",
+                                                                                                     "const pagos = pm.response.json();",
+                                                                                                     "pm.expect(pagos).to.be.an(\u0027array\u0027);",
+                                                                                                     "",
+                                                                                                     "pm.environment.unset(\u0027idPagoAdmin\u0027);",
+                                                                                                     "pm.environment.unset(\u0027idPagoOtraSede\u0027);",
+                                                                                                     "",
+                                                                                                     "if (pagos.length \u003e 0) {",
+                                                                                                     "    pm.environment.set(\u0027idPagoAdmin\u0027, pagos[0].idPago);",
+                                                                                                     "}",
+                                                                                                     "",
+                                                                                                     "const idReservaOtraSede = pm.environment.get(\u0027idReservaOtraSede\u0027);",
+                                                                                                     "if (idReservaOtraSede) {",
+                                                                                                     "    const otro = pagos.find(p =\u003e String(p.idReserva) === String(idReservaOtraSede));",
+                                                                                                     "    if (otro) {",
+                                                                                                     "        pm.environment.set(\u0027idPagoOtraSede\u0027, otro.idPago);",
+                                                                                                     "    }",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "GET",
+                                                                       "header":  [
+
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenAdmin}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/backoffice/pagos",
+                                                                       "description":  "ADMINISTRADOR dispone de alcance global."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   },
+                                                   {
+                                                       "name":  "Consultar pago como ADMIN",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "prerequest",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "if (!pm.environment.get(\u0027idPagoAdmin\u0027)) {",
+                                                                                                     "    throw new Error(\u0027Ejecuta primero Listar todos los pagos y verifica que exista al menos un Pago\u0027);",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     },
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027ADMIN consulta cualquier pago\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(200);",
+                                                                                                     "});",
+                                                                                                     "",
+                                                                                                     "const json = pm.response.json();",
+                                                                                                     "pm.expect(String(json.idPago)).to.eql(String(pm.environment.get(\u0027idPagoAdmin\u0027)));"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "GET",
+                                                                       "header":  [
+
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenAdmin}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/backoffice/pagos/{{idPagoAdmin}}",
+                                                                       "description":  "ADMINISTRADOR puede consultar cualquier Pago."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   }
+                                               ]
+                                  },
+                                  {
+                                      "name":  "ENCARGADO_LOCAL",
+                                      "item":  [
+                                                   {
+                                                       "name":  "Listar pagos de mi sede",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027ENCARGADO lista pagos accesibles\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(200);",
+                                                                                                     "});",
+                                                                                                     "",
+                                                                                                     "const pagos = pm.response.json();",
+                                                                                                     "pm.expect(pagos).to.be.an(\u0027array\u0027);",
+                                                                                                     "",
+                                                                                                     "pm.environment.unset(\u0027idPagoEncargado\u0027);",
+                                                                                                     "",
+                                                                                                     "if (pagos.length \u003e 0) {",
+                                                                                                     "    pm.environment.set(\u0027idPagoEncargado\u0027, pagos[0].idPago);",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "GET",
+                                                                       "header":  [
+
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenEncargado}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/backoffice/pagos",
+                                                                       "description":  "El backend obtiene la sede desde el usuario autenticado. Postman no envia idSede."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   },
+                                                   {
+                                                       "name":  "Consultar pago de mi sede",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "prerequest",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "if (!pm.environment.get(\u0027idPagoEncargado\u0027)) {",
+                                                                                                     "    throw new Error(\u0027Ejecuta primero Listar pagos de mi sede y verifica que exista al menos un Pago accesible\u0027);",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     },
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027ENCARGADO consulta pago de su sede\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(200);",
+                                                                                                     "});",
+                                                                                                     "",
+                                                                                                     "const json = pm.response.json();",
+                                                                                                     "pm.expect(String(json.idPago)).to.eql(String(pm.environment.get(\u0027idPagoEncargado\u0027)));"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "GET",
+                                                                       "header":  [
+
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenEncargado}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/backoffice/pagos/{{idPagoEncargado}}",
+                                                                       "description":  "El Pago debe pertenecer a una Reserva de la sede asignada al ENCARGADO_LOCAL."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   },
+                                                   {
+                                                       "name":  "ENCARGADO no ve pago de otra sede",
+                                                       "event":  [
+                                                                     {
+                                                                         "listen":  "prerequest",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "if (!pm.environment.get(\u0027idPagoOtraSede\u0027)) {",
+                                                                                                     "    throw new Error(\u0027No se encontro un Pago asociado a idReservaOtraSede. Ejecuta primero las pruebas ADMIN y prepara datos de otra sede si es necesario\u0027);",
+                                                                                                     "}"
+                                                                                                 ]
+                                                                                    }
+                                                                     },
+                                                                     {
+                                                                         "listen":  "test",
+                                                                         "script":  {
+                                                                                        "type":  "text/javascript",
+                                                                                        "exec":  [
+                                                                                                     "pm.test(\u0027ENCARGADO no ve Pago de otra sede\u0027, function () {",
+                                                                                                     "    pm.response.to.have.status(404);",
+                                                                                                     "});"
+                                                                                                 ]
+                                                                                    }
+                                                                     }
+                                                                 ],
+                                                       "request":  {
+                                                                       "method":  "GET",
+                                                                       "header":  [
+
+                                                                                  ],
+                                                                       "auth":  {
+                                                                                    "type":  "bearer",
+                                                                                    "bearer":  [
+                                                                                                   {
+                                                                                                       "key":  "token",
+                                                                                                       "value":  "{{tokenEncargado}}",
+                                                                                                       "type":  "string"
+                                                                                                   }
+                                                                                               ]
+                                                                                },
+                                                                       "url":  "{{baseUrl}}/api/backoffice/pagos/{{idPagoOtraSede}}",
+                                                                       "description":  "Un Pago perteneciente a otra sede responde 404 y no revela su existencia."
+                                                                   },
+                                                       "response":  [
+
+                                                                    ]
+                                                   }
+                                               ]
+                                  }
+                              ]
                  }
              ]
 }

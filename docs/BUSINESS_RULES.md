@@ -183,6 +183,27 @@ El endpoint tecnico validar-transicion existe actualmente para probar esta regla
 
 En la API final la validacion debera ejecutarse internamente durante el cambio real de estado.
 
+## Pagos base - FASE 7.6F
+
+Reglas implementadas:
+
+- Cada Pago pertenece a una Reserva.
+- Una Reserva puede tener multiples Pagos.
+- Se permiten pagos parciales.
+- `Pago.monto` debe ser mayor que 0.
+- `metodoPago` es obligatorio.
+- no existe todavia un catalogo cerrado de metodos de pago.
+- un Pago nuevo inicia en `PENDIENTE`.
+- `fechaPago` puede permanecer `null` mientras el pago no haya sido confirmado.
+- `referenciaExterna` permanece disponible para integraciones futuras.
+- el Cliente solamente opera Pagos asociados a sus propias Reservas.
+- un recurso ajeno se trata como no encontrado.
+- ADMINISTRADOR dispone de alcance global en BackOffice.
+- ENCARGADO_LOCAL solamente consulta Pagos de Reservas pertenecientes a su sede.
+- el frontend no envia `idCliente` ni `idSede` como fuente de autorizacion.
+- no existe un endpoint final generico para que el navegador marque un Pago como `APROBADO`.
+- `validar-transicion` continua temporalmente como endpoint tecnico hasta FASE 7.6G.
+- Mercado Pago permanece pendiente para FASE 11.
 # 7. Pagos externos - planeado
 
 Cuando se integre Mercado Pago:

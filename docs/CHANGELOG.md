@@ -235,3 +235,35 @@ FASE 7.6 - Auditoria REST definitiva.
 - Agregadas variables de reserva al environment example.
 - FASE 7.6E cerrada tecnicamente y documentalmente.
 - Siguiente subfase: 7.6F - Pagos base.
+### FASE 7.6F - Pagos base
+
+- Implementado `POST /api/reservas/{idReserva}/pagos` para CLIENTE propietario.
+- Implementado `GET /api/reservas/{idReserva}/pagos` para listar Pagos de una Reserva propia.
+- Implementado `GET /api/pagos/{idPago}` para consultar un Pago propio.
+- Implementado `GET /api/backoffice/pagos` para ADMINISTRADOR y ENCARGADO_LOCAL.
+- Implementado `GET /api/backoffice/pagos/{idPago}` para ADMINISTRADOR y ENCARGADO_LOCAL.
+- El Cliente se resuelve desde el correo autenticado.
+- El frontend no envia `idCliente` como fuente de autorizacion.
+- Una Reserva inexistente o ajena responde como recurso no encontrado.
+- Un Pago inexistente o ajeno responde como recurso no encontrado.
+- Se permiten pagos parciales y multiples Pagos por Reserva.
+- Todo Pago nuevo inicia en estado `PENDIENTE`.
+- `referenciaExterna` y `fechaPago` permanecen nulos durante el inicio base del Pago.
+- `fechaCreacion` se genera en backend.
+- ADMINISTRADOR dispone de alcance global en Pagos BackOffice.
+- ENCARGADO_LOCAL solamente consulta Pagos asociados a Reservas de su sede.
+- El alcance de ENCARGADO_LOCAL se obtiene desde `UsuarioSede`.
+- Un Pago perteneciente a otra sede responde 404 para ENCARGADO_LOCAL.
+- El endpoint tecnico `POST /api/pagos/validar-transicion` permanece temporalmente y sera retirado en FASE 7.6G.
+- No se implementa un endpoint generico para que el navegador marque un Pago como `APROBADO`.
+- Mercado Pago permanece planificado para FASE 11.
+- Tests dirigidos de Pagos Cliente validados.
+- Tests dirigidos de Pagos BackOffice validados.
+- Seguridad por Cliente y por sede validada.
+- Regresion completa del backend validada.
+- Docker build validado.
+- Documentacion REST sincronizada.
+- Postman sincronizado para CLIENTE, ADMINISTRADOR y ENCARGADO_LOCAL.
+- Variables de Pagos agregadas al environment example.
+- FASE 7.6F cerrada tecnicamente y documentalmente.
+- Siguiente subfase: 7.6G - Retirar endpoints tecnicos.

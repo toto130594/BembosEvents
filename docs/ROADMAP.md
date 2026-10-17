@@ -103,7 +103,7 @@ Estado: COMPLETADA.
 
 Estado: ACTUAL.
 
-Subfase actual: 7.6F - Pagos base.
+Subfase actual: 7.6G - Retirar endpoints tecnicos.
 
 Objetivo:
 
@@ -124,7 +124,16 @@ Avance:
   - 7.6E.2 - Consultar reserva BackOffice: COMPLETADA.
   - 7.6E.3 - Cambiar estado de reserva BackOffice: COMPLETADA.
   - 7.6E.4 - Documentacion, Postman y Git: COMPLETADA.
-- 7.6F - Pagos base: ACTUAL.
+- 7.6F - Pagos base: COMPLETADA.
+  - 7.6F.1 - Pagos Cliente: COMPLETADA.
+    - iniciar Pago de una Reserva propia: COMPLETADO.
+    - listar Pagos de una Reserva propia: COMPLETADO.
+    - consultar Pago propio por id: COMPLETADO.
+  - 7.6F.2 - Pagos BackOffice: COMPLETADA.
+    - listar Pagos BackOffice: COMPLETADO.
+    - consultar Pago BackOffice por id: COMPLETADO.
+  - 7.6F.3 - Seguridad y regresion integral: COMPLETADA.
+  - 7.6F.4 - Documentacion, Postman y Git: COMPLETADA.
 
 Revisar:
 

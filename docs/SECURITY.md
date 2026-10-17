@@ -223,6 +223,65 @@ La auditoria debe permitir identificar:
 - cuando.
 - sobre que recurso.
 
+## Pagos base - seguridad actual
+
+FASE 7.6F aplica autorizacion en dos niveles:
+
+1. Spring Security.
+2. validacion de propiedad o alcance dentro del Service.
+
+CLIENTE:
+
+```text
+POST /api/reservas/{idReserva}/pagos
+GET  /api/reservas/{idReserva}/pagos
+GET  /api/pagos/{idPago}
+```
+
+Reglas:
+
+- el Cliente se obtiene desde el correo autenticado.
+- el frontend no envia `idCliente`.
+- la Reserva se consulta mediante `idReserva + idCliente`.
+- el Pago individual se consulta mediante `idPago + idCliente`.
+- un recurso perteneciente a otro Cliente responde 404.
+
+BackOffice:
+
+```text
+GET /api/backoffice/pagos
+GET /api/backoffice/pagos/{idPago}
+```
+
+ADMINISTRADOR:
+
+- alcance global.
+
+ENCARGADO_LOCAL:
+
+- la sede se obtiene desde `UsuarioSede`.
+- el frontend no envia `idSede`.
+- los listados filtran por `Reserva.sede.idSede`.
+- el detalle consulta mediante `idPago + idSede`.
+- un Pago de otra sede responde 404.
+
+CLIENTE no tiene acceso a `/api/backoffice/pagos/**`.
+
+El endpoint tecnico:
+
+```http
+POST /api/pagos/validar-transicion
+```
+
+continua restringido a ADMINISTRADOR y ENCARGADO_LOCAL y sera retirado en FASE 7.6G.
+
+Permitir:
+
+```http
+GET /api/pagos/{idPago}
+```
+
+a CLIENTE no concede acceso al endpoint tecnico porque la regla GET especifica se evalua antes de `/api/pagos/**`.
 # 10. Pagos - seguridad futura
 
 La integracion con Mercado Pago debera:

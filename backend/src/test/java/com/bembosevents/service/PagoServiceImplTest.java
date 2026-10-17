@@ -10,7 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class PagoServiceImplTest {
 
     private final PagoService pagoService =
-            new PagoServiceImpl();
+            new PagoServiceImpl(
+                org.mockito.Mockito.mock(
+                        com.bembosevents.repository.PagoRepository.class),
+                org.mockito.Mockito.mock(
+                        com.bembosevents.repository.ReservaRepository.class),
+                org.mockito.Mockito.mock(
+                        com.bembosevents.repository.ClienteRepository.class));
 
     @Test
     void debeAceptarTransicionDePagoValida() {

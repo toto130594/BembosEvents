@@ -479,11 +479,11 @@ PagoService.validarTransicionEstado se conserva como regla interna.
 
 | Metodo | Endpoint | Acceso | Estado |
 |---|---|---|---|
-| POST | /api/reservas/{idReserva}/pagos | CLIENTE propietario | IMPLEMENTAR |
-| GET | /api/reservas/{idReserva}/pagos | CLIENTE propietario | IMPLEMENTAR |
-| GET | /api/pagos/{idPago} | CLIENTE propietario | IMPLEMENTAR |
-| GET | /api/backoffice/pagos | ADMINISTRADOR / ENCARGADO_LOCAL | IMPLEMENTAR |
-| GET | /api/backoffice/pagos/{idPago} | ADMINISTRADOR / ENCARGADO_LOCAL | IMPLEMENTAR |
+| POST | /api/reservas/{idReserva}/pagos | CLIENTE propietario | MANTENER |
+| GET | /api/reservas/{idReserva}/pagos | CLIENTE propietario | MANTENER |
+| GET | /api/pagos/{idPago} | CLIENTE propietario | MANTENER |
+| GET | /api/backoffice/pagos | ADMINISTRADOR / ENCARGADO_LOCAL | MANTENER |
+| GET | /api/backoffice/pagos/{idPago} | ADMINISTRADOR / ENCARGADO_LOCAL | MANTENER |
 
 ## Inicio de pago
 
@@ -494,6 +494,105 @@ POST /api/reservas/{idReserva}/pagos
 La API sera independiente del proveedor de pago.
 
 PagoService sera responsable de iniciar el proceso.
+## Reglas implementadas en FASE 7.6F
+
+### Cliente
+
+El Cliente se obtiene desde el correo autenticado.
+
+El frontend no envia `idCliente`.
+
+Para iniciar un pago:
+
+```http
+POST /api/reservas/{idReserva}/pagos
+```
+
+El backend valida que la Reserva pertenezca al Cliente autenticado.
+
+Una Reserva inexistente o perteneciente a otro Cliente responde como recurso no encontrado.
+
+El request contiene exclusivamente los datos necesarios para iniciar el pago:
+
+```json
+{
+  "monto": 250.00,
+  "metodoPago": "PRUEBA"
+}
+```
+
+Reglas:
+
+- `monto` debe ser mayor que 0.
+- se admiten pagos parciales.
+- una Reserva puede tener multiples Pagos.
+- `metodoPago` es obligatorio y no supera 50 caracteres.
+- 7.6F no define todavia un catalogo cerrado de metodos de pago.
+- el estado inicial es `PENDIENTE`.
+- `referenciaExterna` inicia en `null`.
+- `fechaPago` inicia en `null`.
+- `fechaCreacion` es generada por el backend.
+- el Cliente no decide el estado inicial del pago.
+- el Cliente no envia `referenciaExterna`.
+- el Cliente no envia `fechaPago`.
+
+Los pagos de una Reserva propia se consultan mediante:
+
+```http
+GET /api/reservas/{idReserva}/pagos
+```
+
+La respuesta se ordena por `fechaCreacion` descendente.
+
+Si la Reserva no tiene Pagos se devuelve `200` con una lista vacia.
+
+El detalle de un Pago propio se consulta mediante:
+
+```http
+GET /api/pagos/{idPago}
+```
+
+La consulta utiliza conjuntamente `idPago` y el Cliente autenticado.
+
+Un Pago inexistente o perteneciente a otro Cliente responde como recurso no encontrado.
+
+### BackOffice
+
+```http
+GET /api/backoffice/pagos
+GET /api/backoffice/pagos/{idPago}
+```
+
+ADMINISTRADOR:
+
+- dispone de alcance global.
+- puede consultar todos los Pagos.
+
+ENCARGADO_LOCAL:
+
+- la sede se obtiene a partir del usuario autenticado.
+- no recibe `idSede` desde el frontend como fuente de autorizacion.
+- solamente consulta Pagos asociados a Reservas de su sede.
+- el detalle utiliza conjuntamente `idPago` e `idSede`.
+- un Pago de otra sede responde como recurso no encontrado.
+
+Los listados se ordenan por `fechaCreacion` descendente.
+
+### Estados
+
+7.6F no expone un endpoint definitivo que permita al navegador aprobar o rechazar Pagos.
+
+El endpoint:
+
+```http
+POST /api/pagos/validar-transicion
+```
+
+continua siendo tecnico y temporal hasta FASE 7.6G.
+
+La regla interna `PagoService.validarTransicionEstado` se conserva.
+
+La aprobacion definitiva de un Pago quedara vinculada al flujo seguro del proveedor en FASE 11.
 
 # 13. Cambio de estado de Pago
 

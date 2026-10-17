@@ -130,6 +130,10 @@ public class SecurityConfig {
                                 .permitAll()
 
                                 .requestMatchers(
+                                        org.springframework.http.HttpMethod.GET,
+                                        "/api/pagos/*")
+                                        .hasRole("CLIENTE")
+                                .requestMatchers(
                                         "/api/pagos/**")
                                 .hasAnyRole(
                                         "ENCARGADO_LOCAL",

@@ -444,20 +444,150 @@ PENDIENTE -> CONFIRMADA
 
 Las transiciones definitivas continúan siendo responsabilidad de ReglasTransicionReserva.
 
-# 7. Pagos - API tecnica actual
+# 7. Pagos
 
-Politica de seguridad actual:
+FASE 7.6F implementa la API REST base de Pagos.
 
-- ENCARGADO_LOCAL.
+La integracion real con Mercado Pago permanece fuera de esta fase y corresponde a FASE 11.
+
+## Cliente - iniciar pago
+
+```http
+POST /api/reservas/{idReserva}/pagos
+```
+
+Acceso:
+
+- CLIENTE propietario de la Reserva.
+
+Request:
+
+```json
+{
+  "monto": 250.00,
+  "metodoPago": "PRUEBA"
+}
+```
+
+Reglas:
+
+- el Cliente se obtiene desde el correo autenticado.
+- el frontend no envia `idCliente`.
+- `idReserva` proviene de la URL.
+- la Reserva debe pertenecer al Cliente autenticado.
+- una Reserva inexistente o ajena responde 404.
+- `monto` debe ser mayor que 0.
+- se permiten pagos parciales y multiples Pagos por Reserva.
+- `metodoPago` es obligatorio.
+- no existe todavia un catalogo cerrado de metodos de pago.
+- el estado inicial es `PENDIENTE`.
+- `referenciaExterna` inicia en `null`.
+- `fechaPago` inicia en `null`.
+- `fechaCreacion` se genera en backend.
+
+Respuesta:
+
+```text
+201 Created
+```
+
+La respuesta utiliza `PagoResponse`.
+
+## Cliente - listar pagos de una Reserva
+
+```http
+GET /api/reservas/{idReserva}/pagos
+```
+
+Acceso:
+
+- CLIENTE propietario.
+
+Reglas:
+
+- primero se valida la propiedad de la Reserva.
+- no se realiza un listado sobre una Reserva ajena.
+- una Reserva inexistente o ajena responde 404.
+- los Pagos se ordenan por `fechaCreacion` descendente.
+- sin Pagos responde 200 con `[]`.
+
+## Cliente - consultar Pago
+
+```http
+GET /api/pagos/{idPago}
+```
+
+Acceso:
+
+- CLIENTE propietario del Pago mediante su Reserva.
+
+Reglas:
+
+- el backend obtiene el Cliente desde la autenticacion.
+- la consulta utiliza conjuntamente `idPago` e `idCliente`.
+- un Pago inexistente o ajeno responde 404.
+- no se expone la existencia de Pagos de otros Clientes.
+
+## BackOffice - listar Pagos
+
+```http
+GET /api/backoffice/pagos
+```
+
+Acceso:
+
 - ADMINISTRADOR.
+- ENCARGADO_LOCAL.
 
-## [TECNICO] Validar transicion de pago
+ADMINISTRADOR:
+
+- obtiene todos los Pagos.
+- orden por `fechaCreacion` descendente.
+
+ENCARGADO_LOCAL:
+
+- obtiene su sede desde el usuario autenticado.
+- no envia `idSede` como fuente de autorizacion.
+- obtiene solo Pagos asociados a Reservas de su sede.
+- orden por `fechaCreacion` descendente.
+
+Sin resultados responde 200 con `[]`.
+
+CLIENTE no tiene acceso.
+
+## BackOffice - consultar Pago
+
+```http
+GET /api/backoffice/pagos/{idPago}
+```
+
+ADMINISTRADOR:
+
+- utiliza consulta global.
+- un Pago inexistente responde 404.
+
+ENCARGADO_LOCAL:
+
+- utiliza una consulta acotada por `idPago` e `idSede`.
+- un Pago inexistente responde 404.
+- un Pago perteneciente a otra sede tambien responde 404.
+
+CLIENTE no tiene acceso.
+
+## Endpoint tecnico de transicion
+
+Continua existiendo temporalmente:
 
 ```http
 POST /api/pagos/validar-transicion
 ```
 
-Ejemplo:
+Acceso tecnico actual:
+
+- ADMINISTRADOR.
+- ENCARGADO_LOCAL.
+
+Request:
 
 ```json
 {
@@ -466,58 +596,38 @@ Ejemplo:
 }
 ```
 
-Este endpoint NO modifica ningun pago.
+Este endpoint:
 
-Solamente valida si la transicion seria permitida.
+- no modifica ningun Pago.
+- solamente valida una transicion.
+- sera retirado en FASE 7.6G.
 
-Debe considerarse temporal.
+La regla interna `PagoService.validarTransicionEstado` se conserva.
 
-# 8. Pagos - API objetivo
+## Cambio real de estado
 
-## [PENDIENTE] Registrar pago
-
-Propuesta:
-
-```http
-POST /api/pagos
-```
-
-## [PENDIENTE] Pagos de una reserva
-
-Propuesta:
-
-```http
-GET /api/reservas/{idReserva}/pagos
-```
-
-## [PENDIENTE] Consultar pago
-
-Propuesta:
-
-```http
-GET /api/pagos/{idPago}
-```
-
-## [PENDIENTE] Cambiar estado de pago
-
-Propuesta:
+7.6F no incorpora:
 
 ```http
 PATCH /api/pagos/{idPago}/estado
 ```
 
-La operacion debera:
+El frontend no puede decidir libremente que un Pago fue aprobado.
 
-1. buscar pago.
-2. buscar reserva relacionada.
-3. validar rol.
-4. validar sede.
-5. validar transicion.
-6. actualizar pago.
-7. registrar acciones relacionadas.
+La aprobacion definitiva se integrara con el flujo seguro del proveedor de pagos en FASE 11.
 
-Cuando este endpoint exista, validar-transicion dejara de ser necesario como endpoint publico.
+## Mercado Pago
 
+No se implementa en FASE 7.6F.
+
+FASE 11 incluira:
+
+- creacion de operacion con proveedor.
+- webhook.
+- validacion de firma.
+- idempotencia.
+- reembolsos.
+- reconciliacion.
 # 9. Catalogos
 
 ## [PENDIENTE / REVISAR] Sedes publicas
