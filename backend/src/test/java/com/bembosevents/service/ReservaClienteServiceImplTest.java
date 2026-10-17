@@ -1,6 +1,7 @@
 package com.bembosevents.service;
 
 import com.bembosevents.config.ReservaProperties;
+import com.bembosevents.domain.EstadoReserva;
 import com.bembosevents.dto.catalogo.DisponibilidadSalonResponse;
 import com.bembosevents.dto.reserva.CrearReservaRequest;
 import com.bembosevents.dto.reserva.CrearReservaServicioRequest;
@@ -1146,5 +1147,378 @@ class ReservaClienteServiceImplTest {
         verifyNoInteractions(
                 clienteRepository,
                 reservaRepository);
+    }
+
+    @Test
+    void debeCancelarReservaPendiente() {
+
+        EscenarioCancelacion escenario =
+                prepararEscenarioCancelacion(
+                        150,
+                        "PENDIENTE");
+
+        when(reservaRepository
+                .save(escenario.reserva()))
+                .thenReturn(
+                        escenario.reserva());
+
+        ReservaDetalleResponse resultado =
+                reservaClienteService.cancelarPropia(
+                        CORREO,
+                        150);
+
+        assertEquals(
+                "CANCELADA",
+                resultado.estado());
+
+        assertEquals(
+                "CANCELADA",
+                escenario.reserva().getEstado());
+
+        assertTrue(
+                escenario.reserva()
+                        .getFechaActualizacion() != null);
+
+        verify(reservaService)
+                .validarTransicionEstado(
+                        EstadoReserva.PENDIENTE,
+                        EstadoReserva.CANCELADA);
+
+        verify(reservaRepository)
+                .save(
+                        escenario.reserva());
+
+        ArgumentCaptor<HistorialReserva> historialCaptor =
+                ArgumentCaptor.forClass(
+                        HistorialReserva.class);
+
+        verify(historialReservaRepository)
+                .save(
+                        historialCaptor.capture());
+
+        HistorialReserva historial =
+                historialCaptor.getValue();
+
+        assertSame(
+                escenario.reserva(),
+                historial.getReserva());
+
+        assertEquals(
+                "PENDIENTE",
+                historial.getEstadoAnterior());
+
+        assertEquals(
+                "CANCELADA",
+                historial.getEstadoNuevo());
+
+        assertEquals(
+                "Reserva cancelada por el cliente",
+                historial.getObservacion());
+
+        assertSame(
+                escenario.usuario(),
+                historial.getUsuarioResponsable());
+
+        assertEquals(
+                escenario.reserva()
+                        .getFechaActualizacion(),
+                historial.getFechaCambio());
+    }
+
+    @Test
+    void debeCancelarReservaConfirmada() {
+
+        EscenarioCancelacion escenario =
+                prepararEscenarioCancelacion(
+                        151,
+                        "CONFIRMADA");
+
+        when(reservaRepository
+                .save(escenario.reserva()))
+                .thenReturn(
+                        escenario.reserva());
+
+        ReservaDetalleResponse resultado =
+                reservaClienteService.cancelarPropia(
+                        CORREO,
+                        151);
+
+        assertEquals(
+                "CANCELADA",
+                resultado.estado());
+
+        verify(reservaService)
+                .validarTransicionEstado(
+                        EstadoReserva.CONFIRMADA,
+                        EstadoReserva.CANCELADA);
+
+        verify(reservaRepository)
+                .save(
+                        escenario.reserva());
+
+        verify(historialReservaRepository)
+                .save(
+                        any(HistorialReserva.class));
+    }
+
+    @Test
+    void debeRechazarCancelacionDesdeEstadoNoPermitido() {
+
+        EscenarioCancelacion escenario =
+                prepararEscenarioCancelacion(
+                        152,
+                        "EN_PROCESO");
+
+        org.mockito.Mockito.doThrow(
+                        new IllegalArgumentException(
+                                "Transicion de estado de reserva no permitida"))
+                .when(reservaService)
+                .validarTransicionEstado(
+                        EstadoReserva.EN_PROCESO,
+                        EstadoReserva.CANCELADA);
+
+        ConflictoReservaException exception =
+                assertThrows(
+                        ConflictoReservaException.class,
+                        () ->
+                                reservaClienteService
+                                        .cancelarPropia(
+                                                CORREO,
+                                                152));
+
+        assertEquals(
+                "La reserva no puede cancelarse en su estado actual",
+                exception.getMessage());
+
+        assertEquals(
+                "EN_PROCESO",
+                escenario.reserva().getEstado());
+
+        verify(
+                reservaRepository,
+                never())
+                .save(
+                        any(Reserva.class));
+
+        verifyNoInteractions(
+                historialReservaRepository);
+    }
+
+    @Test
+    void debeOcultarReservaAjenaAlCancelar() {
+
+        Usuario usuario =
+                mock(Usuario.class);
+
+        Cliente cliente =
+                mock(Cliente.class);
+
+        when(cliente.getUsuario())
+                .thenReturn(usuario);
+
+        when(cliente.getIdCliente())
+                .thenReturn(77);
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.of(cliente));
+
+        when(reservaRepository
+                .findByIdReservaAndCliente_IdCliente(
+                        200,
+                        77))
+                .thenReturn(
+                        Optional.empty());
+
+        RecursoNoEncontradoException exception =
+                assertThrows(
+                        RecursoNoEncontradoException.class,
+                        () ->
+                                reservaClienteService
+                                        .cancelarPropia(
+                                                CORREO,
+                                                200));
+
+        assertEquals(
+                "Reserva no encontrada",
+                exception.getMessage());
+
+        verify(
+                reservaRepository,
+                never())
+                .findById(200);
+
+        verifyNoInteractions(
+                reservaService,
+                historialReservaRepository);
+    }
+
+    @Test
+    void debeResponderNoEncontradaAlCancelarReservaInexistente() {
+
+        Usuario usuario =
+                mock(Usuario.class);
+
+        Cliente cliente =
+                mock(Cliente.class);
+
+        when(cliente.getUsuario())
+                .thenReturn(usuario);
+
+        when(cliente.getIdCliente())
+                .thenReturn(77);
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.of(cliente));
+
+        when(reservaRepository
+                .findByIdReservaAndCliente_IdCliente(
+                        99999,
+                        77))
+                .thenReturn(
+                        Optional.empty());
+
+        RecursoNoEncontradoException exception =
+                assertThrows(
+                        RecursoNoEncontradoException.class,
+                        () ->
+                                reservaClienteService
+                                        .cancelarPropia(
+                                                CORREO,
+                                                99999));
+
+        assertEquals(
+                "Reserva no encontrada",
+                exception.getMessage());
+
+        verifyNoInteractions(
+                reservaService,
+                historialReservaRepository);
+    }
+
+    private EscenarioCancelacion prepararEscenarioCancelacion(
+            Integer idReserva,
+            String estado) {
+
+        Usuario usuario =
+                mock(Usuario.class);
+
+        Cliente cliente =
+                mock(Cliente.class);
+
+        when(cliente.getUsuario())
+                .thenReturn(usuario);
+
+        when(cliente.getIdCliente())
+                .thenReturn(77);
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.of(cliente));
+
+        Sede sede = new Sede();
+        sede.setIdSede(1);
+
+        Salon salon = new Salon();
+        salon.setIdSalon(10);
+        salon.setSede(sede);
+
+        Reserva reserva = new Reserva();
+
+        reserva.setIdReserva(
+                idReserva);
+
+        reserva.setCodigoReserva(
+                "BEM-2026-" + idReserva);
+
+        reserva.setCliente(
+                cliente);
+
+        reserva.setSede(
+                sede);
+
+        reserva.setSalon(
+                salon);
+
+        reserva.setFechaEvento(
+                LocalDate.of(
+                        2026,
+                        12,
+                        20));
+
+        reserva.setHoraInicio(
+                LocalTime.of(
+                        14,
+                        0));
+
+        reserva.setHoraFin(
+                LocalTime.of(
+                        18,
+                        0));
+
+        reserva.setCantidadInvitados(
+                40);
+
+        reserva.setMontoBase(
+                new BigDecimal("500.00"));
+
+        reserva.setMontoServicios(
+                new BigDecimal("250.00"));
+
+        reserva.setMontoTotal(
+                new BigDecimal("750.00"));
+
+        reserva.setPorcentajeDeposito(
+                new BigDecimal("0.50"));
+
+        reserva.setMontoDeposito(
+                new BigDecimal("375.00"));
+
+        reserva.setEstado(
+                estado);
+
+        reserva.setReservaServicios(
+                List.of());
+
+        reserva.setFechaCreacion(
+                LocalDateTime.of(
+                        2026,
+                        10,
+                        16,
+                        17,
+                        0));
+
+        reserva.setFechaActualizacion(
+                LocalDateTime.of(
+                        2026,
+                        10,
+                        16,
+                        17,
+                        0));
+
+        when(reservaRepository
+                .findByIdReservaAndCliente_IdCliente(
+                        idReserva,
+                        77))
+                .thenReturn(
+                        Optional.of(reserva));
+
+        return new EscenarioCancelacion(
+                cliente,
+                usuario,
+                reserva);
+    }
+
+    private record EscenarioCancelacion(
+            Cliente cliente,
+            Usuario usuario,
+            Reserva reserva) {
     }
 }

@@ -150,7 +150,7 @@ Se reutilizaran desde ReservaService.
 | POST | /api/reservas | CLIENTE | MANTENER |
 | GET | /api/reservas/mias | CLIENTE | MANTENER |
 | GET | /api/reservas/{idReserva} | CLIENTE propietario | MANTENER |
-| POST | /api/reservas/{idReserva}/cancelacion | CLIENTE propietario | IMPLEMENTAR |
+| POST | /api/reservas/{idReserva}/cancelacion | CLIENTE propietario | MANTENER |
 
 ## Crear reserva
 
@@ -278,16 +278,51 @@ El acceso de ENCARGADO_LOCAL y ADMINISTRADOR se implementara en FASE 7.6E.
 
 # 8. Cancelacion por cliente
 
-El cliente NO dispondra de un endpoint generico para establecer cualquier estado.
+El cliente NO dispone de un endpoint generico para establecer cualquier estado.
 
-Utilizara una accion especifica:
+Utiliza una accion especifica:
 
 ```http
 POST /api/reservas/{idReserva}/cancelacion
 ```
 
-ReservaService validara si la cancelacion esta permitida.
+Acceso:
 
+- CLIENTE propietario.
+
+Seguridad:
+
+- el Cliente se obtiene desde el correo autenticado.
+- el frontend no envia idCliente.
+- la reserva se busca mediante idReserva + idCliente.
+- una reserva inexistente y una reserva ajena responden 404 para no revelar informacion.
+
+Transiciones permitidas:
+
+- PENDIENTE -> CANCELADA.
+- CONFIRMADA -> CANCELADA.
+
+No se permite cancelar desde:
+
+- EN_PROCESO.
+- COMPLETADA.
+- CANCELADA.
+- EXPIRADA.
+
+ReservaService valida la transicion antes de modificar la reserva.
+
+Una transicion no permitida responde 409 Conflict.
+
+Cuando la cancelacion es valida:
+
+- estado pasa a CANCELADA.
+- se actualiza fechaActualizacion.
+- se registra HistorialReserva.
+- el historial conserva estadoAnterior y estadoNuevo.
+- la observacion identifica que la cancelacion fue realizada por el cliente.
+- UsuarioResponsable corresponde al Usuario asociado al Cliente autenticado.
+
+Esta operacion no cambia automaticamente el estado de los pagos ni ejecuta reembolsos.
 # 9. Reserva - BackOffice
 
 | Metodo | Endpoint | Acceso | Estado |

@@ -280,6 +280,95 @@ public class ReservaClienteServiceImpl
                 reserva);
     }
 
+    @Override
+    public ReservaDetalleResponse cancelarPropia(
+            String correoCliente,
+            Integer idReserva) {
+
+        if (idReserva == null
+                || idReserva <= 0) {
+
+            throw new IllegalArgumentException(
+                    "El id de reserva debe ser positivo");
+        }
+
+        Cliente cliente =
+                buscarClienteAutenticado(
+                        correoCliente);
+
+        Reserva reserva = reservaRepository
+                .findByIdReservaAndCliente_IdCliente(
+                        idReserva,
+                        cliente.getIdCliente())
+                .orElseThrow(() ->
+                        new RecursoNoEncontradoException(
+                                "Reserva no encontrada"));
+
+        EstadoReserva estadoActual;
+
+        try {
+            estadoActual = EstadoReserva.valueOf(
+                    reserva.getEstado());
+        }
+        catch (IllegalArgumentException
+                | NullPointerException ex) {
+
+            throw new IllegalStateException(
+                    "La reserva tiene un estado invalido");
+        }
+
+        try {
+            reservaService.validarTransicionEstado(
+                    estadoActual,
+                    EstadoReserva.CANCELADA);
+        }
+        catch (IllegalArgumentException ex) {
+
+            throw new ConflictoReservaException(
+                    "La reserva no puede cancelarse en su estado actual");
+        }
+
+        LocalDateTime now =
+                LocalDateTime.now();
+
+        reserva.setEstado(
+                EstadoReserva.CANCELADA.name());
+
+        reserva.setFechaActualizacion(
+                now);
+
+        Reserva reservaGuardada =
+                reservaRepository.save(
+                        reserva);
+
+        HistorialReserva historial =
+                new HistorialReserva();
+
+        historial.setReserva(
+                reservaGuardada);
+
+        historial.setEstadoAnterior(
+                estadoActual.name());
+
+        historial.setEstadoNuevo(
+                EstadoReserva.CANCELADA.name());
+
+        historial.setObservacion(
+                "Reserva cancelada por el cliente");
+
+        historial.setFechaCambio(
+                now);
+
+        historial.setUsuarioResponsable(
+                cliente.getUsuario());
+
+        historialReservaRepository.save(
+                historial);
+
+        return mapDetalleResponse(
+                reservaGuardada);
+    }
+
     private Cliente buscarClienteAutenticado(
             String correoCliente) {
 

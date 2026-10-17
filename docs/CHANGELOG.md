@@ -184,3 +184,25 @@ FASE 7.6 - Auditoria REST definitiva.
 - Regresion completa del backend validada.
 - Docker build validado.
 - El acceso de ENCARGADO_LOCAL y ADMINISTRADOR permanece pendiente para FASE 7.6E.
+
+### FASE 7.6D.5 - Cancelacion de reserva propia
+
+- Implementado POST /api/reservas/{idReserva}/cancelacion.
+- Acceso exclusivo para CLIENTE propietario.
+- El Cliente se obtiene desde el correo autenticado.
+- El frontend no envia idCliente.
+- La reserva se busca mediante idReserva + idCliente.
+- Una reserva inexistente o ajena responde como recurso no encontrado.
+- PENDIENTE puede pasar a CANCELADA.
+- CONFIRMADA puede pasar a CANCELADA.
+- Los demas estados no permiten cancelacion mediante esta operacion.
+- La validacion reutiliza ReservaService.validarTransicionEstado.
+- Una transicion no permitida responde 409 Conflict.
+- Se actualizan estado y fechaActualizacion.
+- Se registra HistorialReserva con Usuario responsable.
+- No se modifican automaticamente pagos ni se ejecutan reembolsos.
+- Tests dirigidos validados.
+- Regresion completa del backend validada.
+- Docker build validado.
+- FASE 7.6D de reservas del cliente completada.
+- Siguiente fase: 7.6E - Reservas BackOffice.

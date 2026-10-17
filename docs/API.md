@@ -328,12 +328,36 @@ Para CLIENTE:
 - una reserva inexistente responde como recurso no encontrado.
 - una reserva perteneciente a otro cliente responde de la misma forma para no revelar su existencia.
 - la respuesta utiliza ReservaDetalleResponse y no expone directamente la entidad JPA.
-## [PENDIENTE] Cambiar estado de reserva
+## [IMPLEMENTADO - CLIENTE] Cancelar reserva propia
+
+```http
+POST /api/reservas/{idReserva}/cancelacion
+```
+
+Acceso:
+
+- CLIENTE propietario.
+
+Reglas:
+
+- el Cliente se obtiene desde el correo autenticado.
+- el frontend no envia idCliente.
+- la reserva se busca mediante idReserva + idCliente.
+- una reserva inexistente o perteneciente a otro cliente responde 404.
+- PENDIENTE puede pasar a CANCELADA.
+- CONFIRMADA puede pasar a CANCELADA.
+- EN_PROCESO, COMPLETADA, CANCELADA y EXPIRADA no pueden cancelarse por esta operacion.
+- una transicion no permitida responde 409 Conflict.
+- actualiza estado y fechaActualizacion.
+- registra HistorialReserva con el estado anterior, CANCELADA, fecha, observacion y Usuario responsable.
+- la operacion no modifica automaticamente pagos ni realiza reembolsos.
+
+## [PENDIENTE - BACKOFFICE] Cambiar estado de reserva
 
 Propuesta:
 
 ```http
-PATCH /api/reservas/{idReserva}/estado
+PATCH /api/backoffice/reservas/{idReserva}/estado
 ```
 
 El backend debera:
@@ -345,7 +369,6 @@ El backend debera:
 5. cambiar estado.
 6. registrar historial.
 7. persistir.
-
 # 6. Reservas BackOffice
 
 ## [PENDIENTE] Listar reservas

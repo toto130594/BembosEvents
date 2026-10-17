@@ -5,6 +5,7 @@ import com.bembosevents.dto.reserva.ReservaCreadaResponse;
 import com.bembosevents.dto.reserva.ReservaDetalleResponse;
 import com.bembosevents.dto.reserva.ReservaDetalleServicioResponse;
 import com.bembosevents.dto.reserva.ReservaResumenResponse;
+import com.bembosevents.exception.ConflictoReservaException;
 import com.bembosevents.exception.GlobalExceptionHandler;
 import com.bembosevents.service.ReservaClienteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -390,6 +391,110 @@ class ReservaClienteControllerTest {
 
         verify(reservaClienteService)
                 .consultarPropia(
+                        CORREO,
+                        150);
+    }
+
+    @Test
+    void debeCancelarReservaPropiaDelClienteAutenticado()
+            throws Exception {
+
+        ReservaDetalleResponse response =
+                new ReservaDetalleResponse(
+                        150,
+                        "BEM-2026-000150",
+                        "CANCELADA",
+                        1,
+                        10,
+                        null,
+                        null,
+                        LocalDate.of(
+                                2026,
+                                12,
+                                20),
+                        LocalTime.of(
+                                14,
+                                0),
+                        LocalTime.of(
+                                18,
+                                0),
+                        40,
+                        new BigDecimal("500.00"),
+                        new BigDecimal("250.00"),
+                        new BigDecimal("750.00"),
+                        new BigDecimal("0.50"),
+                        new BigDecimal("375.00"),
+                        List.of(),
+                        LocalDateTime.of(
+                                2026,
+                                10,
+                                16,
+                                17,
+                                0),
+                        LocalDateTime.of(
+                                2026,
+                                10,
+                                16,
+                                19,
+                                0));
+
+        when(reservaClienteService
+                .cancelarPropia(
+                        CORREO,
+                        150))
+                .thenReturn(response);
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        CORREO,
+                        null);
+
+        mockMvc.perform(
+                        post("/api/reservas/150/cancelacion")
+                                .principal(authentication))
+                .andExpect(
+                        status().isOk())
+                .andExpect(
+                        jsonPath("$.idReserva")
+                                .value(150))
+                .andExpect(
+                        jsonPath("$.codigoReserva")
+                                .value("BEM-2026-000150"))
+                .andExpect(
+                        jsonPath("$.estado")
+                                .value("CANCELADA"));
+
+        verify(reservaClienteService)
+                .cancelarPropia(
+                        CORREO,
+                        150);
+    }
+
+    @Test
+    void debeResponderConflictCuandoReservaNoPuedeCancelarse()
+            throws Exception {
+
+        when(reservaClienteService
+                .cancelarPropia(
+                        CORREO,
+                        150))
+                .thenThrow(
+                        new ConflictoReservaException(
+                                "La reserva no puede cancelarse en su estado actual"));
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        CORREO,
+                        null);
+
+        mockMvc.perform(
+                        post("/api/reservas/150/cancelacion")
+                                .principal(authentication))
+                .andExpect(
+                        status().isConflict());
+
+        verify(reservaClienteService)
+                .cancelarPropia(
                         CORREO,
                         150);
     }

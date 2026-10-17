@@ -68,4 +68,16 @@ public class ReservaClienteController {
                         authentication.getName(),
                         idReserva));
     }
+
+    @PostMapping("/{idReserva}/cancelacion")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<ReservaDetalleResponse> cancelarPropia(
+            Authentication authentication,
+            @PathVariable Integer idReserva) {
+
+        return ResponseEntity.ok(
+                reservaClienteService.cancelarPropia(
+                        authentication.getName(),
+                        idReserva));
+    }
 }

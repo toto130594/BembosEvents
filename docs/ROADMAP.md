@@ -103,7 +103,7 @@ Estado: COMPLETADA.
 
 Estado: ACTUAL.
 
-Subfase actual: 7.6D.5 - Cancelacion de una reserva propia del cliente.
+Subfase actual: 7.6E - Reservas BackOffice.
 
 Objetivo:
 
@@ -118,7 +118,8 @@ Avance:
 - 7.6D.2 - Crear reserva real del cliente: COMPLETADA.
 - 7.6D.3 - Mis reservas del cliente: COMPLETADA.
 - 7.6D.4 - Consultar una reserva propia: COMPLETADA.
-- 7.6D.5 - Cancelacion de una reserva propia: ACTUAL.
+- 7.6D.5 - Cancelacion de una reserva propia: COMPLETADA.
+- 7.6E - Reservas BackOffice: ACTUAL.
 Revisar:
 
 - Auth.

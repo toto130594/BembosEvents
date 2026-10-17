@@ -19,4 +19,8 @@ public interface ReservaClienteService {
     ReservaDetalleResponse consultarPropia(
             String correoCliente,
             Integer idReserva);
+
+    ReservaDetalleResponse cancelarPropia(
+            String correoCliente,
+            Integer idReserva);
 }
