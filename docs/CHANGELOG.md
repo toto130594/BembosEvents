@@ -267,3 +267,57 @@ FASE 7.6 - Auditoria REST definitiva.
 - Variables de Pagos agregadas al environment example.
 - FASE 7.6F cerrada tecnicamente y documentalmente.
 - Siguiente subfase: 7.6G - Retirar endpoints tecnicos.
+### FASE 7.6G - Retiro de endpoints tecnicos
+
+- Retirados los endpoints HTTP tecnicos de Reserva.
+- Retirado el endpoint HTTP tecnico de transicion de Pago.
+- Eliminados los Controllers utilizados exclusivamente por dichos endpoints.
+- Eliminados los tests de Controller correspondientes a endpoints retirados.
+- Eliminados DTOs tecnicos que quedaron sin referencias.
+- `MensajeResponse` se conserva porque continua siendo utilizado por Auth.
+- Se mantiene `ReservaService` con sus reglas internas de capacidad, disponibilidad, monto y transiciones.
+- Se mantiene `PagoService.validarTransicionEstado`.
+- Se mantienen `ReglasReserva`, `ReglasTransicionReserva` y `ReglasTransicionPago`.
+- Los flujos REST definitivos de Cliente y BackOffice permanecen intactos.
+- SecurityConfig conserva `GET /api/pagos/{idPago}` para CLIENTE y elimina la regla generica asociada al endpoint tecnico de Pago.
+- Regresion completa del backend validada.
+- Docker build validado.
+- FASE 7.6G completada.
+- Siguiente subfase: 7.6H - Documentacion, Postman y tests.
+### FASE 7.6H - Documentacion, Postman y tests
+
+- Documentacion REST sincronizada con la API definitiva.
+- Eliminadas de API.md las secciones de endpoints tecnicos retirados.
+- REST_CONTRACT.md conserva las reglas de Reserva y Pago como reglas internas.
+- BUSINESS_RULES.md actualizado para reflejar validaciones internas.
+- SECURITY.md actualizado tras retirar el endpoint tecnico de Pago.
+- Postman limpiado de requests correspondientes a endpoints retirados.
+- DATABASE_RULES.md sincronizado con la estructura real de Pago.
+- `metodoPago` documentado como obligatorio.
+- `fechaCreacion` documentada como obligatoria.
+- `referenciaExterna` y `fechaPago` documentadas como opcionales.
+- Se mantienen pagos parciales y multiples Pagos por Reserva.
+- No se inventa un catalogo cerrado de metodos de pago.
+- Mercado Pago permanece reservado para FASE 11.
+- Regresion completa del backend validada.
+- Tests OK.
+- Docker Build OK.
+- FASE 7.6H completada.
+- Siguiente subfase: 7.6I - Validacion final y runtime smoke test.
+### FASE 7.6I - Validacion final y runtime smoke
+
+- Backend validado mediante `scripts/validate-backend.ps1`.
+- Tests completos del backend: OK.
+- Docker Build: OK.
+- Imagen del backend reconstruida con el codigo definitivo de FASE 7.6.
+- SQL Server 2022 verificado en estado healthy.
+- Spring Boot iniciado correctamente en runtime.
+- Flyway inicializado correctamente contra SQL Server.
+- `GET /api/sedes` validado mediante HTTP real.
+- `GET /api/servicios-adicionales` validado mediante HTTP real.
+- No se detectaron errores graves de startup.
+- Endpoints tecnicos de Reserva y Pago confirmados como retirados.
+- Reglas internas de Reserva y Pago confirmadas como conservadas.
+- Documentacion, reglas de base de datos y Postman sincronizados.
+- FASE 7.6 - Auditoria REST completada.
+- Siguiente fase: 7.7 - Seguridad completa por sede.

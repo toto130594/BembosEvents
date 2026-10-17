@@ -267,21 +267,11 @@ ENCARGADO_LOCAL:
 
 CLIENTE no tiene acceso a `/api/backoffice/pagos/**`.
 
-El endpoint tecnico:
+Desde FASE 7.6G no existe un endpoint tecnico de transicion de Pago.
 
-```http
-POST /api/pagos/validar-transicion
-```
+`GET /api/pagos/{idPago}` permanece disponible exclusivamente para que un CLIENTE consulte un Pago propio.
 
-continua restringido a ADMINISTRADOR y ENCARGADO_LOCAL y sera retirado en FASE 7.6G.
-
-Permitir:
-
-```http
-GET /api/pagos/{idPago}
-```
-
-a CLIENTE no concede acceso al endpoint tecnico porque la regla GET especifica se evalua antes de `/api/pagos/**`.
+Las reglas de transicion permanecen encapsuladas en el backend.
 # 10. Pagos - seguridad futura
 
 La integracion con Mercado Pago debera:

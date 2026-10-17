@@ -128,21 +128,24 @@ La consulta de disponibilidad sirve para informar al usuario.
 
 Al crear una reserva el backend DEBE volver a validar disponibilidad.
 
-# 6. Endpoints tecnicos actuales de Reserva
+# 6. Reglas internas de Reserva
 
-| Metodo | Endpoint | Estado final |
-|---|---|---|
-| POST | /api/reservas/validar-capacidad | RETIRAR |
-| POST | /api/reservas/validar-disponibilidad | RETIRAR |
-| POST | /api/reservas/validar-monto-minimo | RETIRAR |
-| POST | /api/reservas/calcular-monto-total | RETIRAR |
-| POST | /api/reservas/calcular-deposito | RETIRAR |
-| POST | /api/reservas/validar-transicion | RETIRAR |
+Los endpoints tecnicos independientes de validacion y calculo fueron retirados en FASE 7.6G.
 
-Las reglas internas NO se eliminan.
+Las reglas de negocio NO fueron eliminadas.
 
-Se reutilizaran desde ReservaService.
+Continuan disponibles internamente mediante `ReservaService`:
 
+- `validarCapacidad`.
+- `validarDisponibilidad`.
+- `validarMontoMinimo`.
+- `calcularMontoTotal`.
+- `calcularMontoDeposito`.
+- `validarTransicionEstado`.
+
+Estas reglas son utilizadas por los flujos REST definitivos de Reserva, disponibilidad y BackOffice.
+
+El frontend no debe ejecutar estas reglas mediante endpoints auxiliares separados.
 # 7. Reserva - Cliente
 
 | Metodo | Endpoint | Acceso | Estado |
@@ -467,14 +470,17 @@ Una reserva perteneciente a otra sede no queda visible para ENCARGADO_LOCAL y re
 
 Los endpoints GET de reservas BackOffice no utilizan bloqueo de escritura.
 
-# 11. Endpoints tecnicos actuales de Pago
+# 11. Reglas internas de Pago
 
-| Metodo | Endpoint | Estado final |
-|---|---|---|
-| POST | /api/pagos/validar-transicion | RETIRAR |
+El endpoint tecnico de validacion de transiciones fue retirado en FASE 7.6G.
 
-PagoService.validarTransicionEstado se conserva como regla interna.
+La regla interna:
 
+`PagoService.validarTransicionEstado`
+
+se conserva para ser utilizada por flujos reales del backend cuando corresponda.
+
+El frontend no dispone de un endpoint auxiliar para decidir o validar de forma independiente el estado de un Pago.
 # 12. Pagos - contrato base
 
 | Metodo | Endpoint | Acceso | Estado |
@@ -582,13 +588,7 @@ Los listados se ordenan por `fechaCreacion` descendente.
 
 7.6F no expone un endpoint definitivo que permita al navegador aprobar o rechazar Pagos.
 
-El endpoint:
-
-```http
-POST /api/pagos/validar-transicion
-```
-
-continua siendo tecnico y temporal hasta FASE 7.6G.
+Desde FASE 7.6G no existe un endpoint tecnico de validacion de transiciones de Pago.
 
 La regla interna `PagoService.validarTransicionEstado` se conserva.
 

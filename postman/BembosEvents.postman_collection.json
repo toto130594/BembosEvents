@@ -892,56 +892,6 @@
                                                   }
                                   },
                                   {
-                                      "name":  "Validar transicion pago",
-                                      "event":  [
-                                                    {
-                                                        "listen":  "test",
-                                                        "script":  {
-                                                                       "type":  "text/javascript",
-                                                                       "exec":  [
-                                                                                    "pm.test(\u0027ENCARGADO puede operar pagos\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(200);",
-                                                                                    "});"
-                                                                                ]
-                                                                   }
-                                                    }
-                                                ],
-                                      "request":  {
-                                                      "auth":  {
-                                                                   "type":  "bearer",
-                                                                   "bearer":  [
-                                                                                  {
-                                                                                      "key":  "token",
-                                                                                      "value":  "{{tokenEncargado}}",
-                                                                                      "type":  "string"
-                                                                                  }
-                                                                              ]
-                                                               },
-                                                      "method":  "POST",
-                                                      "header":  [
-                                                                     {
-                                                                         "key":  "Content-Type",
-                                                                         "value":  "application/json"
-                                                                     }
-                                                                 ],
-                                                      "body":  {
-                                                                   "mode":  "raw",
-                                                                   "raw":  "{\n  \"estadoActual\": \"PENDIENTE\",\n  \"nuevoEstado\": \"APROBADO\"\n}"
-                                                               },
-                                                      "url":  {
-                                                                  "raw":  "{{baseUrl}}/api/pagos/validar-transicion",
-                                                                  "host":  [
-                                                                               "{{baseUrl}}"
-                                                                           ],
-                                                                  "path":  [
-                                                                               "api",
-                                                                               "pagos",
-                                                                               "validar-transicion"
-                                                                           ]
-                                                              }
-                                                  }
-                                  },
-                                  {
                                       "name":  "Listar reservas de mi sede",
                                       "event":  [
                                                     {
@@ -1556,56 +1506,6 @@
                                                                                 },
                                                                        "url":  "{{baseUrl}}/api/pagos/{{idPagoCliente}}",
                                                                        "description":  "Consulta un Pago perteneciente al CLIENTE autenticado."
-                                                                   },
-                                                       "response":  [
-
-                                                                    ]
-                                                   },
-                                                   {
-                                                       "name":  "CLIENTE no accede a validar transicion",
-                                                       "event":  [
-                                                                     {
-                                                                         "listen":  "test",
-                                                                         "script":  {
-                                                                                        "type":  "text/javascript",
-                                                                                        "exec":  [
-                                                                                                     "pm.test(\u0027CLIENTE no usa endpoint tecnico de transicion\u0027, function () {",
-                                                                                                     "    pm.response.to.have.status(403);",
-                                                                                                     "});"
-                                                                                                 ]
-                                                                                    }
-                                                                     }
-                                                                 ],
-                                                       "request":  {
-                                                                       "method":  "POST",
-                                                                       "header":  [
-                                                                                      {
-                                                                                          "key":  "Content-Type",
-                                                                                          "value":  "application/json",
-                                                                                          "type":  "text"
-                                                                                      }
-                                                                                  ],
-                                                                       "auth":  {
-                                                                                    "type":  "bearer",
-                                                                                    "bearer":  [
-                                                                                                   {
-                                                                                                       "key":  "token",
-                                                                                                       "value":  "{{tokenCliente}}",
-                                                                                                       "type":  "string"
-                                                                                                   }
-                                                                                               ]
-                                                                                },
-                                                                       "body":  {
-                                                                                    "mode":  "raw",
-                                                                                    "raw":  "{\n  \"estadoActual\": \"PENDIENTE\",\n  \"nuevoEstado\": \"APROBADO\"\n}",
-                                                                                    "options":  {
-                                                                                                    "raw":  {
-                                                                                                                "language":  "json"
-                                                                                                            }
-                                                                                                }
-                                                                                },
-                                                                       "url":  "{{baseUrl}}/api/pagos/validar-transicion",
-                                                                       "description":  "La regla GET /api/pagos/* para CLIENTE no debe abrir este POST tecnico."
                                                                    },
                                                        "response":  [
 

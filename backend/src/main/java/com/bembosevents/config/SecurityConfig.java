@@ -133,11 +133,6 @@ public class SecurityConfig {
                                         org.springframework.http.HttpMethod.GET,
                                         "/api/pagos/*")
                                         .hasRole("CLIENTE")
-                                .requestMatchers(
-                                        "/api/pagos/**")
-                                .hasAnyRole(
-                                        "ENCARGADO_LOCAL",
-                                        "ADMINISTRADOR")
 
                                 .requestMatchers(
                                         "/api/reservas/**")

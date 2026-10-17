@@ -283,17 +283,31 @@ Son obligatorios:
 
 - `idReserva`
 - `monto`
+- `metodoPago`
 - `estadoPago`
+- `fechaCreacion`
+
+Son opcionales:
+
+- `referenciaExterna`
+- `fechaPago`
 
 Reglas:
 
 - `monto` debe ser mayor que 0.
-- Una Reserva puede tener múltiples Pagos.
-- Cada Pago pertenece a una sola Reserva.
-- `referenciaExterna` puede ser opcional.
-- No implementar reglas específicas de Mercado Pago todavía.
-- Los estados definitivos serán revisados en FASE 1.4.
-
+- `metodoPago` es obligatorio y no debe superar 50 caracteres.
+- una Reserva puede tener multiples Pagos.
+- cada Pago pertenece a una sola Reserva.
+- se permiten pagos parciales.
+- no se exige que `monto` sea igual a `Reserva.montoDeposito`.
+- no se limita una Reserva a un unico Pago.
+- `estadoPago` utiliza los estados definidos por `EstadoPago`.
+- un Pago iniciado por el flujo base comienza en `PENDIENTE`.
+- `referenciaExterna` puede permanecer `null` hasta existir una referencia del proveedor.
+- `fechaPago` puede permanecer `null` mientras el Pago no haya sido confirmado.
+- `fechaCreacion` debe ser generada por el backend.
+- no existe todavia un catalogo cerrado de valores para `metodoPago`.
+- las reglas especificas de Mercado Pago corresponden a FASE 11.
 ### HistorialReserva
 
 Son obligatorios:

@@ -101,9 +101,9 @@ Estado: COMPLETADA.
 
 # FASE 7.6 - Auditoria REST
 
-Estado: ACTUAL.
+Estado: COMPLETADA.
 
-Subfase actual: 7.6G - Retirar endpoints tecnicos.
+Subfase actual: CERRADA.
 
 Objetivo:
 
@@ -135,6 +135,9 @@ Avance:
   - 7.6F.3 - Seguridad y regresion integral: COMPLETADA.
   - 7.6F.4 - Documentacion, Postman y Git: COMPLETADA.
 
+- 7.6G - Retirar endpoints tecnicos: COMPLETADA.
+- 7.6H - Documentacion, Postman y tests: COMPLETADA.
+- 7.6I - Validacion final y runtime smoke test: COMPLETADA.
 Revisar:
 
 - Auth.
@@ -156,6 +159,7 @@ Cada endpoint se clasificara como:
 - ELIMINAR.
 - PENDIENTE.
 
+Siguiente fase: 7.7 - Seguridad completa por sede.
 # FASE 7.7 - Seguridad por sede completa
 
 Estado: PENDIENTE.

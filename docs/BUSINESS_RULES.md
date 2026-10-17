@@ -179,9 +179,9 @@ Estados oficiales:
 
 Toda transicion de estado debe validarse por backend.
 
-El endpoint tecnico validar-transicion existe actualmente para probar esta regla.
+La validacion de transiciones se ejecuta internamente en el backend.
 
-En la API final la validacion debera ejecutarse internamente durante el cambio real de estado.
+La validacion se ejecuta internamente durante el cambio real de estado.
 
 ## Pagos base - FASE 7.6F
 

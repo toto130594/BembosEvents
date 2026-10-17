@@ -179,87 +179,6 @@ Politica de seguridad actual:
 
 segun la configuracion de seguridad vigente.
 
-## [TECNICO] Validar capacidad
-
-```http
-POST /api/reservas/validar-capacidad
-```
-
-Ejemplo:
-
-```json
-{
-  "idSalon": 1,
-  "cantidadInvitados": 40
-}
-```
-
-Regla:
-
-```text
-cantidadInvitados <= capacidadSalon
-```
-
-## [TECNICO] Validar disponibilidad
-
-```http
-POST /api/reservas/validar-disponibilidad
-```
-
-Ejemplo:
-
-```json
-{
-  "idSalon": 1,
-  "fechaEvento": "2026-12-20",
-  "horaInicio": "14:00",
-  "horaFin": "18:00"
-}
-```
-
-Comprueba conflictos de horario.
-
-## [TECNICO] Validar monto minimo
-
-```http
-POST /api/reservas/validar-monto-minimo
-```
-
-## [TECNICO] Calcular monto total
-
-```http
-POST /api/reservas/calcular-monto-total
-```
-
-## [TECNICO] Calcular deposito
-
-```http
-POST /api/reservas/calcular-deposito
-```
-
-## [TECNICO] Validar transicion de reserva
-
-```http
-POST /api/reservas/validar-transicion
-```
-
-Ejemplo:
-
-```json
-{
-  "estadoActual": "PENDIENTE",
-  "nuevoEstado": "CONFIRMADA"
-}
-```
-
-Objetivo actual:
-
-- comprobar las reglas de transicion.
-
-Objetivo final:
-
-- la validacion debe ejecutarse internamente cuando se modifique realmente una reserva.
-
 # 5. Reservas - API objetivo
 
 Los nombres exactos seran confirmados durante FASE 7.6.
@@ -574,36 +493,6 @@ ENCARGADO_LOCAL:
 
 CLIENTE no tiene acceso.
 
-## Endpoint tecnico de transicion
-
-Continua existiendo temporalmente:
-
-```http
-POST /api/pagos/validar-transicion
-```
-
-Acceso tecnico actual:
-
-- ADMINISTRADOR.
-- ENCARGADO_LOCAL.
-
-Request:
-
-```json
-{
-  "estadoActual": "PENDIENTE",
-  "nuevoEstado": "APROBADO"
-}
-```
-
-Este endpoint:
-
-- no modifica ningun Pago.
-- solamente valida una transicion.
-- sera retirado en FASE 7.6G.
-
-La regla interna `PagoService.validarTransicionEstado` se conserva.
-
 ## Cambio real de estado
 
 7.6F no incorpora:
@@ -628,6 +517,23 @@ FASE 11 incluira:
 - idempotencia.
 - reembolsos.
 - reconciliacion.
+## Reglas internas de Reserva y Pago
+
+Los antiguos endpoints tecnicos de validacion y calculo fueron retirados en FASE 7.6G.
+
+Las operaciones siguen existiendo como reglas internas del backend y son ejecutadas dentro de los flujos REST definitivos.
+
+No existen endpoints independientes para:
+
+- validar capacidad de una Reserva.
+- validar disponibilidad de una Reserva.
+- validar monto minimo.
+- calcular monto total.
+- calcular deposito.
+- validar una transicion de Reserva.
+- validar una transicion de Pago.
+
+El frontend debe utilizar exclusivamente los endpoints REST definitivos.
 # 9. Catalogos
 
 ## [PENDIENTE / REVISAR] Sedes publicas
@@ -720,7 +626,7 @@ Ejemplo incorrecto:
 
 ```text
 Frontend
-  -> validar-transicion
+  -> validacion previa separada
   -> recibe OK
   -> modificar estado
 ```
