@@ -283,10 +283,11 @@ IMPLEMENTADO:
 - perfil Cliente sincronizado con el rol CLIENTE.
 - acceso administrativo por rol.
 - restriccion de sede en BackOffice de sedes.
+- restriccion de sede en Reservas BackOffice.
 
 PENDIENTE:
 
-- aplicar alcance por sede a Reservas y Pagos reales.
+- aplicar alcance por sede a Pagos reales.
 - MFA.
 - recovery codes.
 - recuperacion de password.

@@ -327,38 +327,102 @@ Esta operacion no cambia automaticamente el estado de los pagos ni ejecuta reemb
 
 | Metodo | Endpoint | Acceso | Estado |
 |---|---|---|---|
-| GET | /api/backoffice/reservas | ADMINISTRADOR / ENCARGADO_LOCAL | IMPLEMENTAR |
-| GET | /api/backoffice/reservas/{idReserva} | ADMINISTRADOR / ENCARGADO_LOCAL | IMPLEMENTAR |
-| PATCH | /api/backoffice/reservas/{idReserva}/estado | ADMINISTRADOR / ENCARGADO_LOCAL | IMPLEMENTAR |
+| GET | /api/backoffice/reservas | ADMINISTRADOR / ENCARGADO_LOCAL | MANTENER |
+| GET | /api/backoffice/reservas/{idReserva} | ADMINISTRADOR / ENCARGADO_LOCAL | MANTENER |
+| PATCH | /api/backoffice/reservas/{idReserva}/estado | ADMINISTRADOR / ENCARGADO_LOCAL | MANTENER |
 
-## Regla de sede
+## Regla de alcance
 
 ADMINISTRADOR:
 
-```text
-todas las sedes
-```
+- dispone de alcance global.
+- puede listar reservas de todas las sedes.
+- puede consultar reservas de cualquier sede.
+- puede cambiar el estado de reservas de cualquier sede.
 
 ENCARGADO_LOCAL:
 
-```text
-UsuarioSede -> sede asignada -> reservas de esa sede
+- obtiene su sede desde UsuarioSede utilizando el correo autenticado.
+- solamente lista reservas de su sede asignada.
+- solamente consulta reservas de su sede asignada.
+- solamente puede cambiar el estado de reservas de su sede asignada.
+- el frontend no puede indicar una sede diferente para ampliar su alcance.
+
+CLIENTE:
+
+- no tiene acceso a los endpoints de Reservas BackOffice.
+
+## Listado BackOffice
+
+```http
+GET /api/backoffice/reservas
 ```
 
-Un parametro enviado por el navegador nunca puede ampliar el alcance del encargado.
+Las reservas se ordenan por fechaCreacion descendente.
+
+ADMINISTRADOR utiliza una consulta global.
+
+ENCARGADO_LOCAL utiliza exclusivamente el idSede obtenido desde UsuarioSede.
+
+El endpoint no recibe idSede como parametro de autorizacion.
+
+## Detalle BackOffice
+
+```http
+GET /api/backoffice/reservas/{idReserva}
+```
+
+ADMINISTRADOR puede consultar cualquier reserva existente.
+
+Para ENCARGADO_LOCAL la consulta utiliza conjuntamente:
+
+- idReserva.
+- idSede asignada.
+
+Una reserva inexistente o una reserva perteneciente a otra sede responde 404 Not Found.
+
+No se utiliza findById(idReserva) como mecanismo de autorizacion para ENCARGADO_LOCAL.
 
 # 10. Cambio de estado de Reserva
+
+Endpoint:
+
+```http
+PATCH /api/backoffice/reservas/{idReserva}/estado
+```
+
+Acceso:
+
+- ADMINISTRADOR.
+- ENCARGADO_LOCAL.
+
+Request:
+
+```json
+{
+  "nuevoEstado": "CONFIRMADA"
+}
+```
+
+El frontend solamente envia nuevoEstado.
+
+El frontend no envia estadoActual.
+
+El estado actual se obtiene directamente desde la Reserva persistida.
 
 Flujo:
 
 ```text
-buscar reserva
+buscar reserva con bloqueo
       |
       v
-validar acceso
+validar alcance administrativo
       |
       v
 validar sede
+      |
+      v
+obtener estado actual
       |
       v
 validar transicion
@@ -367,11 +431,41 @@ validar transicion
 actualizar estado
       |
       v
-registrar historial
+actualizar fechaActualizacion
       |
       v
-guardar
+registrar HistorialReserva
+      |
+      v
+registrar Usuario responsable
+      |
+      v
+persistir
 ```
+
+La validacion de transicion reutiliza:
+
+```text
+ReservaService.validarTransicionEstado(...)
+```
+
+Las transiciones permitidas continúan siendo las definidas por ReglasTransicionReserva.
+
+Una transicion no permitida responde:
+
+```text
+409 Conflict
+```
+
+La operacion de modificacion utiliza PESSIMISTIC_WRITE para proteger el estado de la reserva frente a modificaciones concurrentes.
+
+ADMINISTRADOR utiliza una consulta bloqueada por idReserva.
+
+ENCARGADO_LOCAL utiliza una consulta bloqueada por idReserva + idSede.
+
+Una reserva perteneciente a otra sede no queda visible para ENCARGADO_LOCAL y responde 404.
+
+Los endpoints GET de reservas BackOffice no utilizan bloqueo de escritura.
 
 # 11. Endpoints tecnicos actuales de Pago
 

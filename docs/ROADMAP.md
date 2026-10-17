@@ -103,7 +103,7 @@ Estado: COMPLETADA.
 
 Estado: ACTUAL.
 
-Subfase actual: 7.6E - Reservas BackOffice.
+Subfase actual: 7.6F - Pagos base.
 
 Objetivo:
 
@@ -119,7 +119,13 @@ Avance:
 - 7.6D.3 - Mis reservas del cliente: COMPLETADA.
 - 7.6D.4 - Consultar una reserva propia: COMPLETADA.
 - 7.6D.5 - Cancelacion de una reserva propia: COMPLETADA.
-- 7.6E - Reservas BackOffice: ACTUAL.
+- 7.6E - Reservas BackOffice: COMPLETADA.
+  - 7.6E.1 - Listar reservas BackOffice: COMPLETADA.
+  - 7.6E.2 - Consultar reserva BackOffice: COMPLETADA.
+  - 7.6E.3 - Cambiar estado de reserva BackOffice: COMPLETADA.
+  - 7.6E.4 - Documentacion, Postman y Git: COMPLETADA.
+- 7.6F - Pagos base: ACTUAL.
+
 Revisar:
 
 - Auth.

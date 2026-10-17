@@ -189,6 +189,56 @@
                                                                            ]
                                                               }
                                                   }
+                                  },
+                                  {
+                                      "name":  "Cliente intenta listar reservas BackOffice - 403",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027CLIENTE no entra a Reservas BackOffice\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(403);",
+                                                                                    "});"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json",
+                                                                         "type":  "text"
+                                                                     }
+                                                                 ],
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{tokenCliente}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/backoffice/reservas",
+                                                      "description":  "Valida que ROLE_CLIENTE no tenga acceso al BackOffice de reservas.",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
                                   }
                               ]
                  },
@@ -448,6 +498,208 @@
                                                                            ]
                                                               }
                                                   }
+                                  },
+                                  {
+                                      "name":  "Listar reservas BackOffice",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027ADMIN lista reservas de todas las sedes\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const reservas = pm.response.json();",
+                                                                                    "pm.expect(reservas).to.be.an(\u0027array\u0027);",
+                                                                                    "",
+                                                                                    "pm.environment.unset(\u0027idReservaAdmin\u0027);",
+                                                                                    "pm.environment.unset(\u0027idReservaCambioAdmin\u0027);",
+                                                                                    "pm.environment.unset(\u0027idReservaOtraSede\u0027);",
+                                                                                    "",
+                                                                                    "if (reservas.length \u003e 0) {",
+                                                                                    "    pm.environment.set(\u0027idReservaAdmin\u0027, reservas[0].idReserva);",
+                                                                                    "}",
+                                                                                    "",
+                                                                                    "const pendiente = reservas.find(r =\u003e r.estado === \u0027PENDIENTE\u0027);",
+                                                                                    "if (pendiente) {",
+                                                                                    "    pm.environment.set(\u0027idReservaCambioAdmin\u0027, pendiente.idReserva);",
+                                                                                    "}",
+                                                                                    "",
+                                                                                    "const idSedeEncargado = pm.environment.get(\u0027idSedeEncargado\u0027);",
+                                                                                    "if (idSedeEncargado) {",
+                                                                                    "    const otra = reservas.find(r =\u003e String(r.idSede) !== String(idSedeEncargado));",
+                                                                                    "    if (otra) {",
+                                                                                    "        pm.environment.set(\u0027idReservaOtraSede\u0027, otra.idReserva);",
+                                                                                    "    }",
+                                                                                    "}"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json",
+                                                                         "type":  "text"
+                                                                     }
+                                                                 ],
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{tokenAdmin}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/backoffice/reservas",
+                                                      "description":  "ADMINISTRADOR obtiene reservas globalmente. Guarda IDs reutilizables para las siguientes pruebas.",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Consultar reserva BackOffice",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "prerequest",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "if (!pm.environment.get(\u0027idReservaAdmin\u0027)) {",
+                                                                                    "    throw new Error(\u0027Ejecuta primero Listar reservas BackOffice y asegúrate de que exista al menos una reserva\u0027);",
+                                                                                    "}"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    },
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027ADMIN consulta una reserva\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "pm.expect(String(json.idReserva)).to.eql(String(pm.environment.get(\u0027idReservaAdmin\u0027)));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json",
+                                                                         "type":  "text"
+                                                                     }
+                                                                 ],
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{tokenAdmin}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/backoffice/reservas/{{idReservaAdmin}}",
+                                                      "description":  "",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Cambiar reserva PENDIENTE a CONFIRMADA",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "prerequest",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "if (!pm.environment.get(\u0027idReservaCambioAdmin\u0027)) {",
+                                                                                    "    throw new Error(\u0027No se encontro una reserva PENDIENTE. Ejecuta primero Listar reservas BackOffice\u0027);",
+                                                                                    "}"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    },
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027ADMIN cambia PENDIENTE a CONFIRMADA\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "pm.expect(json.estado).to.eql(\u0027CONFIRMADA\u0027);"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json",
+                                                                         "type":  "text"
+                                                                     }
+                                                                 ],
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{tokenAdmin}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/backoffice/reservas/{{idReservaCambioAdmin}}/estado",
+                                                      "description":  "Requiere una reserva en estado PENDIENTE. El estado actual nunca se envia desde Postman.",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"nuevoEstado\": \"CONFIRMADA\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
                                   }
                               ]
                  },
@@ -688,6 +940,266 @@
                                                                            ]
                                                               }
                                                   }
+                                  },
+                                  {
+                                      "name":  "Listar reservas de mi sede",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027ENCARGADO lista reservas de su sede\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const reservas = pm.response.json();",
+                                                                                    "pm.expect(reservas).to.be.an(\u0027array\u0027);",
+                                                                                    "",
+                                                                                    "const idSede = pm.environment.get(\u0027idSedeEncargado\u0027);",
+                                                                                    "reservas.forEach(r =\u003e {",
+                                                                                    "    pm.expect(String(r.idSede)).to.eql(String(idSede));",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "pm.environment.unset(\u0027idReservaEncargado\u0027);",
+                                                                                    "pm.environment.unset(\u0027idReservaCambioEncargado\u0027);",
+                                                                                    "",
+                                                                                    "if (reservas.length \u003e 0) {",
+                                                                                    "    pm.environment.set(\u0027idReservaEncargado\u0027, reservas[0].idReserva);",
+                                                                                    "}",
+                                                                                    "",
+                                                                                    "const confirmada = reservas.find(r =\u003e r.estado === \u0027CONFIRMADA\u0027);",
+                                                                                    "if (confirmada) {",
+                                                                                    "    pm.environment.set(\u0027idReservaCambioEncargado\u0027, confirmada.idReserva);",
+                                                                                    "}"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json",
+                                                                         "type":  "text"
+                                                                     }
+                                                                 ],
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{tokenEncargado}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/backoffice/reservas",
+                                                      "description":  "El endpoint no recibe idSede. La sede se obtiene del usuario autenticado.",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Consultar reserva de mi sede",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "prerequest",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "if (!pm.environment.get(\u0027idReservaEncargado\u0027)) {",
+                                                                                    "    throw new Error(\u0027Ejecuta primero Listar reservas de mi sede\u0027);",
+                                                                                    "}"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    },
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027ENCARGADO consulta reserva de su sede\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "pm.expect(String(json.idSede)).to.eql(String(pm.environment.get(\u0027idSedeEncargado\u0027)));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json",
+                                                                         "type":  "text"
+                                                                     }
+                                                                 ],
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{tokenEncargado}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/backoffice/reservas/{{idReservaEncargado}}",
+                                                      "description":  "",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Intentar reserva de otra sede - 404",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "prerequest",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "if (!pm.environment.get(\u0027idReservaOtraSede\u0027)) {",
+                                                                                    "    throw new Error(\u0027Se necesita una reserva perteneciente a otra sede. Ejecuta primero Listar reservas BackOffice como ADMIN\u0027);",
+                                                                                    "}"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    },
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027ENCARGADO no ve reserva de otra sede\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(404);",
+                                                                                    "});"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "GET",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json",
+                                                                         "type":  "text"
+                                                                     }
+                                                                 ],
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{tokenEncargado}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/backoffice/reservas/{{idReservaOtraSede}}",
+                                                      "description":  "La existencia de una reserva de otra sede no se expone al ENCARGADO_LOCAL.",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
+                                  },
+                                  {
+                                      "name":  "Cambiar reserva CONFIRMADA a EN_PROCESO",
+                                      "event":  [
+                                                    {
+                                                        "listen":  "prerequest",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "if (!pm.environment.get(\u0027idReservaCambioEncargado\u0027)) {",
+                                                                                    "    throw new Error(\u0027No se encontro una reserva CONFIRMADA de la sede. Ejecuta primero Listar reservas de mi sede\u0027);",
+                                                                                    "}"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    },
+                                                    {
+                                                        "listen":  "test",
+                                                        "script":  {
+                                                                       "exec":  [
+                                                                                    "pm.test(\u0027ENCARGADO cambia CONFIRMADA a EN_PROCESO\u0027, function () {",
+                                                                                    "    pm.response.to.have.status(200);",
+                                                                                    "});",
+                                                                                    "",
+                                                                                    "const json = pm.response.json();",
+                                                                                    "pm.expect(json.estado).to.eql(\u0027EN_PROCESO\u0027);",
+                                                                                    "pm.expect(String(json.idSede)).to.eql(String(pm.environment.get(\u0027idSedeEncargado\u0027)));"
+                                                                                ],
+                                                                       "type":  "text/javascript"
+                                                                   }
+                                                    }
+                                                ],
+                                      "request":  {
+                                                      "method":  "PATCH",
+                                                      "header":  [
+                                                                     {
+                                                                         "key":  "Content-Type",
+                                                                         "value":  "application/json",
+                                                                         "type":  "text"
+                                                                     }
+                                                                 ],
+                                                      "auth":  {
+                                                                   "type":  "bearer",
+                                                                   "bearer":  [
+                                                                                  {
+                                                                                      "key":  "token",
+                                                                                      "value":  "{{tokenEncargado}}",
+                                                                                      "type":  "string"
+                                                                                  }
+                                                                              ]
+                                                               },
+                                                      "url":  "{{baseUrl}}/api/backoffice/reservas/{{idReservaCambioEncargado}}/estado",
+                                                      "description":  "Requiere una reserva CONFIRMADA perteneciente a la sede del ENCARGADO_LOCAL.",
+                                                      "body":  {
+                                                                   "mode":  "raw",
+                                                                   "raw":  "{\n  \"nuevoEstado\": \"EN_PROCESO\"\n}",
+                                                                   "options":  {
+                                                                                   "raw":  {
+                                                                                               "language":  "json"
+                                                                                           }
+                                                                               }
+                                                               }
+                                                  },
+                                      "response":  [
+
+                                                   ]
                                   }
                               ]
                  },

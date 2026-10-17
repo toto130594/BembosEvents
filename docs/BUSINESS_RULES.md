@@ -214,7 +214,18 @@ CLIENTE:
 no tiene acceso administrativo a sedes
 ```
 
-Esta regla debera aplicarse tambien a reservas, pagos y demas recursos del BackOffice.
+Esta regla ya se encuentra aplicada a las Reservas del BackOffice.
+
+Para Reservas:
+
+- ADMINISTRADOR dispone de alcance global.
+- ENCARGADO_LOCAL obtiene su sede desde UsuarioSede.
+- ENCARGADO_LOCAL solamente lista reservas de su sede.
+- ENCARGADO_LOCAL solamente consulta reservas de su sede.
+- ENCARGADO_LOCAL solamente modifica reservas de su sede.
+- un identificador o parametro enviado por el frontend nunca amplia el alcance administrativo.
+
+La misma regla debera aplicarse posteriormente a pagos y demas recursos del BackOffice.
 
 # 9. Chat - planeado
 

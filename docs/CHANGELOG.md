@@ -206,3 +206,32 @@ FASE 7.6 - Auditoria REST definitiva.
 - Docker build validado.
 - FASE 7.6D de reservas del cliente completada.
 - Siguiente fase: 7.6E - Reservas BackOffice.
+### FASE 7.6E - Reservas BackOffice
+
+- Implementado GET /api/backoffice/reservas.
+- Implementado GET /api/backoffice/reservas/{idReserva}.
+- Implementado PATCH /api/backoffice/reservas/{idReserva}/estado.
+- Acceso restringido a ADMINISTRADOR y ENCARGADO_LOCAL.
+- ADMINISTRADOR dispone de alcance global.
+- ENCARGADO_LOCAL obtiene su sede desde UsuarioSede.
+- El listado de ENCARGADO_LOCAL consulta solamente reservas de su sede.
+- El detalle de ENCARGADO_LOCAL utiliza idReserva + idSede.
+- El cambio de estado de ENCARGADO_LOCAL utiliza idReserva + idSede.
+- Una reserva perteneciente a otra sede no queda visible para ENCARGADO_LOCAL.
+- El frontend no utiliza idSede como fuente de autorizacion.
+- El cambio de estado recibe solamente nuevoEstado.
+- El estado actual se obtiene desde la Reserva persistida.
+- Las transiciones reutilizan ReservaService.validarTransicionEstado.
+- Una transicion no permitida responde 409 Conflict.
+- La modificacion de estado utiliza PESSIMISTIC_WRITE.
+- Se actualiza fechaActualizacion.
+- Se registra HistorialReserva.
+- El Usuario autenticado queda registrado como responsable.
+- Tests dirigidos de Reservas BackOffice validados.
+- Regresion completa del backend validada.
+- Docker build validado.
+- Postman sincronizado con los endpoints de Reservas BackOffice.
+- Agregadas pruebas Postman para CLIENTE, ADMINISTRADOR y ENCARGADO_LOCAL.
+- Agregadas variables de reserva al environment example.
+- FASE 7.6E cerrada tecnicamente y documentalmente.
+- Siguiente subfase: 7.6F - Pagos base.

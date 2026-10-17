@@ -352,28 +352,16 @@ Reglas:
 - registra HistorialReserva con el estado anterior, CANCELADA, fecha, observacion y Usuario responsable.
 - la operacion no modifica automaticamente pagos ni realiza reembolsos.
 
-## [PENDIENTE - BACKOFFICE] Cambiar estado de reserva
-
-Propuesta:
-
-```http
-PATCH /api/backoffice/reservas/{idReserva}/estado
-```
-
-El backend debera:
-
-1. cargar reserva.
-2. comprobar permisos.
-3. comprobar sede.
-4. validar transicion.
-5. cambiar estado.
-6. registrar historial.
-7. persistir.
 # 6. Reservas BackOffice
 
-## [PENDIENTE] Listar reservas
+Acceso:
 
-Propuesta:
+- ADMINISTRADOR.
+- ENCARGADO_LOCAL.
+
+CLIENTE no tiene acceso a estos endpoints.
+
+## [IMPLEMENTADO] Listar reservas BackOffice
 
 ```http
 GET /api/backoffice/reservas
@@ -381,19 +369,80 @@ GET /api/backoffice/reservas
 
 ADMINISTRADOR:
 
-- reservas globales.
+- obtiene todas las reservas.
+- el resultado se ordena por fechaCreacion descendente.
 
 ENCARGADO_LOCAL:
 
-- solamente reservas de su sede.
+- la sede se obtiene mediante UsuarioSede y el correo autenticado.
+- obtiene solamente las reservas pertenecientes a su sede.
+- el navegador no envia idSede como fuente de autorizacion.
 
-## [PENDIENTE] Consultar reserva BackOffice
+La respuesta utiliza ReservaResumenResponse.
 
-Propuesta:
+Cuando no existen reservas accesibles se devuelve:
+
+```text
+200 OK
+[]
+```
+
+## [IMPLEMENTADO] Consultar reserva BackOffice
 
 ```http
 GET /api/backoffice/reservas/{idReserva}
 ```
+
+ADMINISTRADOR:
+
+- puede consultar cualquier reserva existente.
+
+ENCARGADO_LOCAL:
+
+- la busqueda utiliza idReserva + idSede asignada.
+- no utiliza findById(idReserva) como mecanismo de autorizacion.
+- una reserva perteneciente a otra sede responde 404.
+- una reserva inexistente responde 404.
+
+La respuesta utiliza ReservaDetalleResponse.
+
+## [IMPLEMENTADO] Cambiar estado de reserva BackOffice
+
+```http
+PATCH /api/backoffice/reservas/{idReserva}/estado
+```
+
+Request:
+
+```json
+{
+  "nuevoEstado": "CONFIRMADA"
+}
+```
+
+Reglas:
+
+- solamente se recibe nuevoEstado.
+- el frontend no envia estadoActual.
+- el estado actual se obtiene desde la Reserva persistida.
+- ReservaService valida la transicion.
+- una transicion no permitida responde 409 Conflict.
+- ADMINISTRADOR dispone de alcance global.
+- ENCARGADO_LOCAL solamente puede modificar reservas de su sede.
+- una reserva de otra sede responde 404 para ENCARGADO_LOCAL.
+- la modificacion utiliza PESSIMISTIC_WRITE.
+- se actualiza fechaActualizacion.
+- se registra HistorialReserva.
+- el historial conserva estadoAnterior y estadoNuevo.
+- el Usuario autenticado queda registrado como responsable.
+
+Ejemplo de cambio valido:
+
+```text
+PENDIENTE -> CONFIRMADA
+```
+
+Las transiciones definitivas continúan siendo responsabilidad de ReglasTransicionReserva.
 
 # 7. Pagos - API tecnica actual
 
