@@ -246,7 +246,15 @@ Para Reservas:
 - ENCARGADO_LOCAL solamente modifica reservas de su sede.
 - un identificador o parametro enviado por el frontend nunca amplia el alcance administrativo.
 
-La misma regla debera aplicarse posteriormente a pagos y demas recursos del BackOffice.
+La regla de alcance por sede se encuentra aplicada actualmente a:
+
+- Sedes BackOffice.
+- Reservas BackOffice.
+- Pagos BackOffice.
+
+Para ENCARGADO_LOCAL, la sede autorizada se obtiene desde UsuarioSede y nunca desde un parametro enviado por el frontend.
+
+Un recurso perteneciente a otra sede se trata como no visible y responde 404 cuando corresponde evitar revelar su existencia.
 
 # 9. Chat - planeado
 

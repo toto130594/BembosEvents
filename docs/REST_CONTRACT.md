@@ -277,7 +277,7 @@ Respuesta:
 - incluye servicios adicionales.
 - los servicios conservan cantidad, precioUnitario historico y subtotal historico.
 
-El acceso de ENCARGADO_LOCAL y ADMINISTRADOR se implementara en FASE 7.6E.
+El acceso de ENCARGADO_LOCAL y ADMINISTRADOR se encuentra implementado mediante los endpoints BackOffice.
 
 # 8. Cancelacion por cliente
 
@@ -652,6 +652,27 @@ POST /api/webhooks/pagos/mercado-pago
 | GET | /api/backoffice/sedes | ADMINISTRADOR / ENCARGADO_LOCAL | MANTENER |
 | GET | /api/backoffice/sedes/{idSede} | ADMINISTRADOR / ENCARGADO_LOCAL | MANTENER |
 
+## Regla definitiva de alcance para Sedes
+
+ADMINISTRADOR:
+
+- puede listar todas las sedes activas.
+- puede consultar cualquier sede activa.
+
+ENCARGADO_LOCAL:
+
+- obtiene su sede exclusivamente desde `UsuarioSede` usando la identidad autenticada.
+- al listar sedes solamente recibe su sede asignada.
+- solamente puede consultar el detalle de su sede asignada.
+- una sede diferente a la asignada responde 404.
+- una sede inexistente o inactiva responde 404.
+- el `idSede` recibido por URL nunca amplia el alcance autorizado.
+
+CLIENTE:
+
+- no tiene acceso a `/api/backoffice/**`.
+
+La ruta `/api/backoffice/**` tambien esta protegida en `SecurityConfig` para `ADMINISTRADOR` y `ENCARGADO_LOCAL` como defensa en profundidad.
 # 16. Administracion de catalogos
 
 La administracion CRUD de sedes, salones, paquetes, tematicas y servicios adicionales no forma parte de 7.6C.

@@ -581,7 +581,7 @@
                                                         "script":  {
                                                                        "exec":  [
                                                                                     "if (!pm.environment.get(\u0027idReservaAdmin\u0027)) {",
-                                                                                    "    throw new Error(\u0027Ejecuta primero Listar reservas BackOffice y asegúrate de que exista al menos una reserva\u0027);",
+                                                                                    "    throw new Error(\u0027Ejecuta primero Listar reservas BackOffice y asegÃºrate de que exista al menos una reserva\u0027);",
                                                                                     "}"
                                                                                 ],
                                                                        "type":  "text/javascript"
@@ -840,7 +840,7 @@
                                                   }
                                   },
                                   {
-                                      "name":  "Intentar otra sede - 403",
+                                      "name":  "Intentar otra sede - 404",
                                       "event":  [
                                                     {
                                                         "listen":  "prerequest",
@@ -859,7 +859,7 @@
                                                                        "type":  "text/javascript",
                                                                        "exec":  [
                                                                                     "pm.test(\u0027ENCARGADO no puede consultar otra sede\u0027, function () {",
-                                                                                    "    pm.response.to.have.status(403);",
+                                                                                    "    pm.response.to.have.status(404);",
                                                                                     "});"
                                                                                 ]
                                                                    }

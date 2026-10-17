@@ -336,7 +336,7 @@ IMPLEMENTADO:
 
 PENDIENTE:
 
-- aplicar alcance por sede a Pagos reales.
+- alcance por sede aplicado a Pagos BackOffice.
 - MFA.
 - recovery codes.
 - recuperacion de password.
@@ -346,3 +346,18 @@ PENDIENTE:
 - rate limiting.
 - auditoria completa.
 - seguridad de proveedor de pagos.
+## Defensa en profundidad BackOffice
+
+La seguridad administrativa utiliza dos capas complementarias:
+
+1. `SecurityConfig` restringe `/api/backoffice/**` a `ADMINISTRADOR` y `ENCARGADO_LOCAL`.
+2. Los Controllers BackOffice conservan `@PreAuthorize`.
+
+Adicionalmente:
+
+- `/api/usuarios/**` esta restringido a `ADMINISTRADOR`.
+- `ADMINISTRADOR` dispone de alcance global.
+- `ENCARGADO_LOCAL` obtiene su sede autorizada desde `UsuarioSede`.
+- el frontend no puede ampliar el alcance enviando otro `idSede`.
+- Sedes, Reservas y Pagos pertenecientes a otra sede no quedan visibles para `ENCARGADO_LOCAL`.
+- cuando corresponde proteger la existencia del recurso se responde 404 en lugar de 403.

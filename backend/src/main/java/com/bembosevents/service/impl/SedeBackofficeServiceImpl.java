@@ -2,6 +2,7 @@ package com.bembosevents.service.impl;
 
 import com.bembosevents.dto.sede.SedeResumenResponse;
 import com.bembosevents.entity.Sede;
+import com.bembosevents.exception.RecursoNoEncontradoException;
 import com.bembosevents.repository.SedeRepository;
 import com.bembosevents.service.SedeAccessService;
 import com.bembosevents.service.SedeBackofficeService;
@@ -40,9 +41,7 @@ public class SedeBackofficeServiceImpl
                     .stream()
                     .filter(sede ->
                             Boolean.TRUE.equals(
-                                    sede.getActivo()
-                            )
-                    )
+                                    sede.getActivo()))
                     .map(this::convertir)
                     .toList();
         }
@@ -53,17 +52,14 @@ public class SedeBackofficeServiceImpl
             Integer idSede =
                     sedeAccessService
                             .obtenerSedeAsignada(
-                                    authentication.getName()
-                            );
+                                    authentication.getName());
 
             return List.of(
-                    obtenerSedeActiva(idSede)
-            );
+                    obtenerSedeActiva(idSede));
         }
 
         throw new AccessDeniedException(
-                "No tiene permisos para acceder al BackOffice"
-        );
+                "No tiene permisos para acceder al BackOffice");
     }
 
     @Override
@@ -71,33 +67,54 @@ public class SedeBackofficeServiceImpl
             Integer idSede,
             Authentication authentication) {
 
-        sedeAccessService.validarAccesoSede(
-                authentication,
-                idSede
-        );
+        validarIdSede(idSede);
 
-        return obtenerSedeActiva(idSede);
+        if (sedeAccessService
+                .esAdministrador(authentication)) {
+
+            return obtenerSedeActiva(idSede);
+        }
+
+        if (sedeAccessService
+                .esEncargadoLocal(authentication)) {
+
+            Integer idSedeAsignada =
+                    sedeAccessService
+                            .obtenerSedeAsignada(
+                                    authentication.getName());
+
+            if (!idSedeAsignada.equals(idSede)) {
+
+                throw new RecursoNoEncontradoException(
+                        "Sede no encontrada");
+            }
+
+            return obtenerSedeActiva(idSede);
+        }
+
+        throw new AccessDeniedException(
+                "No tiene permisos para acceder al BackOffice");
+    }
+
+    private void validarIdSede(
+            Integer idSede) {
+
+        if (idSede == null ||
+                idSede <= 0) {
+
+            throw new IllegalArgumentException(
+                    "El id de sede debe ser positivo");
+        }
     }
 
     private SedeResumenResponse obtenerSedeActiva(
             Integer idSede) {
 
         Sede sede = sedeRepository
-                .findById(idSede)
+                .findByIdSedeAndActivoTrue(idSede)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Sede no encontrada"
-                        )
-                );
-
-        if (!Boolean.TRUE.equals(
-                sede.getActivo()
-        )) {
-
-            throw new IllegalArgumentException(
-                    "La sede se encuentra inactiva"
-            );
-        }
+                        new RecursoNoEncontradoException(
+                                "Sede no encontrada"));
 
         return convertir(sede);
     }
@@ -111,7 +128,6 @@ public class SedeBackofficeServiceImpl
                 sede.getDireccion(),
                 sede.getDistrito(),
                 sede.getTelefono(),
-                sede.getActivo()
-        );
+                sede.getActivo());
     }
 }

@@ -321,3 +321,33 @@ FASE 7.6 - Auditoria REST definitiva.
 - Documentacion, reglas de base de datos y Postman sincronizados.
 - FASE 7.6 - Auditoria REST completada.
 - Siguiente fase: 7.7 - Seguridad completa por sede.
+### FASE 7.7 - Seguridad completa por sede
+
+- Agregada defensa en profundidad para `/api/backoffice/**` en `SecurityConfig`.
+- `/api/backoffice/**` queda restringido a `ADMINISTRADOR` y `ENCARGADO_LOCAL`.
+- `/api/usuarios/**` queda restringido a `ADMINISTRADOR`.
+- Los Controllers BackOffice mantienen `@PreAuthorize`.
+- `ADMINISTRADOR` conserva alcance global.
+- `ENCARGADO_LOCAL` obtiene su sede exclusivamente desde `UsuarioSede`.
+- El detalle de una Sede perteneciente a otro alcance responde 404.
+- Las sedes inexistentes o inactivas responden 404.
+- Reservas y Pagos BackOffice conservan su scope por sede previamente implementado.
+- Agregados tests de `SedeBackofficeServiceImpl`.
+- Regresion completa validada con 165 tests.
+- Docker Build validado.
+- Documentacion y Postman sincronizados con la politica territorial definitiva.
+### FASE 7.7.6 - Runtime smoke y cierre
+
+- Backend reconstruido con el codigo actual de FASE 7.7.
+- Contenedor backend validado en estado RUNNING.
+- SQL Server validado HEALTHY.
+- API publica validada con HTTP 200.
+- Login real validado para ADMINISTRADOR, ENCARGADO_LOCAL y CLIENTE.
+- ADMINISTRADOR validado con alcance global.
+- ENCARGADO_LOCAL validado con acceso HTTP 200 a su propia sede.
+- Una sede real ajena al ENCARGADO_LOCAL responde HTTP 404.
+- CLIENTE recibe HTTP 403 en recursos BackOffice.
+- Usuario anonimo recibe HTTP 401 en recursos BackOffice.
+- Reservas y Pagos BackOffice validados en runtime.
+- `git diff --check` validado.
+- FASE 7.7 cerrada tecnicamente, documentalmente y en runtime.

@@ -162,14 +162,25 @@ Cada endpoint se clasificara como:
 Siguiente fase: 7.7 - Seguridad completa por sede.
 # FASE 7.7 - Seguridad por sede completa
 
-Estado: PENDIENTE.
+Cierre: 7.7.6 - Runtime smoke y cierre: COMPLETADA.
+
+Estado: COMPLETADA.
 
 Aplicar alcance real de ENCARGADO_LOCAL a:
 
 - reservas.
 - pagos.
 - operaciones administrativas relacionadas.
+## Progreso 7.7
 
+- 7.7.1 - Auditoria de seguridad por sede: COMPLETADA.
+- 7.7.2 - Auditoria focalizada de hardening: COMPLETADA.
+- 7.7.3 - Hardening de Sedes BackOffice: COMPLETADA.
+- 7.7.4 - Regresion completa: COMPLETADA.
+- 7.7.5 - Documentacion y Postman: COMPLETADA.
+- 7.7.6 - Runtime smoke y cierre: COMPLETADA.
+
+Siguiente fase: FASE 8.
 # FASE 8 - Frontend ASP.NET Core MVC
 
 Estado: PENDIENTE.

@@ -163,7 +163,7 @@ Regla:
 
 - ADMINISTRADOR puede consultar cualquier sede autorizada.
 - ENCARGADO_LOCAL solamente puede consultar su sede.
-- intentar acceder a otra sede devuelve 403.
+- intentar acceder a otra sede responde 404 para no revelar su existencia.
 
 # 4. Reservas - API tecnica actual
 
@@ -234,8 +234,8 @@ GET /api/reservas/{idReserva}
 Estado actual:
 
 - CLIENTE propietario: IMPLEMENTADO en FASE 7.6D.4.
-- ENCARGADO_LOCAL: PENDIENTE para FASE 7.6E.
-- ADMINISTRADOR: PENDIENTE para FASE 7.6E.
+- ENCARGADO_LOCAL: implementado mediante BackOffice con alcance limitado a su sede.
+- ADMINISTRADOR: implementado mediante BackOffice con alcance global.
 
 Para CLIENTE:
 
