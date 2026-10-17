@@ -1,13 +1,19 @@
-# Normalizar archivos de texto en Git
+# Normalizacion de archivos de texto
 * text=auto
 
-# Documentación y configuración
-*.md text eol=lf
-*.yml text eol=lf
-*.yaml text eol=lf
-*.json text eol=lf
+# Codigo fuente
+*.java text eol=lf
+*.cs text eol=lf
+*.cshtml text eol=lf
 *.xml text eol=lf
 *.properties text eol=lf
+*.sql text eol=lf
+
+# Documentacion y configuracion
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
 
 # Linux / Bash / Docker
 *.sh text eol=lf
@@ -17,3 +23,13 @@ Dockerfile text eol=lf
 *.ps1 text eol=crlf
 *.bat text eol=crlf
 *.cmd text eol=crlf
+
+# Binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.jar binary
