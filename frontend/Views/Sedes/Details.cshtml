@@ -1,0 +1,154 @@
+@model BembosEvents.Web.ViewModels.SedeDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Sede.Nombre;
+}
+
+<section class="be-catalog-detail-hero">
+    <div class="be-container">
+
+        <a asp-controller="Sedes"
+           asp-action="Index"
+           class="be-catalog-back">
+            Volver a sedes
+        </a>
+
+        <div class="be-catalog-detail-grid">
+
+            <div>
+                <span class="be-catalog-kicker">
+                    @Model.Sede.Distrito
+                </span>
+
+                <h1>
+                    @Model.Sede.Nombre
+                </h1>
+
+                <p class="be-catalog-detail-lead">
+                    Selecciona uno de los salones disponibles
+                    en esta sede para conocer su capacidad y horarios.
+                </p>
+            </div>
+
+            <aside class="be-location-panel">
+                <span>
+                    Informacion de la sede
+                </span>
+
+                <dl>
+                    <div>
+                        <dt>
+                            Direccion
+                        </dt>
+
+                        <dd>
+                            @Model.Sede.Direccion
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>
+                            Distrito
+                        </dt>
+
+                        <dd>
+                            @Model.Sede.Distrito
+                        </dd>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Sede.Telefono))
+                    {
+                        <div>
+                            <dt>
+                                Telefono
+                            </dt>
+
+                            <dd>
+                                @Model.Sede.Telefono
+                            </dd>
+                        </div>
+                    }
+                </dl>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<section class="be-catalog-section">
+    <div class="be-container">
+
+        <div class="be-section-heading">
+            <div>
+                <span class="be-catalog-kicker">
+                    Salones
+                </span>
+
+                <h2>
+                    Salones en @Model.Sede.Nombre
+                </h2>
+            </div>
+
+            <p>
+                Mostramos exclusivamente los salones asociados
+                a esta sede.
+            </p>
+        </div>
+
+        @if (Model.Salones.Count == 0)
+        {
+            <div class="be-catalog-empty">
+                <h3>
+                    No hay salones disponibles
+                </h3>
+
+                <p>
+                    Esta sede aun no tiene salones publicos disponibles.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="be-catalog-grid">
+                @foreach (var salon in Model.Salones)
+                {
+                    <article class="be-catalog-card">
+                        <div class="be-catalog-card-accent"></div>
+
+                        <div class="be-catalog-card-body">
+                            <span class="be-catalog-eyebrow">
+                                Capacidad: @salon.Capacidad personas
+                            </span>
+
+                            <h3>
+                                @salon.Nombre
+                            </h3>
+
+                            @if (!string.IsNullOrWhiteSpace(salon.Descripcion))
+                            {
+                                <p>
+                                    @salon.Descripcion
+                                </p>
+                            }
+                            else
+                            {
+                                <p>
+                                    Consulta los horarios disponibles
+                                    para este salon.
+                                </p>
+                            }
+                        </div>
+
+                        <div class="be-catalog-card-footer">
+                            <a asp-controller="Salones"
+                               asp-action="Details"
+                               asp-route-idSalon="@salon.IdSalon"
+                               class="be-btn be-btn-primary">
+                                Ver salon
+                            </a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>

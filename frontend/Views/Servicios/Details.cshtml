@@ -1,0 +1,53 @@
+@model BembosEvents.Web.Models.Api.ServicioAdicionalPublicoDto
+
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<section class="be-catalog-detail-hero">
+    <div class="be-container">
+
+        <a asp-controller="Servicios"
+           asp-action="Index"
+           class="be-catalog-back">
+            Volver a servicios
+        </a>
+
+        <div class="be-catalog-detail-grid">
+            <div>
+                <span class="be-catalog-kicker">
+                    Servicio adicional
+                </span>
+
+                <h1>
+                    @Model.Nombre
+                </h1>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Descripcion))
+                {
+                    <p class="be-catalog-detail-lead">
+                        @Model.Descripcion
+                    </p>
+                }
+            </div>
+
+            <aside class="be-location-panel">
+                <span>
+                    Informacion del servicio
+                </span>
+
+                <dl>
+                    <div>
+                        <dt>
+                            Precio
+                        </dt>
+
+                        <dd>
+                            S/ @Model.Precio.ToString("0.00")
+                        </dd>
+                    </div>
+                </dl>
+            </aside>
+        </div>
+    </div>
+</section>

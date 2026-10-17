@@ -1,0 +1,104 @@
+@model IReadOnlyList<BembosEvents.Web.Models.Api.PaquetePublicoDto>
+
+@{
+    ViewData["Title"] = "Paquetes";
+}
+
+<section class="be-catalog-hero">
+    <div class="be-container be-catalog-hero-content">
+        <span class="be-catalog-kicker">
+            Bembos Events
+        </span>
+
+        <h1>
+            Paquetes para tu celebracion
+        </h1>
+
+        <p>
+            Conoce los paquetes disponibles y sus precios base
+            configurados directamente en Bembos Events.
+        </p>
+    </div>
+</section>
+
+<section class="be-catalog-section">
+    <div class="be-container">
+
+        <div class="be-section-heading">
+            <div>
+                <span class="be-catalog-kicker">
+                    Paquetes
+                </span>
+
+                <h2>
+                    Opciones disponibles
+                </h2>
+            </div>
+
+            <p>
+                El precio mostrado corresponde al precio base
+                configurado para cada paquete.
+            </p>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="be-catalog-empty">
+                <h3>
+                    Aun no hay paquetes disponibles
+                </h3>
+
+                <p>
+                    Cuando existan paquetes activos apareceran aqui.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="be-catalog-grid">
+                @foreach (var paquete in Model)
+                {
+                    <article class="be-catalog-card">
+                        <div class="be-catalog-card-accent"></div>
+
+                        <div class="be-catalog-card-body">
+                            <span class="be-catalog-eyebrow">
+                                @paquete.CantidadPersonasBase personas base
+                            </span>
+
+                            <h3>
+                                @paquete.Nombre
+                            </h3>
+
+                            @if (!string.IsNullOrWhiteSpace(paquete.Descripcion))
+                            {
+                                <p>
+                                    @paquete.Descripcion
+                                </p>
+                            }
+
+                            <div class="be-catalog-price">
+                                <small>
+                                    Desde
+                                </small>
+
+                                <strong>
+                                    S/ @paquete.PrecioBase.ToString("0.00")
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="be-catalog-card-footer">
+                            <a asp-controller="Paquetes"
+                               asp-action="Details"
+                               asp-route-idPaquete="@paquete.IdPaquete"
+                               class="be-btn be-btn-primary">
+                                Ver paquete
+                            </a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>

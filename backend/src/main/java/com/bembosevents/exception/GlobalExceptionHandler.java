@@ -181,6 +181,14 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+
+    @ExceptionHandler(
+            org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResourceFound(
+            org.springframework.web.servlet.resource.NoResourceFoundException ex) {
+
+        return ResponseEntity.notFound().build();
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleUnexpected(
             Exception ex) {

@@ -1,0 +1,63 @@
+@model BembosEvents.Web.Models.Api.PaquetePublicoDto
+
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<section class="be-catalog-detail-hero">
+    <div class="be-container">
+
+        <a asp-controller="Paquetes"
+           asp-action="Index"
+           class="be-catalog-back">
+            Volver a paquetes
+        </a>
+
+        <div class="be-catalog-detail-grid">
+            <div>
+                <span class="be-catalog-kicker">
+                    Paquete
+                </span>
+
+                <h1>
+                    @Model.Nombre
+                </h1>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Descripcion))
+                {
+                    <p class="be-catalog-detail-lead">
+                        @Model.Descripcion
+                    </p>
+                }
+            </div>
+
+            <aside class="be-location-panel">
+                <span>
+                    Informacion del paquete
+                </span>
+
+                <dl>
+                    <div>
+                        <dt>
+                            Precio base
+                        </dt>
+
+                        <dd>
+                            S/ @Model.PrecioBase.ToString("0.00")
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>
+                            Personas base
+                        </dt>
+
+                        <dd>
+                            @Model.CantidadPersonasBase
+                        </dd>
+                    </div>
+                </dl>
+            </aside>
+        </div>
+    </div>
+</section>

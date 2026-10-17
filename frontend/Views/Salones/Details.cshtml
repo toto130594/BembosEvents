@@ -1,0 +1,168 @@
+@model BembosEvents.Web.ViewModels.SalonDetailsViewModel
+
+@{
+    ViewData["Title"] = Model.Salon.Nombre;
+}
+
+<section class="be-catalog-detail-hero">
+    <div class="be-container">
+
+        @if (Model.Sede is not null)
+        {
+            <a asp-controller="Sedes"
+               asp-action="Details"
+               asp-route-idSede="@Model.Sede.IdSede"
+               class="be-catalog-back">
+                Volver a @Model.Sede.Nombre
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Sedes"
+               asp-action="Index"
+               class="be-catalog-back">
+                Volver a sedes
+            </a>
+        }
+
+        <div class="be-catalog-detail-grid">
+
+            <div>
+                <span class="be-catalog-kicker">
+                    Salon
+                </span>
+
+                <h1>
+                    @Model.Salon.Nombre
+                </h1>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Salon.Descripcion))
+                {
+                    <p class="be-catalog-detail-lead">
+                        @Model.Salon.Descripcion
+                    </p>
+                }
+
+                @if (Model.Sede is not null)
+                {
+                    <p class="be-catalog-location-line">
+                        @Model.Sede.Nombre · @Model.Sede.Distrito
+                    </p>
+                }
+            </div>
+
+            <aside class="be-location-panel">
+                <span>
+                    Detalles del salon
+                </span>
+
+                <dl>
+                    <div>
+                        <dt>
+                            Capacidad
+                        </dt>
+
+                        <dd>
+                            @Model.Salon.Capacidad personas
+                        </dd>
+                    </div>
+
+                    @if (Model.Sede is not null)
+                    {
+                        <div>
+                            <dt>
+                                Sede
+                            </dt>
+
+                            <dd>
+                                @Model.Sede.Nombre
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>
+                                Distrito
+                            </dt>
+
+                            <dd>
+                                @Model.Sede.Distrito
+                            </dd>
+                        </div>
+                    }
+                </dl>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<section class="be-catalog-section">
+    <div class="be-container">
+
+        <div class="be-section-heading">
+            <div>
+                <span class="be-catalog-kicker">
+                    Horarios
+                </span>
+
+                <h2>
+                    Horarios del salon
+                </h2>
+            </div>
+
+            <p>
+                Estos horarios provienen directamente del catalogo
+                configurado en Bembos Events.
+            </p>
+        </div>
+
+        @if (Model.Horarios.Count == 0)
+        {
+            <div class="be-catalog-empty">
+                <h3>
+                    No hay horarios publicados
+                </h3>
+
+                <p>
+                    Todavia no existen horarios disponibles
+                    para este salon.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="be-schedule-grid">
+                @foreach (var horario in Model.Horarios)
+                {
+                    <article class="be-schedule-card">
+                        <span>
+                            @horario.DiaSemana
+                        </span>
+
+                        <strong>
+                            @horario.HoraInicio.ToString(@"hh\:mm")
+                            -
+                            @horario.HoraFin.ToString(@"hh\:mm")
+                        </strong>
+                    </article>
+                }
+            </div>
+        }
+
+        <div class="be-catalog-next-step">
+            <div>
+                <span class="be-catalog-kicker">
+                    Proximo paso
+                </span>
+
+                <h3>
+                    Este salon ya puede formar parte del flujo de reserva
+                </h3>
+
+                <p>
+                    La seleccion de fecha y disponibilidad se incorporara
+                    en la etapa de reservas.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,53 @@
+@model BembosEvents.Web.Models.Api.TematicaPublicaDto
+
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<section class="be-catalog-detail-hero">
+    <div class="be-container">
+
+        <a asp-controller="Tematicas"
+           asp-action="Index"
+           class="be-catalog-back">
+            Volver a tematicas
+        </a>
+
+        <div class="be-catalog-detail-grid">
+            <div>
+                <span class="be-catalog-kicker">
+                    Tematica
+                </span>
+
+                <h1>
+                    @Model.Nombre
+                </h1>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Descripcion))
+                {
+                    <p class="be-catalog-detail-lead">
+                        @Model.Descripcion
+                    </p>
+                }
+            </div>
+
+            <aside class="be-location-panel">
+                <span>
+                    Informacion de la tematica
+                </span>
+
+                <dl>
+                    <div>
+                        <dt>
+                            Precio adicional
+                        </dt>
+
+                        <dd>
+                            S/ @Model.PrecioAdicional.ToString("0.00")
+                        </dd>
+                    </div>
+                </dl>
+            </aside>
+        </div>
+    </div>
+</section>

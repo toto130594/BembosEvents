@@ -438,4 +438,204 @@ public sealed class BackendApiClient : IBackendApiClient
             .RootElement
             .GetArrayLength();
     }
-}
+
+    public async Task<SedePublicaDto?> GetSedeAsync(
+        int idSede,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/sedes/{idSede}",
+                cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<SedePublicaDto>(
+            cancellationToken: cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<SalonPublicoDto>> GetSalonesBySedeAsync(
+        int idSede,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/sedes/{idSede}/salones",
+                cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return Array.Empty<SalonPublicoDto>();
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        var salones =
+            await response.Content.ReadFromJsonAsync<List<SalonPublicoDto>>(
+                cancellationToken: cancellationToken);
+
+        return salones ??
+            new List<SalonPublicoDto>();
+    }
+
+    public async Task<SalonPublicoDto?> GetSalonAsync(
+        int idSalon,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/salones/{idSalon}",
+                cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<SalonPublicoDto>(
+            cancellationToken: cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<HorarioSalonDto>> GetHorariosSalonAsync(
+        int idSalon,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/salones/{idSalon}/horarios",
+                cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return Array.Empty<HorarioSalonDto>();
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        var horarios =
+            await response.Content.ReadFromJsonAsync<List<HorarioSalonDto>>(
+                cancellationToken: cancellationToken);
+
+        return horarios ??
+            new List<HorarioSalonDto>();
+    }
+    public async Task<IReadOnlyList<PaquetePublicoDto>> GetPaquetesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                "api/paquetes",
+                cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var items =
+            await response.Content.ReadFromJsonAsync<List<PaquetePublicoDto>>(
+                cancellationToken: cancellationToken);
+
+        return items ??
+            new List<PaquetePublicoDto>();
+    }
+
+    public async Task<PaquetePublicoDto?> GetPaqueteAsync(
+        int idPaquete,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/paquetes/{idPaquete}",
+                cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<PaquetePublicoDto>(
+            cancellationToken: cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<TematicaPublicaDto>> GetTematicasAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                "api/tematicas",
+                cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var items =
+            await response.Content.ReadFromJsonAsync<List<TematicaPublicaDto>>(
+                cancellationToken: cancellationToken);
+
+        return items ??
+            new List<TematicaPublicaDto>();
+    }
+
+    public async Task<TematicaPublicaDto?> GetTematicaAsync(
+        int idTematica,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/tematicas/{idTematica}",
+                cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<TematicaPublicaDto>(
+            cancellationToken: cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<ServicioAdicionalPublicoDto>> GetServiciosAdicionalesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                "api/servicios-adicionales",
+                cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var items =
+            await response.Content.ReadFromJsonAsync<List<ServicioAdicionalPublicoDto>>(
+                cancellationToken: cancellationToken);
+
+        return items ??
+            new List<ServicioAdicionalPublicoDto>();
+    }
+
+    public async Task<ServicioAdicionalPublicoDto?> GetServicioAdicionalAsync(
+        int idServicioAdicional,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/servicios-adicionales/{idServicioAdicional}",
+                cancellationToken);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<ServicioAdicionalPublicoDto>(
+            cancellationToken: cancellationToken);
+    }}
