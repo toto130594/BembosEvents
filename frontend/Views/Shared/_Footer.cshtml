@@ -1,0 +1,90 @@
+<footer class="be-footer">
+    <div class="be-footer-main">
+        <div class="be-container be-footer-grid">
+            <section>
+                <a class="be-brand be-footer-brand"
+                   asp-controller="Home"
+                   asp-action="Index"
+                   aria-label="Bembos Events - Inicio">
+
+                    <span class="be-brand-main">BEMBOS</span>
+                    <span class="be-brand-events">EVENTS</span>
+                </a>
+
+                <p class="be-footer-description">
+                    Reserva y organiza tu celebracion desde un solo lugar.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="be-footer-title">
+                    Explora
+                </h2>
+
+                <ul class="be-footer-list">
+                    <li>
+                        <a class="be-footer-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-fragment="paquetes">
+                            Paquetes
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="be-footer-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-fragment="sedes">
+                            Sedes
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="be-footer-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-fragment="tematicas">
+                            Tematicas
+                        </a>
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="be-footer-title">
+                    Ayuda
+                </h2>
+
+                <ul class="be-footer-list">
+                    <li>
+                        <a class="be-footer-link"
+                           asp-controller="Home"
+                           asp-action="Privacy">
+                            Privacidad
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="be-footer-link"
+                           href="/health/backend">
+                            Estado del servicio
+                        </a>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+    <div class="be-footer-bottom">
+        <div class="be-container be-footer-bottom-content">
+            <span>
+                &copy; @DateTime.Now.Year Bembos Events.
+            </span>
+
+            <span>
+                Portal de reservas de eventos.
+            </span>
+        </div>
+    </div>
+</footer>

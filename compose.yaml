@@ -69,6 +69,21 @@ services:
       - "8080:8080"
     restart: unless-stopped
 
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    environment:
+      BackendApi__BaseUrl: http://backend:8080
+      ASPNETCORE_ENVIRONMENT: Production
+      DataProtection__KeysPath: /var/bembos-events/dpkeys
+    ports:
+      - "5000:8080"
+    volumes:
+      - frontend-dp-keys:/var/bembos-events/dpkeys
+    restart: unless-stopped
 volumes:
+  frontend-dp-keys:
   bembos-sql-data:
     name: bembos-sql-data

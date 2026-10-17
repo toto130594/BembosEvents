@@ -1,0 +1,27 @@
+@{
+    ViewData["Title"] = "Acceso denegado";
+}
+
+<section class="be-auth-page">
+    <div class="be-container be-auth-message-wrapper">
+        <div class="be-auth-message-card">
+            <span class="be-auth-message-code">
+                403
+            </span>
+
+            <h1>
+                Acceso denegado
+            </h1>
+
+            <p>
+                Tu cuenta no tiene permiso para acceder a esta opcion.
+            </p>
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="be-btn be-btn-secondary">
+                Volver al inicio
+            </a>
+        </div>
+    </div>
+</section>

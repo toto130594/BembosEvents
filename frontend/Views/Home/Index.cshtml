@@ -1,0 +1,558 @@
+@model BembosEvents.Web.ViewModels.HomeViewModel
+
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<section class="be-home-hero">
+    <div class="be-container be-home-hero-grid">
+
+        <div class="be-home-hero-copy">
+            <span class="be-home-eyebrow">
+                Bembos Events
+            </span>
+
+            <h1>
+                La fiesta empieza
+                <strong>en Bembos</strong>
+            </h1>
+
+            <p>
+                Elige tu sede y prepara tu celebracion desde una
+                experiencia simple, rapida y conectada con nuestra
+                disponibilidad real.
+            </p>
+
+            <div class="be-home-hero-actions">
+                <a class="be-btn be-btn-primary"
+                   href="#sedes">
+                    Ver sedes
+                </a>
+
+                <a class="be-btn be-btn-hero-outline"
+                   href="#como-funciona">
+                    Como reservar
+                </a>
+            </div>
+        </div>
+
+        <div class="be-home-party-art"
+             aria-hidden="true">
+
+            <div class="be-party-circle be-party-circle-yellow"></div>
+            <div class="be-party-circle be-party-circle-red"></div>
+            <div class="be-party-circle be-party-circle-blue"></div>
+
+            <div class="be-party-card">
+                <span class="be-party-card-small">
+                    Tu proxima celebracion
+                </span>
+
+                <strong>
+                    Bembos Events
+                </strong>
+
+                <span>
+                    Sede + salon + experiencia
+                </span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="be-home-quick"
+         aria-label="Explora Bembos Events">
+
+    <div class="be-container">
+        <div class="be-home-quick-grid">
+
+            <a href="#paquetes"
+               class="be-quick-card">
+                <span class="be-quick-icon"
+                      aria-hidden="true">
+                    P
+                </span>
+
+                <span>
+                    Paquetes
+                </span>
+            </a>
+
+            <a href="#sedes"
+               class="be-quick-card">
+                <span class="be-quick-icon"
+                      aria-hidden="true">
+                    S
+                </span>
+
+                <span>
+                    Sedes
+                </span>
+            </a>
+
+            <a href="#tematicas"
+               class="be-quick-card">
+                <span class="be-quick-icon"
+                      aria-hidden="true">
+                    T
+                </span>
+
+                <span>
+                    Tematicas
+                </span>
+            </a>
+
+            <a href="#servicios"
+               class="be-quick-card">
+                <span class="be-quick-icon"
+                      aria-hidden="true">
+                    +
+                </span>
+
+                <span>
+                    Servicios
+                </span>
+            </a>
+        </div>
+    </div>
+</section>
+
+
+@if (Model.HasPartialLoadError)
+{
+    <section class="be-home-notice"
+             role="status">
+        <div class="be-container">
+            <div class="be-home-notice-box">
+                Algunos catalogos no pudieron cargarse en este momento.
+                Puedes seguir explorando la informacion disponible.
+            </div>
+        </div>
+    </section>
+}
+
+
+<section id="sedes"
+         class="be-home-section">
+
+    <div class="be-container">
+
+        <div class="be-section-heading">
+            <div>
+                <span class="be-section-kicker">
+                    Encuentra tu Bembos
+                </span>
+
+                <h2>
+                    Elige donde celebrar
+                </h2>
+            </div>
+
+            @if (Model.SedesApiAvailable)
+            {
+                <span class="be-section-count">
+                    @Model.Sedes.Count sede(s) disponible(s)
+                </span>
+            }
+        </div>
+
+
+        @if (!Model.SedesApiAvailable)
+        {
+            <div class="be-empty-state">
+                <span class="be-empty-state-icon"
+                      aria-hidden="true">
+                    !
+                </span>
+
+                <h3>
+                    No pudimos cargar las sedes
+                </h3>
+
+                <p>
+                    Intenta nuevamente en unos minutos.
+                </p>
+            </div>
+        }
+        else if (Model.Sedes.Count == 0)
+        {
+            <div class="be-empty-state">
+                <h3>
+                    No hay sedes disponibles
+                </h3>
+
+                <p>
+                    Actualmente no existen sedes activas para mostrar.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="be-sede-grid">
+                @foreach (var sede in Model.Sedes)
+                {
+                    <article class="be-sede-card">
+
+                        <div class="be-sede-card-visual"
+                             aria-hidden="true">
+                            <span>
+                                B
+                            </span>
+                        </div>
+
+                        <div class="be-sede-card-body">
+                            <span class="be-sede-district">
+                                @sede.Distrito
+                            </span>
+
+                            <h3>
+                                @sede.Nombre
+                            </h3>
+
+                            <p class="be-sede-address">
+                                @sede.Direccion
+                            </p>
+
+                            @if (!string.IsNullOrWhiteSpace(sede.Telefono))
+                            {
+                                <a class="be-sede-phone"
+                                   href="tel:@sede.Telefono">
+                                    @sede.Telefono
+                                </a>
+                            }
+
+                            <a class="be-sede-action"
+                               href="#salones">
+                                Conocer sus salones
+                                <span aria-hidden="true">
+                                    &rarr;
+                                </span>
+                            </a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+
+<section id="salones"
+         class="be-home-section be-home-section-blue">
+
+    <div class="be-container be-salon-intro">
+
+        <div>
+            <span class="be-section-kicker be-section-kicker-yellow">
+                Salones
+            </span>
+
+            <h2>
+                Cada sede tiene su propio espacio
+            </h2>
+
+            <p>
+                Los salones disponibles se consultan segun la sede
+                elegida. Asi evitamos mostrar opciones que no
+                correspondan a tu ubicacion.
+            </p>
+        </div>
+
+        <a class="be-btn be-btn-light"
+           href="#sedes">
+            Elegir sede
+        </a>
+    </div>
+</section>
+
+
+<section id="paquetes"
+         class="be-home-section">
+
+    <div class="be-container">
+        <div class="be-section-heading">
+            <div>
+                <span class="be-section-kicker">
+                    Paquetes
+                </span>
+
+                <h2>
+                    Opciones para tu celebracion
+                </h2>
+            </div>
+
+            @if (Model.PaquetesApiAvailable &&
+                 Model.PaquetesCount > 0)
+            {
+                <span class="be-section-count">
+                    @Model.PaquetesCount opciones disponibles
+                </span>
+            }
+        </div>
+
+        @if (!Model.PaquetesApiAvailable)
+        {
+            <div class="be-empty-state">
+                <h3>
+                    No pudimos cargar los paquetes
+                </h3>
+
+                <p>
+                    El catalogo no esta disponible en este momento.
+                </p>
+            </div>
+        }
+        else if (Model.PaquetesCount == 0)
+        {
+            <div class="be-empty-state">
+                <span class="be-empty-state-icon"
+                      aria-hidden="true">
+                    P
+                </span>
+
+                <h3>
+                    No hay paquetes disponibles por el momento
+                </h3>
+
+                <p>
+                    Cuando existan paquetes activos apareceran aqui.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="be-catalog-ready">
+                <strong>
+                    @Model.PaquetesCount opciones disponibles
+                </strong>
+
+                <p>
+                    El catalogo tiene informacion disponible.
+                </p>
+            </div>
+        }
+    </div>
+</section>
+
+
+<section id="tematicas"
+         class="be-home-section be-home-section-soft">
+
+    <div class="be-container">
+        <div class="be-section-heading">
+            <div>
+                <span class="be-section-kicker">
+                    Tematicas
+                </span>
+
+                <h2>
+                    Dale personalidad a tu fiesta
+                </h2>
+            </div>
+        </div>
+
+        @if (!Model.TematicasApiAvailable)
+        {
+            <div class="be-empty-state">
+                <h3>
+                    No pudimos cargar las tematicas
+                </h3>
+
+                <p>
+                    El catalogo no esta disponible en este momento.
+                </p>
+            </div>
+        }
+        else if (Model.TematicasCount == 0)
+        {
+            <div class="be-empty-state">
+                <span class="be-empty-state-icon"
+                      aria-hidden="true">
+                    T
+                </span>
+
+                <h3>
+                    No hay tematicas disponibles por el momento
+                </h3>
+
+                <p>
+                    Las tematicas activas apareceran aqui.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="be-catalog-ready">
+                <strong>
+                    @Model.TematicasCount opciones disponibles
+                </strong>
+
+                <p>
+                    El catalogo tiene informacion disponible.
+                </p>
+            </div>
+        }
+    </div>
+</section>
+
+
+<section id="servicios"
+         class="be-home-section">
+
+    <div class="be-container">
+        <div class="be-section-heading">
+            <div>
+                <span class="be-section-kicker">
+                    Servicios adicionales
+                </span>
+
+                <h2>
+                    Completa la experiencia
+                </h2>
+            </div>
+        </div>
+
+        @if (!Model.ServiciosApiAvailable)
+        {
+            <div class="be-empty-state">
+                <h3>
+                    No pudimos cargar los servicios
+                </h3>
+
+                <p>
+                    El catalogo no esta disponible en este momento.
+                </p>
+            </div>
+        }
+        else if (Model.ServiciosAdicionalesCount == 0)
+        {
+            <div class="be-empty-state">
+                <span class="be-empty-state-icon"
+                      aria-hidden="true">
+                    +
+                </span>
+
+                <h3>
+                    No hay servicios adicionales disponibles
+                </h3>
+
+                <p>
+                    Los servicios activos apareceran aqui.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="be-catalog-ready">
+                <strong>
+                    @Model.ServiciosAdicionalesCount opciones disponibles
+                </strong>
+
+                <p>
+                    El catalogo tiene informacion disponible.
+                </p>
+            </div>
+        }
+    </div>
+</section>
+
+
+<section id="como-funciona"
+         class="be-home-section be-how-section">
+
+    <div class="be-container">
+        <div class="be-section-heading be-section-heading-centered">
+            <div>
+                <span class="be-section-kicker">
+                    Como funciona
+                </span>
+
+                <h2>
+                    Tu fiesta en cuatro pasos
+                </h2>
+            </div>
+        </div>
+
+        <ol class="be-how-grid">
+
+            <li class="be-how-card">
+                <span class="be-how-number">
+                    1
+                </span>
+
+                <h3>
+                    Elige tu sede
+                </h3>
+
+                <p>
+                    Selecciona la ubicacion que mejor te convenga.
+                </p>
+            </li>
+
+            <li class="be-how-card">
+                <span class="be-how-number">
+                    2
+                </span>
+
+                <h3>
+                    Elige tu salon
+                </h3>
+
+                <p>
+                    Revisa los espacios disponibles para esa sede.
+                </p>
+            </li>
+
+            <li class="be-how-card">
+                <span class="be-how-number">
+                    3
+                </span>
+
+                <h3>
+                    Personaliza
+                </h3>
+
+                <p>
+                    Agrega las opciones disponibles para tu celebracion.
+                </p>
+            </li>
+
+            <li class="be-how-card">
+                <span class="be-how-number">
+                    4
+                </span>
+
+                <h3>
+                    Reserva
+                </h3>
+
+                <p>
+                    Confirma la informacion y gestiona tu reserva.
+                </p>
+            </li>
+        </ol>
+    </div>
+</section>
+
+
+<section id="reservar"
+         class="be-home-final-cta">
+
+    <div class="be-container be-home-final-cta-content">
+        <div>
+            <span class="be-section-kicker be-section-kicker-yellow">
+                Bembos Events
+            </span>
+
+            <h2>
+                Tu proxima celebracion puede empezar aqui
+            </h2>
+        </div>
+
+        <a class="be-btn be-btn-primary"
+           href="#sedes">
+            Elegir sede
+        </a>
+    </div>
+</section>

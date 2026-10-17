@@ -1,0 +1,202 @@
+@model BembosEvents.Web.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Crear cuenta";
+}
+
+<section class="be-auth-page">
+    <div class="be-container be-auth-layout">
+
+        <div class="be-auth-promo">
+            <span class="be-auth-kicker">
+                Bembos Events
+            </span>
+
+            <h1>
+                Crea tu cuenta
+            </h1>
+
+            <p>
+                Registrate para gestionar tus reservas y preparar
+                tu celebracion desde un solo lugar.
+            </p>
+
+            <ul class="be-auth-benefits">
+                <li>
+                    Consulta tus reservas.
+                </li>
+
+                <li>
+                    Gestiona tus celebraciones.
+                </li>
+
+                <li>
+                    Accede con tu cuenta de forma segura.
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="be-auth-card">
+
+            <div class="be-auth-card-heading">
+                <span>
+                    Nueva cuenta
+                </span>
+
+                <h2>
+                    Registrarse
+                </h2>
+
+                <p>
+                    Completa tus datos para crear una cuenta de cliente.
+                </p>
+            </div>
+
+            <form asp-controller="Account"
+                  asp-action="Register"
+                  method="post"
+                  class="be-auth-form">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="be-form-summary"
+                     role="alert">
+                </div>
+
+
+                <div class="be-auth-name-grid">
+
+                    <div class="be-form-field">
+                        <label asp-for="Nombres"
+                               class="be-form-label">
+                        </label>
+
+                        <input asp-for="Nombres"
+                               class="be-form-control"
+                               autocomplete="given-name"
+                               maxlength="100" />
+
+                        <span asp-validation-for="Nombres"
+                              class="be-form-error">
+                        </span>
+                    </div>
+
+
+                    <div class="be-form-field">
+                        <label asp-for="Apellidos"
+                               class="be-form-label">
+                        </label>
+
+                        <input asp-for="Apellidos"
+                               class="be-form-control"
+                               autocomplete="family-name"
+                               maxlength="100" />
+
+                        <span asp-validation-for="Apellidos"
+                              class="be-form-error">
+                        </span>
+                    </div>
+                </div>
+
+
+                <div class="be-form-field">
+                    <label asp-for="Correo"
+                           class="be-form-label">
+                    </label>
+
+                    <input asp-for="Correo"
+                           class="be-form-control"
+                           autocomplete="email"
+                           inputmode="email"
+                           maxlength="254"
+                           placeholder="tu@correo.com" />
+
+                    <span asp-validation-for="Correo"
+                          class="be-form-error">
+                    </span>
+                </div>
+
+
+                <div class="be-form-field">
+                    <label asp-for="Telefono"
+                           class="be-form-label">
+                    </label>
+
+                    <input asp-for="Telefono"
+                           class="be-form-control"
+                           autocomplete="tel"
+                           inputmode="tel"
+                           maxlength="20"
+                           placeholder="Opcional" />
+
+                    <span asp-validation-for="Telefono"
+                          class="be-form-error">
+                    </span>
+                </div>
+
+
+                <div class="be-form-field">
+                    <label asp-for="Password"
+                           class="be-form-label">
+                    </label>
+
+                    <input asp-for="Password"
+                           class="be-form-control"
+                           autocomplete="new-password"
+                           minlength="8"
+                           maxlength="72" />
+
+                    <span class="be-form-help">
+                        Entre 8 y 72 caracteres.
+                    </span>
+
+                    <span asp-validation-for="Password"
+                          class="be-form-error">
+                    </span>
+                </div>
+
+
+                <div class="be-form-field">
+                    <label asp-for="ConfirmPassword"
+                           class="be-form-label">
+                    </label>
+
+                    <input asp-for="ConfirmPassword"
+                           class="be-form-control"
+                           autocomplete="new-password"
+                           minlength="8"
+                           maxlength="72" />
+
+                    <span asp-validation-for="ConfirmPassword"
+                          class="be-form-error">
+                    </span>
+                </div>
+
+
+                <button type="submit"
+                        class="be-btn be-btn-primary be-auth-submit">
+                    Crear cuenta
+                </button>
+            </form>
+
+
+            <div class="be-auth-card-footer">
+                <span>
+                    Ya tienes una cuenta?
+                </span>
+
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="be-auth-text-link">
+                    Iniciar sesion
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

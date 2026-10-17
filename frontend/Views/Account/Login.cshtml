@@ -1,0 +1,133 @@
+@model BembosEvents.Web.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar sesion";
+}
+
+<section class="be-auth-page">
+    <div class="be-container be-auth-layout">
+
+        <div class="be-auth-promo">
+            <span class="be-auth-kicker">
+                Bembos Events
+            </span>
+
+            <h1>
+                Tu fiesta empieza aqui
+            </h1>
+
+            <p>
+                Inicia sesion para continuar con tus reservas
+                y gestionar tu experiencia Bembos Events.
+            </p>
+
+            <ul class="be-auth-benefits">
+                <li>
+                    Consulta tus reservas desde un solo lugar.
+                </li>
+
+                <li>
+                    Continua tu proceso de celebracion.
+                </li>
+
+                <li>
+                    Accede de forma segura con tu cuenta.
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="be-auth-card">
+
+            @if (TempData["RegistrationSuccess"] is string registrationSuccess)
+            {
+                <div class="be-auth-success"
+                     role="status">
+                    @registrationSuccess
+                </div>
+            }
+
+            <div class="be-auth-card-heading">
+                <span>
+                    Mi cuenta
+                </span>
+
+                <h2>
+                    Iniciar sesion
+                </h2>
+
+                <p>
+                    Ingresa el correo y contrasena de tu cuenta.
+                </p>
+            </div>
+
+            <form asp-controller="Account"
+                  asp-action="Login"
+                  method="post"
+                  class="be-auth-form">
+
+                @Html.AntiForgeryToken()
+
+                <input asp-for="ReturnUrl"
+                       type="hidden" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="be-form-summary"
+                     role="alert">
+                </div>
+
+                <div class="be-form-field">
+                    <label asp-for="Correo"
+                           class="be-form-label">
+                    </label>
+
+                    <input asp-for="Correo"
+                           class="be-form-control"
+                           autocomplete="email"
+                           inputmode="email"
+                           placeholder="tu@correo.com" />
+
+                    <span asp-validation-for="Correo"
+                          class="be-form-error">
+                    </span>
+                </div>
+
+                <div class="be-form-field">
+                    <label asp-for="Password"
+                           class="be-form-label">
+                    </label>
+
+                    <input asp-for="Password"
+                           class="be-form-control"
+                           autocomplete="current-password"
+                           placeholder="Ingresa tu contrasena" />
+
+                    <span asp-validation-for="Password"
+                          class="be-form-error">
+                    </span>
+                </div>
+
+                <button type="submit"
+                        class="be-btn be-btn-primary be-auth-submit">
+                    Iniciar sesion
+                </button>
+            </form>
+
+            <div class="be-auth-card-footer">
+                <span>
+                    Todavia no tienes cuenta?
+                </span>
+
+                <a asp-controller="Account"
+                   asp-action="Register"
+                   class="be-auth-text-link">
+                    Crear cuenta
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

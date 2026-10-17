@@ -1,0 +1,139 @@
+<header class="be-header">
+    <div class="be-header-top">
+        <div class="be-container be-header-top-content">
+            Celebra momentos inolvidables con Bembos Events
+        </div>
+    </div>
+
+    <div class="be-container">
+        <nav class="be-navbar navbar navbar-expand-lg"
+             aria-label="Navegacion principal">
+
+            <a class="be-brand"
+               asp-controller="Home"
+               asp-action="Index"
+               aria-label="Bembos Events - Inicio">
+
+                <span class="be-brand-main">BEMBOS</span>
+                <span class="be-brand-events">EVENTS</span>
+            </a>
+
+            <button class="be-mobile-toggle"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#bePublicNavigation"
+                    aria-controls="bePublicNavigation"
+                    aria-expanded="false"
+                    aria-label="Abrir menu de navegacion">
+
+                <span class="be-mobile-toggle-lines"
+                      aria-hidden="true">
+                </span>
+            </button>
+
+            <div class="collapse navbar-collapse be-nav-collapse"
+                 id="bePublicNavigation">
+
+                <ul class="be-nav">
+                    <li>
+                        <a class="be-nav-link"
+                           asp-controller="Home"
+                           asp-action="Index">
+                            Inicio
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="be-nav-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-fragment="paquetes">
+                            Paquetes
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="be-nav-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-fragment="tematicas">
+                            Tematicas
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="be-nav-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-fragment="sedes">
+                            Sedes
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="be-nav-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-fragment="salones">
+                            Salones
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="be-nav-link"
+                           asp-controller="Home"
+                           asp-action="Index"
+                           asp-fragment="servicios">
+                            Servicios
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="be-header-actions">
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="be-authenticated-user">
+                            <span class="be-authenticated-label">
+                                Sesion iniciada
+                            </span>
+
+                            <span class="be-authenticated-email"
+                                  title="@User.Identity.Name">
+                                @User.Identity.Name
+                            </span>
+                        </div>
+
+                        <form asp-controller="Account"
+                              asp-action="Logout"
+                              method="post"
+                              class="be-header-logout-form">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="be-header-action be-header-account">
+                                Cerrar sesion
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="be-header-action be-header-account"
+                           asp-controller="Account"
+                           asp-action="Login">
+                            Mi cuenta
+                        </a>
+                    }
+
+                    <a class="be-header-action be-header-reservation"
+                       asp-controller="Home"
+                       asp-action="Index"
+                       asp-fragment="reservar">
+                        Mi reserva
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
