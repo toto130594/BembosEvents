@@ -7,4 +7,7 @@ public static class FrontendSessionKeys
 
     public const string BackendJwtExpiresAtUtc =
         "BackendJwtExpiresAtUtc";
+
+    public const string ReservationDraft =
+        "BembosEvents.ReservationDraft";
 }

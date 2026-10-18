@@ -1,0 +1,172 @@
+@model BembosEvents.Web.ViewModels.ReservationFechaHorarioViewModel
+
+@{
+    ViewData["Title"] = "Fecha y horario";
+
+    var minDate =
+        DateOnly
+            .FromDateTime(DateTime.Today)
+            .ToString("yyyy-MM-dd");
+}
+
+<section class="be-reservation-page">
+    <div class="container">
+        <header class="be-reservation-heading">
+            <span class="be-reservation-step">
+                Paso 3 de 9
+            </span>
+
+            <h1>Elige fecha y horario</h1>
+
+            <p>
+                Salon seleccionado:
+                <strong>@Model.SalonNombre</strong>
+            </p>
+        </header>
+
+        <div
+            class="be-reservation-progress"
+            aria-label="Progreso de reserva">
+
+            <span class="is-complete">Sede</span>
+            <span class="is-complete">Salon</span>
+            <span class="is-active">Fecha</span>
+            <span>Invitados</span>
+            <span>Paquete</span>
+            <span>Tematica</span>
+            <span>Servicios</span>
+            <span>Resumen</span>
+        </div>
+
+        <div class="be-reservation-two-column">
+            <div>
+                <form
+                    asp-controller="Reserva"
+                    asp-action="FechaHorario"
+                    method="post"
+                    class="be-reservation-form">
+
+                    @Html.AntiForgeryToken()
+
+                    @if (TempData["ReservationError"] is string reservationError)
+                    {
+                        <div class="alert alert-danger">
+                            @reservationError
+                        </div>
+                    }
+                    <div
+                        asp-validation-summary="ModelOnly"
+                        class="text-danger mb-3">
+                    </div>
+
+                    <div class="be-reservation-field">
+                        <label
+                            asp-for="FechaEvento"
+                            class="form-label">
+                            Fecha del evento
+                        </label>
+
+                        <input
+                            asp-for="FechaEvento"
+                            type="date"
+                            min="@minDate"
+                            class="form-control" />
+
+                        <span
+                            asp-validation-for="FechaEvento"
+                            class="text-danger">
+                        </span>
+                    </div>
+
+                    <div class="be-reservation-time-grid">
+                        <div class="be-reservation-field">
+                            <label
+                                asp-for="HoraInicio"
+                                class="form-label">
+                                Hora de inicio
+                            </label>
+
+                            <input
+                                asp-for="HoraInicio"
+                                type="time"
+                                step="900"
+                                class="form-control" />
+
+                            <span
+                                asp-validation-for="HoraInicio"
+                                class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="be-reservation-field">
+                            <label
+                                asp-for="HoraFin"
+                                class="form-label">
+                                Hora de fin
+                            </label>
+
+                            <input
+                                asp-for="HoraFin"
+                                type="time"
+                                step="900"
+                                class="form-control" />
+
+                            <span
+                                asp-validation-for="HoraFin"
+                                class="text-danger">
+                            </span>
+                        </div>
+                    </div>
+
+                    <p class="be-reservation-help">
+                        La disponibilidad se valida directamente con
+                        Spring Boot antes de continuar.
+                    </p>
+
+                    <div class="be-reservation-actions">
+                        <a
+                            asp-controller="Reserva"
+                            asp-action="Salon"
+                            class="btn btn-outline-secondary">
+                            Volver a salon
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn be-btn-primary">
+                            Verificar disponibilidad
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <aside class="be-reservation-schedule">
+                <h2>Horarios del salon</h2>
+
+                @if (Model.Horarios.Count == 0)
+                {
+                    <p>
+                        Este salon no tiene horarios publicados.
+                    </p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var horario in Model.Horarios)
+                        {
+                            <li>
+                                <strong>@horario.DiaSemana</strong>
+
+                                <span>
+                                    @horario.HoraInicio.ToString(@"hh\:mm")
+                                    -
+                                    @horario.HoraFin.ToString(@"hh\:mm")
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </aside>
+        </div>
+    </div>
+</section>

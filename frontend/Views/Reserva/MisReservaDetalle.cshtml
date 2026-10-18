@@ -1,0 +1,250 @@
+@model BembosEvents.Web.ViewModels.ReservaDetalleViewModel
+
+@{
+    ViewData["Title"] = "Detalle de reserva";
+
+    var statusClass =
+        Model.Estado?.ToUpperInvariant() switch
+        {
+            "CONFIRMADA" => "is-confirmed",
+            "CANCELADA" => "is-cancelled",
+            "COMPLETADA" => "is-completed",
+            _ => "is-pending"
+        };
+    var puedeCancelar =
+        string.Equals(
+            Model.Estado,
+            "PENDIENTE",
+            StringComparison.OrdinalIgnoreCase)
+        ||
+        string.Equals(
+            Model.Estado,
+            "CONFIRMADA",
+            StringComparison.OrdinalIgnoreCase);
+}
+
+<section class="be-my-reservations-page">
+    <div class="container">
+        <div class="be-detail-back">
+            <a
+                asp-controller="Reserva"
+                asp-action="MisReservas">
+                &larr; Volver a mis reservas
+            </a>
+        </div>
+
+        <header class="be-my-reservations-heading">
+            <span class="be-reservation-code">
+                @Model.CodigoReserva
+            </span>
+
+            <div class="be-detail-title-row">
+                <h1>Detalle de reserva</h1>
+
+                <span class="be-reservation-status @statusClass">
+                    @Model.Estado
+                </span>
+            </div>
+        </header>
+
+        @if (TempData["ReservationSuccess"] is string reservationSuccess)
+        {
+            <div class="alert alert-success be-reservation-feedback">
+                @reservationSuccess
+            </div>
+        }
+
+        @if (TempData["ReservationError"] is string reservationError)
+        {
+            <div class="alert alert-danger be-reservation-feedback">
+                @reservationError
+            </div>
+        }
+        <div class="be-reservation-detail-grid">
+            <section class="be-reservation-detail-card">
+                <h2>Evento</h2>
+
+                <dl>
+                    <div>
+                        <dt>Sede</dt>
+                        <dd>@Model.SedeNombre</dd>
+                    </div>
+
+                    <div>
+                        <dt>Salon</dt>
+                        <dd>@Model.SalonNombre</dd>
+                    </div>
+
+                    <div>
+                        <dt>Fecha</dt>
+                        <dd>
+                            @Model.FechaEvento.ToString("dd/MM/yyyy")
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Horario</dt>
+                        <dd>
+                            @Model.HoraInicio.ToString("HH:mm")
+                            -
+                            @Model.HoraFin.ToString("HH:mm")
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Invitados</dt>
+                        <dd>@Model.CantidadInvitados</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <section class="be-reservation-detail-card">
+                <h2>Configuracion</h2>
+
+                <dl>
+                    <div>
+                        <dt>Paquete</dt>
+                        <dd>
+                            @(Model.PaqueteNombre ?? "Sin paquete")
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Tematica</dt>
+                        <dd>
+                            @(Model.TematicaNombre ?? "Sin tematica")
+                        </dd>
+                    </div>
+                </dl>
+
+                <h3>Servicios adicionales</h3>
+
+                @if (Model.Servicios.Count == 0)
+                {
+                    <p class="be-detail-muted">
+                        Sin servicios adicionales.
+                    </p>
+                }
+                else
+                {
+                    <ul class="be-detail-services">
+                        @foreach (var servicio in Model.Servicios)
+                        {
+                            <li>
+                                <div>
+                                    <strong>
+                                        @servicio.Nombre
+                                    </strong>
+
+                                    <span>
+                                        Cantidad:
+                                        @servicio.Cantidad
+                                    </span>
+                                </div>
+
+                                <div class="be-detail-service-price">
+                                    <span>
+                                        S/ @servicio.PrecioUnitario.ToString("N2")
+                                        c/u
+                                    </span>
+
+                                    <strong>
+                                        S/ @servicio.Subtotal.ToString("N2")
+                                    </strong>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+
+            <section class="be-reservation-detail-card be-reservation-money-card">
+                <h2>Importes oficiales</h2>
+
+                <dl>
+                    <div>
+                        <dt>Monto base</dt>
+                        <dd>
+                            S/ @Model.MontoBase.ToString("N2")
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Servicios</dt>
+                        <dd>
+                            S/ @Model.MontoServicios.ToString("N2")
+                        </dd>
+                    </div>
+
+                    <div class="is-total">
+                        <dt>Total</dt>
+                        <dd>
+                            S/ @Model.MontoTotal.ToString("N2")
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>Porcentaje de deposito</dt>
+                        <dd>
+                            @Model.PorcentajeDeposito.ToString("N2") %
+                        </dd>
+                    </div>
+
+                    <div class="is-deposit">
+                        <dt>Deposito requerido</dt>
+                        <dd>
+                            S/ @Model.MontoDeposito.ToString("N2")
+                        </dd>
+                    </div>
+                </dl>
+
+                <p class="be-detail-authority-note">
+                    Estos importes provienen de Spring Boot y son
+                    los valores oficiales de la reserva.
+                </p>
+            </section>
+        </div>
+
+        @if (puedeCancelar)
+        {
+            <section class="be-reservation-cancel-panel">
+                <div>
+                    <h2>Cancelar reserva</h2>
+
+                    <p>
+                        La cancelacion cambiara el estado de la reserva
+                        a CANCELADA. Esta operacion no realiza
+                        reembolsos automaticamente.
+                    </p>
+                </div>
+
+                <form
+                    asp-controller="Reserva"
+                    asp-action="CancelarPropia"
+                    asp-route-idReserva="@Model.IdReserva"
+                    method="post"
+                    onsubmit="return confirm('¿Seguro que deseas cancelar esta reserva?');">
+
+                    @Html.AntiForgeryToken()
+
+                    <button
+                        type="submit"
+                        class="btn be-btn-danger">
+                        Cancelar reserva
+                    </button>
+                </form>
+            </section>
+        }
+        <div class="be-detail-metadata">
+            <span>
+                Reserva creada:
+                @Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+            </span>
+
+            <span>
+                Ultima actualizacion:
+                @Model.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")
+            </span>
+        </div>
+    </div>
+</section>

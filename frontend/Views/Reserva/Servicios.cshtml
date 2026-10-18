@@ -1,0 +1,134 @@
+@model BembosEvents.Web.ViewModels.ReservationServiciosViewModel
+
+@{
+    ViewData["Title"] = "Servicios adicionales";
+
+    var cantidades =
+        Model.Servicios.ToDictionary(
+            item => item.IdServicioAdicional,
+            item => item.Cantidad);
+
+    var index = 0;
+}
+
+<section class="be-reservation-page">
+    <div class="container">
+        <header class="be-reservation-heading">
+            <span class="be-reservation-step">
+                Paso 7 de 9
+            </span>
+
+            <h1>Servicios adicionales</h1>
+
+            <p>
+                Indica una cantidad mayor a cero solamente
+                para los servicios que quieras agregar.
+                El precio final sera calculado por Spring Boot.
+            </p>
+        </header>
+
+        <div class="be-reservation-progress">
+            <span class="is-complete">Sede</span>
+            <span class="is-complete">Salon</span>
+            <span class="is-complete">Fecha</span>
+            <span class="is-complete">Invitados</span>
+            <span class="is-complete">Paquete</span>
+            <span class="is-complete">Tematica</span>
+            <span class="is-active">Servicios</span>
+            <span>Resumen</span>
+        </div>
+
+        <form
+            asp-controller="Reserva"
+            asp-action="Servicios"
+            method="post"
+            class="be-reservation-form">
+
+            @Html.AntiForgeryToken()
+
+            <div
+                asp-validation-summary="ModelOnly"
+                class="text-danger mb-3">
+            </div>
+
+            @if (Model.Catalogo.Count == 0)
+            {
+                <div class="be-reservation-empty">
+                    <h2>No hay servicios adicionales publicados</h2>
+
+                    <p>
+                        Este paso es opcional.
+                        Puedes continuar directamente al resumen.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="be-service-grid">
+                    @foreach (var servicio in Model.Catalogo)
+                    {
+                        var cantidad =
+                            cantidades.TryGetValue(
+                                servicio.IdServicioAdicional,
+                                out var current)
+                                ? current
+                                : 0;
+
+                        <article class="be-service-card">
+                            <div>
+                                <h2>@servicio.Nombre</h2>
+
+                                <p>
+                                    @servicio.Descripcion
+                                </p>
+
+                                <small>
+                                    Precio informativo:
+                                    S/ @servicio.Precio.ToString("N2")
+                                </small>
+                            </div>
+
+                            <div class="be-service-quantity">
+                                <label
+                                    for="servicio-@servicio.IdServicioAdicional">
+                                    Cantidad
+                                </label>
+
+                                <input
+                                    type="hidden"
+                                    name="Servicios[@index].IdServicioAdicional"
+                                    value="@servicio.IdServicioAdicional" />
+
+                                <input
+                                    id="servicio-@servicio.IdServicioAdicional"
+                                    type="number"
+                                    name="Servicios[@index].Cantidad"
+                                    value="@cantidad"
+                                    min="0"
+                                    class="form-control"
+                                    inputmode="numeric" />
+                            </div>
+                        </article>
+
+                        index++;
+                    }
+                </div>
+            }
+
+            <div class="be-reservation-actions">
+                <a
+                    asp-controller="Reserva"
+                    asp-action="Tematica"
+                    class="btn btn-outline-secondary">
+                    Volver
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn be-btn-primary">
+                    Ir al resumen
+                </button>
+            </div>
+        </form>
+    </div>
+</section>

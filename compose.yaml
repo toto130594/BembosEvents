@@ -69,6 +69,49 @@ services:
       - "8080:8080"
     restart: unless-stopped
 
+  dev-seed:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: "no"
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      SQLCMDPASSWORD: ${BEMBOS_SQL_PASSWORD:?Define BEMBOS_SQL_PASSWORD en .env}
+    entrypoint:
+      - /bin/bash
+    command:
+      - -c
+      - |
+        set -e
+
+        echo "Waiting for Flyway schema..."
+
+        until /opt/mssql-tools18/bin/sqlcmd \
+          -S sqlserver \
+          -U sa \
+          -P "$$SQLCMDPASSWORD" \
+          -C \
+          -d BembosEventsDB \
+          -Q "SET NOCOUNT ON; IF OBJECT_ID(N'dbo.HorarioSalon', N'U') IS NULL THROW 50000, 'Schema not ready', 1;" \
+          >/dev/null 2>&1
+        do
+          sleep 2
+        done
+
+        echo "Flyway schema available. Applying DEV seed..."
+
+        /opt/mssql-tools18/bin/sqlcmd \
+          -S sqlserver \
+          -U sa \
+          -P "$$SQLCMDPASSWORD" \
+          -C \
+          -b \
+          -d BembosEventsDB \
+          -i /scripts/10-seed-catalog.sql
+    volumes:
+      - ./database/dev:/scripts:ro
   frontend:
     build:
       context: ./frontend

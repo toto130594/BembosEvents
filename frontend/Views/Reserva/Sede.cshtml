@@ -1,0 +1,115 @@
+@model BembosEvents.Web.ViewModels.ReservationSedeViewModel
+
+@{
+    ViewData["Title"] = "Elige una sede";
+}
+
+<section class="be-reservation-page">
+    <div class="container">
+        <header class="be-reservation-heading">
+            <span class="be-reservation-step">
+                Paso 1 de 9
+            </span>
+
+            <h1>Elige la sede para tu fiesta</h1>
+
+            <p>
+                Primero dinos en que local quieres celebrar.
+                Los salones del siguiente paso dependeran de esta sede.
+            </p>
+        </header>
+
+        <div class="be-reservation-progress" aria-label="Progreso de reserva">
+            <span class="is-active">Sede</span>
+            <span>Salon</span>
+            <span>Fecha</span>
+            <span>Invitados</span>
+            <span>Paquete</span>
+            <span>Tematica</span>
+            <span>Servicios</span>
+            <span>Resumen</span>
+        </div>
+
+        @if (Model.Sedes.Count == 0)
+        {
+            <div class="be-reservation-empty" role="status">
+                <h2>No hay sedes disponibles</h2>
+                <p>
+                    En este momento Spring Boot no tiene sedes publicadas
+                    para iniciar una reserva.
+                </p>
+            </div>
+        }
+        else
+        {
+            <form
+                asp-controller="Reserva"
+                asp-action="Sede"
+                method="post"
+                class="be-reservation-form">
+
+                @Html.AntiForgeryToken()
+
+                <div
+                    asp-validation-summary="ModelOnly"
+                    class="text-danger mb-3">
+                </div>
+
+                <span
+                    asp-validation-for="IdSede"
+                    class="text-danger d-block mb-3">
+                </span>
+
+                <div class="be-reservation-options">
+                    @foreach (var sede in Model.Sedes)
+                    {
+                        var selected =
+                            Model.IdSede == sede.IdSede;
+
+                        <label
+                            for="sede-@sede.IdSede"
+                            class="be-reservation-option @(selected ? "is-selected" : string.Empty)">
+
+                            <input
+                                id="sede-@sede.IdSede"
+                                type="radio"
+                                name="IdSede"
+                                value="@sede.IdSede"
+                                checked="@selected" />
+
+                            <span class="be-reservation-option-body">
+                                <strong>@sede.Nombre</strong>
+
+                                <span>
+                                    @sede.Direccion
+                                </span>
+
+                                @if (!string.IsNullOrWhiteSpace(sede.Distrito))
+                                {
+                                    <small>
+                                        @sede.Distrito
+                                    </small>
+                                }
+                            </span>
+                        </label>
+                    }
+                </div>
+
+                <div class="be-reservation-actions">
+                    <a
+                        asp-controller="Home"
+                        asp-action="Index"
+                        class="btn btn-outline-secondary">
+                        Volver
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn be-btn-primary">
+                        Continuar con salon
+                    </button>
+                </div>
+            </form>
+        }
+    </div>
+</section>

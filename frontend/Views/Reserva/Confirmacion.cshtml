@@ -1,0 +1,44 @@
+@model BembosEvents.Web.ViewModels.ReservationConfirmacionViewModel
+
+@{
+    ViewData["Title"] = "Reserva creada";
+}
+
+<section class="be-reservation-page">
+    <div class="container">
+        <div class="be-reservation-success">
+            <span class="be-reservation-step">
+                Paso 9 de 9
+            </span>
+
+            <h1>Reserva creada correctamente</h1>
+
+            <p>
+                Spring Boot registro la reserva con ID
+                <strong>@Model.IdReserva</strong>.
+            </p>
+
+            <p>
+                Ya puedes consultar sus datos oficiales desde
+                Mis reservas.
+            </p>
+
+            <div class="be-reservation-actions">
+                <a
+                    asp-controller="Reserva"
+                    asp-action="MisReservaDetalle"
+                    asp-route-idReserva="@Model.IdReserva"
+                    class="btn be-btn-primary">
+                    Ver mi reserva
+                </a>
+
+                <a
+                    asp-controller="Reserva"
+                    asp-action="MisReservas"
+                    class="btn btn-outline-secondary">
+                    Ver mis reservas
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

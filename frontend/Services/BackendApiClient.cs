@@ -638,4 +638,205 @@ public sealed class BackendApiClient : IBackendApiClient
 
         return await response.Content.ReadFromJsonAsync<ServicioAdicionalPublicoDto>(
             cancellationToken: cancellationToken);
-    }}
+    }
+    public async Task<DisponibilidadSalonDto?> GetDisponibilidadSalonAsync(
+        int idSalon,
+        DateOnly fecha,
+        TimeOnly horaInicio,
+        TimeOnly horaFin,
+        CancellationToken cancellationToken = default)
+    {
+        var fechaValue =
+            fecha.ToString(
+                "yyyy-MM-dd",
+                System.Globalization.CultureInfo.InvariantCulture);
+
+        var horaInicioValue =
+            horaInicio.ToString(
+                "HH:mm",
+                System.Globalization.CultureInfo.InvariantCulture);
+
+        var horaFinValue =
+            horaFin.ToString(
+                "HH:mm",
+                System.Globalization.CultureInfo.InvariantCulture);
+
+        var uri =
+            "api/salones/" +
+            idSalon +
+            "/disponibilidad?fecha=" +
+            Uri.EscapeDataString(fechaValue) +
+            "&horaInicio=" +
+            Uri.EscapeDataString(horaInicioValue) +
+            "&horaFin=" +
+            Uri.EscapeDataString(horaFinValue);
+
+        using var response =
+            await _httpClient.GetAsync(
+                uri,
+                cancellationToken);
+
+        if (
+            response.StatusCode ==
+            System.Net.HttpStatusCode.NotFound
+        )
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content
+            .ReadFromJsonAsync<DisponibilidadSalonDto>(
+                cancellationToken: cancellationToken);
+    }
+
+    public async Task<BembosEvents.Web.Models.Api.BackendApiResult<BembosEvents.Web.Models.Api.ReservaCreadaDto>> CrearReservaAsync(
+        BembosEvents.Web.Models.Api.CrearReservaRequestDto request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.PostAsJsonAsync(
+                "api/reservas",
+                request,
+                cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var data =
+                await response.Content.ReadFromJsonAsync<BembosEvents.Web.Models.Api.ReservaCreadaDto>(
+                    cancellationToken: cancellationToken);
+
+            return new BembosEvents.Web.Models.Api.BackendApiResult<BembosEvents.Web.Models.Api.ReservaCreadaDto>
+            {
+                StatusCode =
+                    (int)response.StatusCode,
+
+                Data =
+                    data
+            };
+        }
+
+        var errorBody =
+            await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+        return new BembosEvents.Web.Models.Api.BackendApiResult<BembosEvents.Web.Models.Api.ReservaCreadaDto>
+        {
+            StatusCode =
+                (int)response.StatusCode,
+
+            ErrorBody =
+                errorBody
+        };
+    }
+
+    public async Task<BackendApiResult<IReadOnlyList<ReservaResumenDto>>> GetMisReservasAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                "api/reservas/mias",
+                cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var items =
+                await response.Content.ReadFromJsonAsync<List<ReservaResumenDto>>(
+                    cancellationToken: cancellationToken);
+
+            return new BackendApiResult<IReadOnlyList<ReservaResumenDto>>
+            {
+                StatusCode =
+                    (int)response.StatusCode,
+
+                Data =
+                    items ??
+                    new List<ReservaResumenDto>()
+            };
+        }
+
+        return new BackendApiResult<IReadOnlyList<ReservaResumenDto>>
+        {
+            StatusCode =
+                (int)response.StatusCode,
+
+            ErrorBody =
+                await response.Content.ReadAsStringAsync(
+                    cancellationToken)
+        };
+    }
+
+    public async Task<BackendApiResult<ReservaDetalleDto>> GetReservaPropiaAsync(
+        int idReserva,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/reservas/{idReserva}",
+                cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var item =
+                await response.Content.ReadFromJsonAsync<ReservaDetalleDto>(
+                    cancellationToken: cancellationToken);
+
+            return new BackendApiResult<ReservaDetalleDto>
+            {
+                StatusCode =
+                    (int)response.StatusCode,
+
+                Data =
+                    item
+            };
+        }
+
+        return new BackendApiResult<ReservaDetalleDto>
+        {
+            StatusCode =
+                (int)response.StatusCode,
+
+            ErrorBody =
+                await response.Content.ReadAsStringAsync(
+                    cancellationToken)
+        };
+    }
+
+    public async Task<BackendApiResult<ReservaDetalleDto>> CancelarReservaPropiaAsync(
+        int idReserva,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.PostAsync(
+                $"api/reservas/{idReserva}/cancelacion",
+                content: null,
+                cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var data =
+                await response.Content.ReadFromJsonAsync<ReservaDetalleDto>(
+                    cancellationToken: cancellationToken);
+
+            return new BackendApiResult<ReservaDetalleDto>
+            {
+                StatusCode =
+                    (int)response.StatusCode,
+
+                Data =
+                    data
+            };
+        }
+
+        return new BackendApiResult<ReservaDetalleDto>
+        {
+            StatusCode =
+                (int)response.StatusCode,
+
+            ErrorBody =
+                await response.Content.ReadAsStringAsync(
+                    cancellationToken)
+        };
+    }
+}

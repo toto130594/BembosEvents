@@ -1,0 +1,186 @@
+@model BembosEvents.Web.ViewModels.ReservationResumenViewModel
+
+@{
+    ViewData["Title"] = "Resumen de reserva";
+}
+
+<section class="be-reservation-page">
+    <div class="container">
+        <header class="be-reservation-heading">
+            <span class="be-reservation-step">
+                Paso 8 de 9
+            </span>
+
+            <h1>Revisa tu reserva</h1>
+
+            <p>
+                Confirma que la informacion sea correcta antes de continuar.
+            </p>
+        </header>
+
+        <div class="be-reservation-progress">
+            <span class="is-complete">Sede</span>
+            <span class="is-complete">Salon</span>
+            <span class="is-complete">Fecha</span>
+            <span class="is-complete">Invitados</span>
+            <span class="is-complete">Paquete</span>
+            <span class="is-complete">Tematica</span>
+            <span class="is-complete">Servicios</span>
+            <span class="is-active">Resumen</span>
+        </div>
+
+        @if (TempData["ReservationError"] is string reservationError)
+        {
+            <div class="alert alert-danger">
+                @reservationError
+            </div>
+        }
+
+        <div class="be-reservation-summary">
+            <dl>
+                <div>
+                    <dt>Sede</dt>
+                    <dd>@Model.SedeNombre</dd>
+                </div>
+
+                <div>
+                    <dt>Salon</dt>
+                    <dd>@Model.SalonNombre</dd>
+                </div>
+
+                <div>
+                    <dt>Fecha</dt>
+                    <dd>@Model.FechaEvento.ToString("dd/MM/yyyy")</dd>
+                </div>
+
+                <div>
+                    <dt>Horario</dt>
+                    <dd>
+                        @Model.HoraInicio.ToString("HH:mm")
+                        -
+                        @Model.HoraFin.ToString("HH:mm")
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Invitados</dt>
+                    <dd>@Model.CantidadInvitados</dd>
+                </div>
+
+                <div>
+                    <dt>Paquete</dt>
+                    <dd>
+                        @if (Model.PaqueteNombre is null)
+                        {
+                            <span>Sin paquete</span>
+                        }
+                        else
+                        {
+                            <span>
+                                @Model.PaqueteNombre
+                                @if (Model.PaquetePrecioBase.HasValue)
+                                {
+                                    <small>
+                                        - referencia S/
+                                        @Model.PaquetePrecioBase.Value.ToString("N2")
+                                    </small>
+                                }
+                            </span>
+                        }
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Tematica</dt>
+                    <dd>
+                        @if (Model.TematicaNombre is null)
+                        {
+                            <span>Sin tematica</span>
+                        }
+                        else
+                        {
+                            <span>
+                                @Model.TematicaNombre
+                                @if (Model.TematicaPrecioAdicional.HasValue)
+                                {
+                                    <small>
+                                        - referencia S/
+                                        @Model.TematicaPrecioAdicional.Value.ToString("N2")
+                                    </small>
+                                }
+                            </span>
+                        }
+                    </dd>
+                </div>
+            </dl>
+
+            <section class="be-reservation-summary-services">
+                <h2>Servicios adicionales</h2>
+
+                @if (Model.Servicios.Count == 0)
+                {
+                    <p>Sin servicios adicionales.</p>
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var servicio in Model.Servicios)
+                        {
+                            <li>
+                                <span>
+                                    @servicio.Nombre
+                                    x @servicio.Cantidad
+                                </span>
+
+                                <small>
+                                    Referencia S/
+                                    @servicio.PrecioUnitario.ToString("N2")
+                                    c/u
+                                </small>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        </div>
+
+        <div class="be-reservation-info mt-3">
+            Los precios anteriores son solo referencias del catalogo.
+            El monto total y el deposito son calculados exclusivamente
+            por Spring Boot al crear la reserva.
+        </div>
+
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <div class="be-reservation-info mt-3">
+                Para confirmar la reserva deberas iniciar sesion.
+                Tu borrador permanecera guardado en esta sesion.
+            </div>
+        }
+
+        <form
+            asp-controller="Reserva"
+            asp-action="Confirmar"
+            method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div class="be-reservation-actions">
+                <a
+                    asp-controller="Reserva"
+                    asp-action="Servicios"
+                    class="btn btn-outline-secondary">
+                    Volver
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn be-btn-primary">
+                    @(User.Identity?.IsAuthenticated == true
+                        ? "Confirmar reserva"
+                        : "Iniciar sesion para confirmar")
+                </button>
+            </div>
+        </form>
+    </div>
+</section>

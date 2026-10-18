@@ -1,0 +1,88 @@
+@model BembosEvents.Web.ViewModels.ReservationInvitadosViewModel
+
+@{
+    ViewData["Title"] = "Cantidad de invitados";
+}
+
+<section class="be-reservation-page">
+    <div class="container">
+        <header class="be-reservation-heading">
+            <span class="be-reservation-step">
+                Paso 4 de 9
+            </span>
+
+            <h1>Cuantos invitados tendras?</h1>
+
+            <p>
+                Salon:
+                <strong>@Model.SalonNombre</strong>
+            </p>
+        </header>
+
+        <div class="be-reservation-progress">
+            <span class="is-complete">Sede</span>
+            <span class="is-complete">Salon</span>
+            <span class="is-complete">Fecha</span>
+            <span class="is-active">Invitados</span>
+            <span>Paquete</span>
+            <span>Tematica</span>
+            <span>Servicios</span>
+            <span>Resumen</span>
+        </div>
+
+        <form
+            asp-controller="Reserva"
+            asp-action="Invitados"
+            method="post"
+            class="be-reservation-form be-reservation-form-narrow">
+
+            @Html.AntiForgeryToken()
+
+            <div
+                asp-validation-summary="ModelOnly"
+                class="text-danger mb-3">
+            </div>
+
+            <div class="be-reservation-field">
+                <label
+                    asp-for="CantidadInvitados"
+                    class="form-label">
+                    Cantidad de invitados
+                </label>
+
+                <input
+                    asp-for="CantidadInvitados"
+                    type="number"
+                    min="1"
+                    class="form-control"
+                    inputmode="numeric" />
+
+                <span
+                    asp-validation-for="CantidadInvitados"
+                    class="text-danger">
+                </span>
+            </div>
+
+            <div class="be-reservation-info">
+                Capacidad publicada del salon:
+                <strong>@Model.CapacidadSalon personas</strong>.
+                Spring Boot realizara las validaciones finales al crear la reserva.
+            </div>
+
+            <div class="be-reservation-actions">
+                <a
+                    asp-controller="Reserva"
+                    asp-action="FechaHorario"
+                    class="btn btn-outline-secondary">
+                    Volver
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn be-btn-primary">
+                    Continuar
+                </button>
+            </div>
+        </form>
+    </div>
+</section>

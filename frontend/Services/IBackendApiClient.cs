@@ -61,4 +61,26 @@ public interface IBackendApiClient
     Task<ServicioAdicionalPublicoDto?> GetServicioAdicionalAsync(
         int idServicioAdicional,
         CancellationToken cancellationToken = default);
+
+    Task<DisponibilidadSalonDto?> GetDisponibilidadSalonAsync(
+        int idSalon,
+        DateOnly fecha,
+        TimeOnly horaInicio,
+        TimeOnly horaFin,
+        CancellationToken cancellationToken = default);
+
+    Task<BembosEvents.Web.Models.Api.BackendApiResult<BembosEvents.Web.Models.Api.ReservaCreadaDto>> CrearReservaAsync(
+        BembosEvents.Web.Models.Api.CrearReservaRequestDto request,
+        CancellationToken cancellationToken = default);
+
+    Task<BackendApiResult<IReadOnlyList<ReservaResumenDto>>> GetMisReservasAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<BackendApiResult<ReservaDetalleDto>> GetReservaPropiaAsync(
+        int idReserva,
+        CancellationToken cancellationToken = default);
+
+    Task<BackendApiResult<ReservaDetalleDto>> CancelarReservaPropiaAsync(
+        int idReserva,
+        CancellationToken cancellationToken = default);
 }

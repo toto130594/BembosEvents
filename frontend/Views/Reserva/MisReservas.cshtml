@@ -1,0 +1,140 @@
+@model BembosEvents.Web.ViewModels.MisReservasViewModel
+
+@{
+    ViewData["Title"] = "Mis reservas";
+}
+
+<section class="be-my-reservations-page">
+    <div class="container">
+        <header class="be-my-reservations-heading">
+            <span class="be-reservation-step">
+                Mi cuenta
+            </span>
+
+            <h1>Mis reservas</h1>
+
+            <p>
+                Consulta tus eventos reservados y revisa el detalle
+                de cada solicitud.
+            </p>
+        </header>
+
+        @if (TempData["ReservationError"] is string reservationError)
+        {
+            <div class="alert alert-danger">
+                @reservationError
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                @Model.ErrorMessage
+            </div>
+        }
+        else if (Model.Reservas.Count == 0)
+        {
+            <div class="be-my-reservations-empty">
+                <h2>Aun no tienes reservas</h2>
+
+                <p>
+                    Cuando completes una reserva aparecera aqui.
+                </p>
+
+                <a
+                    asp-controller="Reserva"
+                    asp-action="Sede"
+                    class="btn be-btn-primary">
+                    Crear mi primera reserva
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="be-reservation-list">
+                @foreach (var reserva in Model.Reservas)
+                {
+                    var statusClass =
+                        reserva.Estado?.ToUpperInvariant() switch
+                        {
+                            "CONFIRMADA" => "is-confirmed",
+                            "CANCELADA" => "is-cancelled",
+                            "COMPLETADA" => "is-completed",
+                            _ => "is-pending"
+                        };
+
+                    <article class="be-reservation-card">
+                        <div class="be-reservation-card-top">
+                            <div>
+                                <span class="be-reservation-code">
+                                    @reserva.CodigoReserva
+                                </span>
+
+                                <h2>
+                                    @reserva.SedeNombre
+                                </h2>
+
+                                <p>
+                                    @reserva.SalonNombre
+                                </p>
+                            </div>
+
+                            <span class="be-reservation-status @statusClass">
+                                @reserva.Estado
+                            </span>
+                        </div>
+
+                        <dl class="be-reservation-card-data">
+                            <div>
+                                <dt>Fecha</dt>
+                                <dd>
+                                    @reserva.FechaEvento.ToString("dd/MM/yyyy")
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>Horario</dt>
+                                <dd>
+                                    @reserva.HoraInicio.ToString("HH:mm")
+                                    -
+                                    @reserva.HoraFin.ToString("HH:mm")
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>Invitados</dt>
+                                <dd>
+                                    @reserva.CantidadInvitados
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>Total</dt>
+                                <dd>
+                                    S/ @reserva.MontoTotal.ToString("N2")
+                                </dd>
+                            </div>
+
+                            <div>
+                                <dt>Deposito</dt>
+                                <dd>
+                                    S/ @reserva.MontoDeposito.ToString("N2")
+                                </dd>
+                            </div>
+                        </dl>
+
+                        <div class="be-reservation-card-actions">
+                            <a
+                                asp-controller="Reserva"
+                                asp-action="MisReservaDetalle"
+                                asp-route-idReserva="@reserva.IdReserva"
+                                class="btn be-btn-primary">
+                                Ver detalle
+                            </a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>

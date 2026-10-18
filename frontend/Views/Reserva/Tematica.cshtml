@@ -1,0 +1,118 @@
+@model BembosEvents.Web.ViewModels.ReservationTematicaViewModel
+
+@{
+    ViewData["Title"] = "Elige una tematica";
+}
+
+<section class="be-reservation-page">
+    <div class="container">
+        <header class="be-reservation-heading">
+            <span class="be-reservation-step">
+                Paso 6 de 9
+            </span>
+
+            <h1>Quieres agregar una tematica?</h1>
+
+            <p>
+                Tambien puedes continuar sin tematica.
+            </p>
+        </header>
+
+        <div class="be-reservation-progress">
+            <span class="is-complete">Sede</span>
+            <span class="is-complete">Salon</span>
+            <span class="is-complete">Fecha</span>
+            <span class="is-complete">Invitados</span>
+            <span class="is-complete">Paquete</span>
+            <span class="is-active">Tematica</span>
+            <span>Servicios</span>
+            <span>Resumen</span>
+        </div>
+
+        <form
+            asp-controller="Reserva"
+            asp-action="Tematica"
+            method="post"
+            class="be-reservation-form">
+
+            @Html.AntiForgeryToken()
+
+            <div
+                asp-validation-summary="ModelOnly"
+                class="text-danger mb-3">
+            </div>
+
+            <span
+                asp-validation-for="IdTematica"
+                class="text-danger d-block mb-3">
+            </span>
+
+            <div class="be-reservation-options">
+                <label class="be-reservation-option">
+                    <input
+                        type="radio"
+                        name="IdTematica"
+                        value=""
+                        checked="@(!Model.IdTematica.HasValue)" />
+
+                    <span class="be-reservation-option-body">
+                        <strong>Sin tematica</strong>
+                        <span>
+                            Continuar sin agregar una tematica.
+                        </span>
+                    </span>
+                </label>
+
+                @foreach (var tematica in Model.Tematicas)
+                {
+                    var selected =
+                        Model.IdTematica == tematica.IdTematica;
+
+                    <label class="be-reservation-option">
+                        <input
+                            type="radio"
+                            name="IdTematica"
+                            value="@tematica.IdTematica"
+                            checked="@selected" />
+
+                        <span class="be-reservation-option-body">
+                            <strong>@tematica.Nombre</strong>
+
+                            <span>
+                                @tematica.Descripcion
+                            </span>
+
+                            <small>
+                                Adicional informativo:
+                                S/ @tematica.PrecioAdicional.ToString("N2")
+                            </small>
+                        </span>
+                    </label>
+                }
+            </div>
+
+            @if (Model.Tematicas.Count == 0)
+            {
+                <div class="be-reservation-info mt-3">
+                    Actualmente no hay tematicas publicadas.
+                    Puedes continuar sin tematica.
+                </div>
+            }
+
+            <div class="be-reservation-actions">
+                <a
+                    asp-controller="Reserva"
+                    asp-action="Paquete"
+                    class="btn btn-outline-secondary">
+                    Volver
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn be-btn-primary">
+                    Continuar
+                </button>
+            </div>
+        </form>
+    </div>
+</section>

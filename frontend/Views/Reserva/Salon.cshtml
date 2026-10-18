@@ -1,0 +1,123 @@
+@model BembosEvents.Web.ViewModels.ReservationSalonViewModel
+
+@{
+    ViewData["Title"] = "Elige un salon";
+}
+
+<section class="be-reservation-page">
+    <div class="container">
+        <header class="be-reservation-heading">
+            <span class="be-reservation-step">
+                Paso 2 de 9
+            </span>
+
+            <h1>Ahora elige tu salon</h1>
+
+            <p>
+                Sede seleccionada:
+                <strong>@Model.SedeNombre</strong>
+            </p>
+        </header>
+
+        <div class="be-reservation-progress" aria-label="Progreso de reserva">
+            <span class="is-complete">Sede</span>
+            <span class="is-active">Salon</span>
+            <span>Fecha</span>
+            <span>Invitados</span>
+            <span>Paquete</span>
+            <span>Tematica</span>
+            <span>Servicios</span>
+            <span>Resumen</span>
+        </div>
+
+        @if (Model.Salones.Count == 0)
+        {
+            <div class="be-reservation-empty" role="status">
+                <h2>Esta sede aun no tiene salones disponibles</h2>
+
+                <p>
+                    Puedes regresar y seleccionar otra sede.
+                </p>
+
+                <a
+                    asp-controller="Reserva"
+                    asp-action="Sede"
+                    class="btn be-btn-primary">
+                    Elegir otra sede
+                </a>
+            </div>
+        }
+        else
+        {
+            <form
+                asp-controller="Reserva"
+                asp-action="Salon"
+                method="post"
+                class="be-reservation-form">
+
+                @Html.AntiForgeryToken()
+
+                <div
+                    asp-validation-summary="ModelOnly"
+                    class="text-danger mb-3">
+                </div>
+
+                <span
+                    asp-validation-for="IdSalon"
+                    class="text-danger d-block mb-3">
+                </span>
+
+                <div class="be-reservation-options">
+                    @foreach (var salon in Model.Salones)
+                    {
+                        var selected =
+                            Model.IdSalon == salon.IdSalon;
+
+                        <label
+                            for="salon-@salon.IdSalon"
+                            class="be-reservation-option @(selected ? "is-selected" : string.Empty)">
+
+                            <input
+                                id="salon-@salon.IdSalon"
+                                type="radio"
+                                name="IdSalon"
+                                value="@salon.IdSalon"
+                                checked="@selected" />
+
+                            <span class="be-reservation-option-body">
+                                <strong>@salon.Nombre</strong>
+
+                                @if (!string.IsNullOrWhiteSpace(salon.Descripcion))
+                                {
+                                    <span>
+                                        @salon.Descripcion
+                                    </span>
+                                }
+
+                                <small>
+                                    Capacidad:
+                                    @salon.Capacidad personas
+                                </small>
+                            </span>
+                        </label>
+                    }
+                </div>
+
+                <div class="be-reservation-actions">
+                    <a
+                        asp-controller="Reserva"
+                        asp-action="Sede"
+                        class="btn btn-outline-secondary">
+                        Volver a sede
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn be-btn-primary">
+                        Continuar con fecha
+                    </button>
+                </div>
+            </form>
+        }
+    </div>
+</section>
