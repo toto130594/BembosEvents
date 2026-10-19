@@ -1,0 +1,343 @@
+@model BembosEvents.Web.ViewModels.BackofficeReservaDetalleViewModel
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = "Detalle de reserva";
+
+    var reserva = Model.Reserva;
+}
+
+<section class="backoffice-page-heading">
+    <div>
+        <p class="backoffice-eyebrow">
+            Reserva #@reserva.IdReserva
+        </p>
+
+        <h1>
+            @reserva.CodigoReserva
+        </h1>
+
+        <p>
+            Detalle administrativo obtenido desde Spring Boot.
+        </p>
+    </div>
+
+    <span class="backoffice-status">
+        @reserva.Estado
+    </span>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.MensajeExito))
+{
+    <div class="backoffice-alert backoffice-alert--success">
+        @Model.MensajeExito
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorCambioEstado))
+{
+    <div class="backoffice-alert backoffice-alert--error">
+        @Model.ErrorCambioEstado
+    </div>
+}
+
+<section class="backoffice-detail-card">
+    <h2>
+        Evento
+    </h2>
+
+    <dl class="backoffice-detail-grid">
+        <div>
+            <dt>
+                Fecha
+            </dt>
+
+            <dd>
+                @reserva.FechaEvento.ToString("dd/MM/yyyy")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Horario
+            </dt>
+
+            <dd>
+                @reserva.HoraInicio.ToString("HH:mm")
+                -
+                @reserva.HoraFin.ToString("HH:mm")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Sede
+            </dt>
+
+            <dd>
+                ID @reserva.IdSede
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Salon
+            </dt>
+
+            <dd>
+                ID @reserva.IdSalon
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Paquete
+            </dt>
+
+            <dd>
+                @(reserva.IdPaquete.HasValue
+                    ? $"ID {reserva.IdPaquete.Value}"
+                    : "Sin paquete")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Tematica
+            </dt>
+
+            <dd>
+                @(reserva.IdTematica.HasValue
+                    ? $"ID {reserva.IdTematica.Value}"
+                    : "Sin tematica")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Invitados
+            </dt>
+
+            <dd>
+                @reserva.CantidadInvitados
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Estado
+            </dt>
+
+            <dd>
+                @reserva.Estado
+            </dd>
+        </div>
+    </dl>
+</section>
+
+<section class="backoffice-detail-card">
+    <h2>
+        Gestionar estado
+    </h2>
+
+    @if (Model.TransicionesDisponibles.Count == 0)
+    {
+        <p class="backoffice-muted">
+            Esta reserva se encuentra en un estado terminal
+            y no dispone de transiciones administrativas.
+        </p>
+    }
+    else
+    {
+        <p class="backoffice-muted">
+            Las opciones se muestran segun las reglas conocidas,
+            pero Spring Boot vuelve a validar la transicion.
+        </p>
+
+        <form
+            class="backoffice-state-form"
+            asp-controller="Backoffice"
+            asp-action="CambiarEstadoReserva"
+            asp-route-idReserva="@reserva.IdReserva"
+            method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div class="backoffice-field">
+                <label for="NuevoEstado">
+                    Nuevo estado
+                </label>
+
+                <select
+                    id="NuevoEstado"
+                    name="NuevoEstado"
+                    required>
+                    <option value="">
+                        Selecciona un estado
+                    </option>
+
+                    @foreach (var estado in Model.TransicionesDisponibles)
+                    {
+                        <option value="@estado">
+                            @estado
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <button
+                class="backoffice-action"
+                type="submit">
+                Actualizar estado
+            </button>
+        </form>
+    }
+</section>
+
+<section class="backoffice-detail-card">
+    <h2>
+        Montos
+    </h2>
+
+    <dl class="backoffice-detail-grid">
+        <div>
+            <dt>
+                Base
+            </dt>
+
+            <dd>
+                S/ @reserva.MontoBase.ToString("N2")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Servicios
+            </dt>
+
+            <dd>
+                S/ @reserva.MontoServicios.ToString("N2")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Total
+            </dt>
+
+            <dd>
+                S/ @reserva.MontoTotal.ToString("N2")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Deposito
+            </dt>
+
+            <dd>
+                S/ @reserva.MontoDeposito.ToString("N2")
+                (@reserva.PorcentajeDeposito.ToString("N2")%)
+            </dd>
+        </div>
+    </dl>
+</section>
+
+<section class="backoffice-detail-card">
+    <h2>
+        Servicios adicionales
+    </h2>
+
+    @if (reserva.ServiciosAdicionales.Count == 0)
+    {
+        <p class="backoffice-muted">
+            Esta reserva no tiene servicios adicionales.
+        </p>
+    }
+    else
+    {
+        <div class="backoffice-table-wrap">
+            <table class="backoffice-table">
+                <thead>
+                    <tr>
+                        <th>
+                            Servicio
+                        </th>
+
+                        <th>
+                            Cantidad
+                        </th>
+
+                        <th>
+                            Precio unitario
+                        </th>
+
+                        <th>
+                            Subtotal
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var servicio in reserva.ServiciosAdicionales)
+                    {
+                        <tr>
+                            <td>
+                                ID @servicio.IdServicioAdicional
+                            </td>
+
+                            <td>
+                                @servicio.Cantidad
+                            </td>
+
+                            <td>
+                                S/ @servicio.PrecioUnitario.ToString("N2")
+                            </td>
+
+                            <td>
+                                S/ @servicio.Subtotal.ToString("N2")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<section class="backoffice-detail-card">
+    <h2>
+        Auditoria
+    </h2>
+
+    <dl class="backoffice-detail-grid">
+        <div>
+            <dt>
+                Creada
+            </dt>
+
+            <dd>
+                @reserva.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Actualizada
+            </dt>
+
+            <dd>
+                @reserva.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")
+            </dd>
+        </div>
+    </dl>
+</section>
+
+<div class="backoffice-footer-actions">
+    <a
+        class="backoffice-action backoffice-action--secondary"
+        asp-controller="Backoffice"
+        asp-action="Reservas">
+        Volver a reservas
+    </a>
+</div>

@@ -950,4 +950,267 @@ public sealed class BackendApiClient : IBackendApiClient
                     cancellationToken)
         };
     }
+
+    public async Task<int> GetBackofficeAccessStatusAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                "api/backoffice/sedes",
+                cancellationToken);
+
+        return (int)response.StatusCode;
+    }
+
+    public async Task<BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.SedeBackofficeDto>>> GetBackofficeSedesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                "api/backoffice/sedes",
+                cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.SedeBackofficeDto>>(
+                (int)response.StatusCode,
+                null);
+        }
+
+        var json =
+            await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+        var data =
+            System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<BembosEvents.Web.Models.Api.SedeBackofficeDto>>(
+                json,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ??
+            new System.Collections.Generic.List<BembosEvents.Web.Models.Api.SedeBackofficeDto>();
+
+        return new BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.SedeBackofficeDto>>(
+            (int)response.StatusCode,
+            data);
+    }
+
+    public async Task<BackofficeApiResult<BembosEvents.Web.Models.Api.SedeBackofficeDto>> GetBackofficeSedeAsync(
+        int idSede,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/backoffice/sedes/{idSede}",
+                cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new BackofficeApiResult<BembosEvents.Web.Models.Api.SedeBackofficeDto>(
+                (int)response.StatusCode,
+                null);
+        }
+
+        var json =
+            await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+        var data =
+            System.Text.Json.JsonSerializer.Deserialize<BembosEvents.Web.Models.Api.SedeBackofficeDto>(
+                json,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+        return new BackofficeApiResult<BembosEvents.Web.Models.Api.SedeBackofficeDto>(
+            (int)response.StatusCode,
+            data);
+    }
+
+    public async Task<BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.ReservaBackofficeResumenDto>>> GetBackofficeReservasAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                "api/backoffice/reservas",
+                cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.ReservaBackofficeResumenDto>>(
+                (int)response.StatusCode,
+                null);
+        }
+
+        var json =
+            await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+        var data =
+            System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<BembosEvents.Web.Models.Api.ReservaBackofficeResumenDto>>(
+                json,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ??
+            new System.Collections.Generic.List<BembosEvents.Web.Models.Api.ReservaBackofficeResumenDto>();
+
+        return new BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.ReservaBackofficeResumenDto>>(
+            (int)response.StatusCode,
+            data);
+    }
+
+    public async Task<BackofficeApiResult<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>> GetBackofficeReservaAsync(
+        int idReserva,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/backoffice/reservas/{idReserva}",
+                cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new BackofficeApiResult<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>(
+                (int)response.StatusCode,
+                null);
+        }
+
+        var json =
+            await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+        var data =
+            System.Text.Json.JsonSerializer.Deserialize<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>(
+                json,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+        return new BackofficeApiResult<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>(
+            (int)response.StatusCode,
+            data);
+    }
+
+    public async Task<BackofficeApiResult<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>> CambiarEstadoReservaBackofficeAsync(
+        int idReserva,
+        BembosEvents.Web.Models.Api.CambiarEstadoReservaRequestDto request,
+        CancellationToken cancellationToken = default)
+    {
+        var json =
+            System.Text.Json.JsonSerializer.Serialize(
+                request,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNamingPolicy =
+                        System.Text.Json.JsonNamingPolicy.CamelCase
+                });
+
+        using var message =
+            new System.Net.Http.HttpRequestMessage(
+                System.Net.Http.HttpMethod.Patch,
+                $"api/backoffice/reservas/{idReserva}/estado");
+
+        message.Content =
+            new System.Net.Http.StringContent(
+                json,
+                System.Text.Encoding.UTF8,
+                "application/json");
+
+        using var response =
+            await _httpClient.SendAsync(
+                message,
+                cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new BackofficeApiResult<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>(
+                (int)response.StatusCode,
+                null);
+        }
+
+        var responseJson =
+            await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+        var data =
+            System.Text.Json.JsonSerializer.Deserialize<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>(
+                responseJson,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+        return new BackofficeApiResult<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>(
+            (int)response.StatusCode,
+            data);
+    }
+
+    public async Task<BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.PagoDto>>> GetBackofficePagosAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                "api/backoffice/pagos",
+                cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.PagoDto>>(
+                (int)response.StatusCode,
+                null);
+        }
+
+        var json =
+            await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+        var data =
+            System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<BembosEvents.Web.Models.Api.PagoDto>>(
+                json,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ??
+            new System.Collections.Generic.List<BembosEvents.Web.Models.Api.PagoDto>();
+
+        return new BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.PagoDto>>(
+            (int)response.StatusCode,
+            data);
+    }
+
+    public async Task<BackofficeApiResult<BembosEvents.Web.Models.Api.PagoDto>> GetBackofficePagoAsync(
+        int idPago,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/backoffice/pagos/{idPago}",
+                cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return new BackofficeApiResult<BembosEvents.Web.Models.Api.PagoDto>(
+                (int)response.StatusCode,
+                null);
+        }
+
+        var json =
+            await response.Content.ReadAsStringAsync(
+                cancellationToken);
+
+        var data =
+            System.Text.Json.JsonSerializer.Deserialize<BembosEvents.Web.Models.Api.PagoDto>(
+                json,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+        return new BackofficeApiResult<BembosEvents.Web.Models.Api.PagoDto>(
+            (int)response.StatusCode,
+            data);
+    }
 }

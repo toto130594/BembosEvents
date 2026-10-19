@@ -1,0 +1,125 @@
+@model BembosEvents.Web.ViewModels.BackofficePagosViewModel
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = "Pagos";
+}
+
+<section class="backoffice-page-heading">
+    <div>
+        <p class="backoffice-eyebrow">
+            BackOffice
+        </p>
+
+        <h1>
+            Pagos accesibles
+        </h1>
+
+        <p>
+            Consulta de pagos limitada por el alcance
+            que Spring Boot asigna a la identidad.
+        </p>
+    </div>
+
+    <span class="backoffice-count">
+        @Model.Pagos.Count
+    </span>
+</section>
+
+@if (Model.Pagos.Count == 0)
+{
+    <section class="backoffice-empty">
+        <h2>
+            Sin pagos accesibles
+        </h2>
+
+        <p>
+            No existen pagos disponibles para esta identidad.
+        </p>
+    </section>
+}
+else
+{
+    <section class="backoffice-table-card">
+        <div class="backoffice-table-wrap">
+            <table class="backoffice-table">
+                <thead>
+                    <tr>
+                        <th>
+                            Pago
+                        </th>
+
+                        <th>
+                            Reserva
+                        </th>
+
+                        <th>
+                            Monto
+                        </th>
+
+                        <th>
+                            Metodo
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Fecha
+                        </th>
+
+                        <th>
+                            Accion
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var pago in Model.Pagos)
+                    {
+                        <tr>
+                            <td>
+                                <strong>
+                                    #@pago.IdPago
+                                </strong>
+                            </td>
+
+                            <td>
+                                #@pago.IdReserva
+                            </td>
+
+                            <td>
+                                S/ @pago.Monto.ToString("N2")
+                            </td>
+
+                            <td>
+                                @pago.MetodoPago
+                            </td>
+
+                            <td>
+                                <span class="backoffice-status">
+                                    @pago.EstadoPago
+                                </span>
+                            </td>
+
+                            <td>
+                                @pago.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+                            </td>
+
+                            <td>
+                                <a
+                                    class="backoffice-action backoffice-action--compact"
+                                    asp-controller="Backoffice"
+                                    asp-action="PagoDetalle"
+                                    asp-route-idPago="@pago.IdPago">
+                                    Ver detalle
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}

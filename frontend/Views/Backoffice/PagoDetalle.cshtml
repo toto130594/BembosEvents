@@ -1,0 +1,140 @@
+@model BembosEvents.Web.Models.Api.PagoDto
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = "Detalle de pago";
+}
+
+<section class="backoffice-page-heading">
+    <div>
+        <p class="backoffice-eyebrow">
+            Pago #@Model.IdPago
+        </p>
+
+        <h1>
+            Detalle de pago
+        </h1>
+
+        <p>
+            Informacion obtenida directamente desde
+            el BackOffice REST.
+        </p>
+    </div>
+
+    <span class="backoffice-status">
+        @Model.EstadoPago
+    </span>
+</section>
+
+<section class="backoffice-detail-card">
+    <h2>
+        Pago
+    </h2>
+
+    <dl class="backoffice-detail-grid">
+        <div>
+            <dt>
+                ID pago
+            </dt>
+
+            <dd>
+                @Model.IdPago
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Reserva
+            </dt>
+
+            <dd>
+                ID @Model.IdReserva
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Monto
+            </dt>
+
+            <dd>
+                S/ @Model.Monto.ToString("N2")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Metodo
+            </dt>
+
+            <dd>
+                @Model.MetodoPago
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Estado
+            </dt>
+
+            <dd>
+                @Model.EstadoPago
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Referencia externa
+            </dt>
+
+            <dd>
+                @(string.IsNullOrWhiteSpace(Model.ReferenciaExterna)
+                    ? "No registrada"
+                    : Model.ReferenciaExterna)
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Fecha de pago
+            </dt>
+
+            <dd>
+                @(Model.FechaPago.HasValue
+                    ? Model.FechaPago.Value.ToString("dd/MM/yyyy HH:mm")
+                    : "Pendiente")
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Fecha de creacion
+            </dt>
+
+            <dd>
+                @Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+            </dd>
+        </div>
+    </dl>
+</section>
+
+<section class="backoffice-detail-card">
+    <h2>
+        Operaciones
+    </h2>
+
+    <p class="backoffice-muted">
+        El BackOffice actual permite consultar pagos.
+        No existe un endpoint administrativo de cambio
+        de estado de pago dentro del alcance implementado.
+    </p>
+</section>
+
+<div class="backoffice-footer-actions">
+    <a
+        class="backoffice-action backoffice-action--secondary"
+        asp-controller="Backoffice"
+        asp-action="Pagos">
+        Volver a pagos
+    </a>
+</div>

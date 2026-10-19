@@ -1,0 +1,151 @@
+@model BembosEvents.Web.ViewModels.BackofficeDashboardViewModel
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = "BackOffice";
+}
+
+<section class="backoffice-hero">
+    <p class="backoffice-eyebrow">
+        Administracion
+    </p>
+
+    <h1>
+        BackOffice Bembos Events
+    </h1>
+
+    <p>
+        El acceso y el alcance se validan directamente
+        en Spring Boot.
+    </p>
+</section>
+
+<section
+    class="backoffice-metrics"
+    aria-label="Resumen BackOffice">
+
+    <article class="backoffice-metric">
+        <span class="backoffice-metric__value">
+            @Model.SedesAccesibles
+        </span>
+
+        <span class="backoffice-metric__label">
+            Sedes accesibles
+        </span>
+    </article>
+
+    <article class="backoffice-metric">
+        <span class="backoffice-metric__value">
+            @Model.ReservasAccesibles
+        </span>
+
+        <span class="backoffice-metric__label">
+            Reservas accesibles
+        </span>
+    </article>
+
+    <article class="backoffice-metric">
+        <span class="backoffice-metric__value">
+            @Model.PagosAccesibles
+        </span>
+
+        <span class="backoffice-metric__label">
+            Pagos accesibles
+        </span>
+    </article>
+</section>
+
+<section
+    class="backoffice-grid"
+    aria-label="Modulos BackOffice">
+
+    <article class="backoffice-card">
+        <span class="backoffice-card__step">
+            01
+        </span>
+
+        <h2>
+            Sedes
+        </h2>
+
+        <p>
+            Consulta las sedes que Spring permite
+            ver a tu identidad.
+        </p>
+
+        <a
+            class="backoffice-action"
+            asp-controller="Backoffice"
+            asp-action="Sedes">
+            Ver sedes
+        </a>
+    </article>
+
+    <article class="backoffice-card">
+        <span class="backoffice-card__step">
+            02
+        </span>
+
+        <h2>
+            Reservas
+        </h2>
+
+        <p>
+            Consulta y administra las reservas
+            accesibles por tu identidad.
+        </p>
+
+        <a
+            class="backoffice-action"
+            asp-controller="Backoffice"
+            asp-action="Reservas">
+            Ver reservas
+        </a>
+    </article>
+
+    <article class="backoffice-card">
+        <span class="backoffice-card__step">
+            03
+        </span>
+
+        <h2>
+            Pagos
+        </h2>
+
+        <p>
+            Consulta los pagos visibles segun
+            el alcance definido por Spring.
+        </p>
+
+        <a
+            class="backoffice-action"
+            asp-controller="Backoffice"
+            asp-action="Pagos">
+            Ver pagos
+        </a>
+    </article>
+</section>
+
+<section class="backoffice-security">
+    <h2>
+        Seguridad
+    </h2>
+
+    <ul>
+        <li>
+            JWT almacenado exclusivamente server-side.
+        </li>
+
+        <li>
+            Spring Boot decide el acceso final.
+        </li>
+
+        <li>
+            ENCARGADO_LOCAL mantiene scope por sede.
+        </li>
+
+        <li>
+            El frontend no accede directamente a SQL Server.
+        </li>
+    </ul>
+</section>

@@ -1,0 +1,139 @@
+@model BembosEvents.Web.ViewModels.BackofficeReservasViewModel
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = "Reservas";
+}
+
+<section class="backoffice-page-heading">
+    <div>
+        <p class="backoffice-eyebrow">
+            BackOffice
+        </p>
+
+        <h1>
+            Reservas accesibles
+        </h1>
+
+        <p>
+            El listado respeta el alcance que Spring Boot
+            determina para la identidad autenticada.
+        </p>
+    </div>
+
+    <span class="backoffice-count">
+        @Model.Reservas.Count
+    </span>
+</section>
+
+@if (Model.Reservas.Count == 0)
+{
+    <section class="backoffice-empty">
+        <h2>
+            Sin reservas accesibles
+        </h2>
+
+        <p>
+            No existen reservas disponibles para esta identidad.
+        </p>
+    </section>
+}
+else
+{
+    <section class="backoffice-table-card">
+        <div class="backoffice-table-wrap">
+            <table class="backoffice-table">
+                <thead>
+                    <tr>
+                        <th>
+                            Reserva
+                        </th>
+
+                        <th>
+                            Evento
+                        </th>
+
+                        <th>
+                            Sede / salon
+                        </th>
+
+                        <th>
+                            Invitados
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Accion
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var reserva in Model.Reservas)
+                    {
+                        <tr>
+                            <td>
+                                <strong>
+                                    @reserva.CodigoReserva
+                                </strong>
+
+                                <small>
+                                    ID @reserva.IdReserva
+                                </small>
+                            </td>
+
+                            <td>
+                                @reserva.FechaEvento.ToString("dd/MM/yyyy")
+
+                                <small>
+                                    @reserva.HoraInicio.ToString("HH:mm")
+                                    -
+                                    @reserva.HoraFin.ToString("HH:mm")
+                                </small>
+                            </td>
+
+                            <td>
+                                Sede @reserva.IdSede
+
+                                <small>
+                                    Salon @reserva.IdSalon
+                                </small>
+                            </td>
+
+                            <td>
+                                @reserva.CantidadInvitados
+                            </td>
+
+                            <td>
+                                S/ @reserva.MontoTotal.ToString("N2")
+                            </td>
+
+                            <td>
+                                <span class="backoffice-status">
+                                    @reserva.Estado
+                                </span>
+                            </td>
+
+                            <td>
+                                <a
+                                    class="backoffice-action backoffice-action--compact"
+                                    asp-controller="Backoffice"
+                                    asp-action="ReservaDetalle"
+                                    asp-route-idReserva="@reserva.IdReserva">
+                                    Ver detalle
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}

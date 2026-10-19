@@ -1,0 +1,122 @@
+@model BembosEvents.Web.ViewModels.BackofficeSedesViewModel
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = "Sedes";
+}
+
+<section class="backoffice-page-heading">
+    <div>
+        <p class="backoffice-eyebrow">
+            BackOffice
+        </p>
+
+        <h1>
+            Sedes accesibles
+        </h1>
+
+        <p>
+            Spring Boot devuelve solamente las sedes
+            disponibles para la identidad autenticada.
+        </p>
+    </div>
+
+    <span class="backoffice-count">
+        @Model.Sedes.Count
+    </span>
+</section>
+
+@if (Model.Sedes.Count == 0)
+{
+    <section class="backoffice-empty">
+        <h2>
+            Sin sedes accesibles
+        </h2>
+
+        <p>
+            No existen sedes disponibles para esta identidad.
+        </p>
+    </section>
+}
+else
+{
+    <section class="backoffice-table-card">
+        <div class="backoffice-table-wrap">
+            <table class="backoffice-table">
+                <thead>
+                    <tr>
+                        <th>
+                            Sede
+                        </th>
+
+                        <th>
+                            Distrito
+                        </th>
+
+                        <th>
+                            Direccion
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Accion
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var sede in Model.Sedes)
+                    {
+                        <tr>
+                            <td>
+                                <strong>
+                                    @sede.Nombre
+                                </strong>
+
+                                <small>
+                                    ID @sede.IdSede
+                                </small>
+                            </td>
+
+                            <td>
+                                @sede.Distrito
+                            </td>
+
+                            <td>
+                                @sede.Direccion
+                            </td>
+
+                            <td>
+                                @if (sede.Activo)
+                                {
+                                    <span class="backoffice-status backoffice-status--active">
+                                        Activa
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="backoffice-status">
+                                        Inactiva
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <a
+                                    class="backoffice-action backoffice-action--compact"
+                                    asp-controller="Backoffice"
+                                    asp-action="SedeDetalle"
+                                    asp-route-idSede="@sede.IdSede">
+                                    Ver detalle
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}

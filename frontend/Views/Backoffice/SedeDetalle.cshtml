@@ -1,0 +1,90 @@
+@model BembosEvents.Web.Models.Api.SedeBackofficeDto
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = "Detalle de sede";
+}
+
+<section class="backoffice-page-heading">
+    <div>
+        <p class="backoffice-eyebrow">
+            Sede #@Model.IdSede
+        </p>
+
+        <h1>
+            @Model.Nombre
+        </h1>
+
+        <p>
+            Informacion obtenida desde el BackOffice REST.
+        </p>
+    </div>
+
+    @if (Model.Activo)
+    {
+        <span class="backoffice-status backoffice-status--active">
+            Activa
+        </span>
+    }
+    else
+    {
+        <span class="backoffice-status">
+            Inactiva
+        </span>
+    }
+</section>
+
+<section class="backoffice-detail-card">
+    <dl class="backoffice-detail-grid">
+        <div>
+            <dt>
+                ID
+            </dt>
+
+            <dd>
+                @Model.IdSede
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Distrito
+            </dt>
+
+            <dd>
+                @Model.Distrito
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Direccion
+            </dt>
+
+            <dd>
+                @Model.Direccion
+            </dd>
+        </div>
+
+        <div>
+            <dt>
+                Telefono
+            </dt>
+
+            <dd>
+                @(string.IsNullOrWhiteSpace(Model.Telefono)
+                    ? "No registrado"
+                    : Model.Telefono)
+            </dd>
+        </div>
+    </dl>
+</section>
+
+<div class="backoffice-footer-actions">
+    <a
+        class="backoffice-action backoffice-action--secondary"
+        asp-controller="Backoffice"
+        asp-action="Sedes">
+        Volver a sedes
+    </a>
+</div>

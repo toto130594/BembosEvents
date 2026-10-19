@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        @ViewData["Title"] - Bembos Events BackOffice
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="~/css/site.css"
+        asp-append-version="true" />
+
+    <link
+        rel="stylesheet"
+        href="~/css/backoffice.css"
+        asp-append-version="true" />
+</head>
+<body class="backoffice-body">
+    <header class="backoffice-header">
+        <div class="backoffice-shell backoffice-header__inner">
+            <a
+                class="backoffice-brand"
+                asp-controller="Backoffice"
+                asp-action="Index">
+                Bembos Events
+                <span>BackOffice</span>
+            </a>
+
+            <nav
+                class="backoffice-nav"
+                aria-label="Navegacion BackOffice">
+                <a
+                    asp-controller="Backoffice"
+                    asp-action="Index">
+                    Inicio
+                </a>
+
+                <a
+                    asp-controller="Backoffice"
+                    asp-action="Sedes">
+                    Sedes
+                </a>
+
+                <a
+                    asp-controller="Backoffice"
+                    asp-action="Reservas">
+                    Reservas
+                </a>
+
+                <a
+                    asp-controller="Backoffice"
+                    asp-action="Pagos">
+                    Pagos
+                </a>
+            </nav>
+
+            <div class="backoffice-account">
+                <a
+                    asp-controller="Home"
+                    asp-action="Index">
+                    Volver al portal
+                </a>
+
+                <form
+                    asp-controller="Account"
+                    asp-action="Logout"
+                    method="post">
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit">
+                        Cerrar sesion
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <main class="backoffice-main">
+        <div class="backoffice-shell">
+            @RenderBody()
+        </div>
+    </main>
+</body>
+</html>

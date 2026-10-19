@@ -96,4 +96,33 @@ public interface IBackendApiClient
     Task<BackendApiResult<PagoDto>> GetPagoPropioAsync(
         int idPago,
         CancellationToken cancellationToken = default);
+
+    Task<int> GetBackofficeAccessStatusAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.SedeBackofficeDto>>> GetBackofficeSedesAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<BackofficeApiResult<BembosEvents.Web.Models.Api.SedeBackofficeDto>> GetBackofficeSedeAsync(
+        int idSede,
+        CancellationToken cancellationToken = default);
+
+    Task<BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.ReservaBackofficeResumenDto>>> GetBackofficeReservasAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<BackofficeApiResult<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>> GetBackofficeReservaAsync(
+        int idReserva,
+        CancellationToken cancellationToken = default);
+
+    Task<BackofficeApiResult<BembosEvents.Web.Models.Api.ReservaBackofficeDetalleDto>> CambiarEstadoReservaBackofficeAsync(
+        int idReserva,
+        BembosEvents.Web.Models.Api.CambiarEstadoReservaRequestDto request,
+        CancellationToken cancellationToken = default);
+
+    Task<BackofficeApiResult<System.Collections.Generic.IReadOnlyList<BembosEvents.Web.Models.Api.PagoDto>>> GetBackofficePagosAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<BackofficeApiResult<BembosEvents.Web.Models.Api.PagoDto>> GetBackofficePagoAsync(
+        int idPago,
+        CancellationToken cancellationToken = default);
 }
