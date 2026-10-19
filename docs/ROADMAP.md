@@ -183,7 +183,7 @@ Aplicar alcance real de ENCARGADO_LOCAL a:
 Siguiente fase: FASE 8.
 # FASE 8 - Frontend ASP.NET Core MVC
 
-Estado: PENDIENTE.
+Estado: COMPLETADA.
 
 ## Portal publico y cliente
 
@@ -204,6 +204,47 @@ Estado: PENDIENTE.
 - reservas.
 - pagos.
 - gestion por sede.
+
+## Cierre FASE 8 - 8.0.12
+
+FASE 8 completada y validada.
+
+Componentes cerrados:
+
+- base ASP.NET Core MVC.
+- integracion HttpClient con Spring Boot.
+- layout publico.
+- home.
+- registro y login.
+- catalogos publicos.
+- flujo completo de reservas.
+- flujo de pagos del cliente.
+- BackOffice MVC.
+- seguridad por roles y alcance por sede.
+- anti-enumeration.
+- JWT exclusivamente server-side.
+
+Checkpoints principales:
+
+- 743fc1a - catalogos publicos 8.0.8.
+- 3d01df5 - reservas frontend 8.0.9.
+- d3f1837 - pagos frontend 8.0.10.
+- f19e54b - BackOffice MVC 8.0.11.
+
+Validacion final:
+
+- backend: 165 tests OK.
+- frontend Release: 0 warnings.
+- Docker frontend: OK.
+- ADMINISTRADOR: alcance global validado.
+- ENCARGADO_LOCAL: scope por sede validado.
+- CLIENTE: BackOffice denegado.
+- SQL directo desde frontend: NO.
+- JWT en navegador: NO.
+
+Siguiente fase:
+
+- FASE 9 - Seguridad avanzada.
 
 # FASE 9 - Seguridad avanzada
 

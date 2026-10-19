@@ -351,3 +351,23 @@ FASE 7.6 - Auditoria REST definitiva.
 - Reservas y Pagos BackOffice validados en runtime.
 - `git diff --check` validado.
 - FASE 7.7 cerrada tecnicamente, documentalmente y en runtime.
+
+### FASE 8.0.12 - Cierre global de FASE 8
+
+- Sincronizado ROADMAP con el estado real del proyecto.
+- FASE 7.7 marcada COMPLETADA.
+- FASE 8 marcada COMPLETADA.
+- Catalogos frontend cerrados.
+- Reservas frontend cerradas.
+- Pagos frontend cerrados.
+- BackOffice MVC cerrado.
+- ADMINISTRADOR global validado.
+- ENCARGADO_LOCAL con scope por sede validado.
+- CLIENTE rechazado en BackOffice.
+- Anti-enumeration validado.
+- Backend validado con 165 tests.
+- Frontend Release validado sin warnings C#.
+- Docker frontend validado.
+- No se modifico backend.
+- No se modifico Flyway.
+- Siguiente fase: FASE 9 - Seguridad avanzada.
