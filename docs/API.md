@@ -361,7 +361,7 @@ Ejemplo de cambio valido:
 PENDIENTE -> CONFIRMADA
 ```
 
-Las transiciones definitivas continúan siendo responsabilidad de ReglasTransicionReserva.
+Las transiciones definitivas continÃºan siendo responsabilidad de ReglasTransicionReserva.
 
 # 7. Pagos
 
@@ -728,3 +728,28 @@ La entrega de correo utiliza SecurityEmailService con implementacion SMTP median
 En desarrollo Docker, Mailpit se utiliza como servidor SMTP local.
 
 El enforcement de correo esta implementado y probado. El entorno Docker estable lo mantiene deshabilitado hasta completar la integracion MVC en FASE 9.0.9.
+
+## FASE 9.0.6 - Rate limiting
+
+Endpoints protegidos:
+
+- POST /api/auth/login
+- POST /api/auth/password/solicitar
+- POST /api/auth/correo/reenviar
+
+Al superar el limite:
+
+- HTTP 429 Too Many Requests;
+- header Retry-After;
+- cuerpo ApiErrorResponse;
+- mensaje publico generico.
+
+Politicas por defecto:
+
+- login: 10 solicitudes por 60 segundos;
+- recuperacion de password: 5 solicitudes por 900 segundos;
+- reenvio de verificacion: 5 solicitudes por 900 segundos.
+
+Los limites son configurables mediante properties y variables de entorno.
+
+La implementacion actual es in-memory y por instancia.

@@ -1053,3 +1053,132 @@ Resultado:
 Siguiente subfase:
 
 - 9.0.6 - Rate limiting.
+
+## 33. Decision de implementacion 9.0.6B
+
+La primera implementacion de rate limiting utiliza memoria del proceso.
+
+Motivos:
+
+- el despliegue actual utiliza una sola instancia backend;
+- no se requiere Redis para la fase academica actual;
+- no se modifica Flyway;
+- la abstraccion permite reemplazar la estrategia mas adelante.
+
+Algoritmo inicial:
+
+- ventana fija;
+- contador concurrente por scope + subject;
+- actualizacion atomica mediante ConcurrentHashMap.compute;
+- limpieza oportunista de ventanas expiradas;
+- el subject no se conserva en texto plano dentro de la clave;
+- la clave utiliza SHA-256 del subject.
+
+Scopes iniciales:
+
+- LOGIN;
+- PASSWORD_RECOVERY;
+- EMAIL_VERIFICATION.
+
+Politicas por defecto:
+
+- login: 10 solicitudes por 60 segundos;
+- solicitud de recuperacion: 5 solicitudes por 900 segundos;
+- reenvio de verificacion: 5 solicitudes por 900 segundos.
+
+Todas las politicas son configurables mediante application.properties y variables de entorno.
+
+Identidad HTTP inicial:
+
+- se utiliza HttpServletRequest.getRemoteAddr();
+- no se confia en X-Forwarded-For;
+- no se confia en X-Real-IP;
+- forwarded headers requieren una configuracion explicita de proxy confiable antes de poder utilizarse.
+
+Limitaciones conocidas:
+
+- los contadores son locales a cada instancia;
+- un reinicio del backend reinicia los contadores;
+- si el backend escala horizontalmente, debe migrarse a un almacenamiento compartido como Redis o equivalente.
+
+La respuesta HTTP 429, Retry-After, auditoria RATE_LIMIT_EXCEDIDO e integracion con endpoints se implementan en 9.0.6C.
+
+## 34. Integracion HTTP 9.0.6C
+
+El rate limiter se integra mediante RateLimitFilter dentro de Spring Security.
+
+Endpoints protegidos inicialmente:
+
+- POST /api/auth/login;
+- POST /api/auth/password/solicitar;
+- POST /api/auth/correo/reenviar.
+
+No se limita en esta subfase:
+
+- registro;
+- consumo de token de recuperacion;
+- consumo de token de verificacion;
+- catalogos publicos;
+- endpoints autenticados.
+
+Cuando se supera el limite:
+
+- HTTP 429 Too Many Requests;
+- header Retry-After con segundos restantes de la ventana;
+- cuerpo ApiErrorResponse con mensaje publico generico;
+- el request no llega al controller.
+
+Auditoria:
+
+- utiliza RATE_LIMIT_EXCEDIDO;
+- solo se registra el primer rechazo de cada bucket y ventana;
+- los rechazos posteriores de la misma ventana no generan escrituras adicionales;
+- la IP raw no se guarda en detalleSeguro.
+
+La identidad inicial sigue utilizando getRemoteAddr() y no confia en X-Forwarded-For ni X-Real-IP.
+
+Limitacion conocida:
+
+En la arquitectura MVC server-side, varias solicitudes pueden llegar al backend desde el mismo peer de red del frontend. Esta fase conserva getRemoteAddr() porque aun no existe una politica de proxies confiables. La estrategia de forwarding/trusted proxy debe revisarse durante la integracion MVC de 9.0.9 antes de un despliegue distribuido o expuesto a usuarios reales.
+
+El rate limit permanece separado del contador persistente de intentos fallidos:
+
+- un 429 no incrementa intentosFallidos;
+- un 429 no aplica bloqueadoHasta;
+- el bloqueo de login y el rate limiting son controles independientes.
+
+## 35. Cierre 9.0.6
+
+Rate limiting implementado y validado end-to-end.
+
+Resultado:
+
+- estrategia in-memory;
+- algoritmo fixed window;
+- actualizacion thread-safe mediante ConcurrentHashMap.compute;
+- clave scope + SHA-256 del subject;
+- limpieza oportunista de ventanas expiradas;
+- login protegido;
+- solicitud de recuperacion protegida;
+- reenvio de verificacion protegido;
+- HTTP 429 validado;
+- Retry-After validado;
+- ApiErrorResponse preservado;
+- RATE_LIMIT_EXCEDIDO validado en BD real;
+- un solo evento de auditoria por bucket y ventana;
+- rechazos adicionales no amplifican escrituras de auditoria;
+- 429 no incrementa intentosFallidos;
+- 429 no aplica bloqueadoHasta;
+- getRemoteAddr() permanece como identidad inicial;
+- X-Forwarded-For y X-Real-IP no son confiados;
+- configuracion normal restaurada despues del smoke;
+- contadores in-memory del backend temporal descartados;
+- Reserva 1, Reserva 2 y Pago 1 permanecen intactos;
+- Flyway no modificado;
+- frontend no modificado.
+
+Evidencia runtime RATE_LIMIT_EXCEDIDO se preserva.
+
+Siguiente subfase:
+
+- 9.0.7 - MFA TOTP + recovery codes.

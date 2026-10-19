@@ -450,3 +450,26 @@ FASE 7.6 - Auditoria REST definitiva.
 - Flyway no modificado.
 - Frontend no modificado.
 - Siguiente fase: 9.0.6 - Rate limiting.
+
+### FASE 9.0.6 - Rate limiting
+
+- Agregados scopes LOGIN, PASSWORD_RECOVERY y EMAIL_VERIFICATION.
+- Agregada estrategia in-memory fixed window.
+- Agregada clave protegida con SHA-256.
+- Agregado cleanup de buckets expirados.
+- Agregada identidad HTTP mediante getRemoteAddr().
+- Agregado RateLimitFilter en Spring Security.
+- Protegidos login, solicitud de recuperacion y reenvio de verificacion.
+- Agregado HTTP 429 Too Many Requests.
+- Agregado header Retry-After.
+- Agregada auditoria RATE_LIMIT_EXCEDIDO.
+- La auditoria se limita al primer rechazo de cada bucket y ventana.
+- Validado que 429 no incrementa intentos fallidos.
+- Validado que 429 no bloquea al usuario.
+- X-Forwarded-For no es confiado.
+- X-Real-IP no es confiado.
+- Smoke runtime validado con limites temporales de 2 solicitudes.
+- Configuracion normal restaurada despues del smoke.
+- Flyway no modificado.
+- Frontend no modificado.
+- Siguiente subfase: 9.0.7 - MFA TOTP + recovery codes.

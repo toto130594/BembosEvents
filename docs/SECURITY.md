@@ -379,3 +379,28 @@ Adicionalmente:
 - El enforcement de correo existe y fue validado end-to-end.
 - El Docker estable mantiene enforcement deshabilitado hasta la integracion MVC de FASE 9.0.9.
 - Los raw tokens no se imprimen ni se persisten.
+
+## Rate limiting - FASE 9.0.6
+
+Implementado para endpoints publicos sensibles:
+
+- login;
+- solicitud de recuperacion de password;
+- reenvio de verificacion de correo.
+
+Caracteristicas:
+
+- fixed window in-memory;
+- contador concurrente;
+- clave por scope + SHA-256 del subject;
+- identidad HTTP inicial mediante getRemoteAddr();
+- no se confia en X-Forwarded-For;
+- no se confia en X-Real-IP;
+- respuesta 429 con Retry-After;
+- auditoria RATE_LIMIT_EXCEDIDO;
+- solo el primer rechazo por bucket y ventana genera auditoria;
+- rate limiting y bloqueo persistente de login son controles independientes.
+
+Limitacion:
+
+La implementacion es local por instancia. Un despliegue multi-instancia requiere almacenamiento compartido, por ejemplo Redis o equivalente.

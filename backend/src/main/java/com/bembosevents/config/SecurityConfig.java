@@ -1,6 +1,7 @@
 package com.bembosevents.config;
 
 import com.bembosevents.security.JwtAuthenticationFilter;
+import com.bembosevents.security.RateLimitFilter;
 import com.bembosevents.security.RestAccessDeniedHandler;
 import com.bembosevents.security.RestAuthenticationEntryPoint;
 import com.bembosevents.security.UsuarioDetailsService;
@@ -26,20 +27,36 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final UsuarioDetailsService usuarioDetailsService;
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    private final RateLimitFilter rateLimitFilter;
+
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
+
     private final RestAccessDeniedHandler accessDeniedHandler;
 
     public SecurityConfig(
             UsuarioDetailsService usuarioDetailsService,
             JwtAuthenticationFilter jwtAuthenticationFilter,
+            RateLimitFilter rateLimitFilter,
             RestAuthenticationEntryPoint authenticationEntryPoint,
             RestAccessDeniedHandler accessDeniedHandler) {
 
-        this.usuarioDetailsService = usuarioDetailsService;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        this.accessDeniedHandler = accessDeniedHandler;
+        this.usuarioDetailsService =
+                usuarioDetailsService;
+
+        this.jwtAuthenticationFilter =
+                jwtAuthenticationFilter;
+
+        this.rateLimitFilter =
+                rateLimitFilter;
+
+        this.authenticationEntryPoint =
+                authenticationEntryPoint;
+
+        this.accessDeniedHandler =
+                accessDeniedHandler;
     }
 
     @Bean
@@ -48,6 +65,19 @@ public class SecurityConfig {
                     JwtAuthenticationFilter filter) {
 
         FilterRegistrationBean<JwtAuthenticationFilter> registration =
+                new FilterRegistrationBean<>(filter);
+
+        registration.setEnabled(false);
+
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean<RateLimitFilter>
+            rateLimitFilterRegistration(
+                    RateLimitFilter filter) {
+
+        FilterRegistrationBean<RateLimitFilter> registration =
                 new FilterRegistrationBean<>(filter);
 
         registration.setEnabled(false);
@@ -140,9 +170,9 @@ public class SecurityConfig {
                                 .hasRole("ADMINISTRADOR")
 
                                 .requestMatchers(
-                                        org.springframework.http.HttpMethod.GET,
+                                        HttpMethod.GET,
                                         "/api/pagos/*")
-                                        .hasRole("CLIENTE")
+                                .hasRole("CLIENTE")
 
                                 .requestMatchers(
                                         "/api/reservas/**")
@@ -153,6 +183,10 @@ public class SecurityConfig {
 
                                 .anyRequest()
                                 .authenticated())
+
+                .addFilterBefore(
+                        rateLimitFilter,
+                        UsernamePasswordAuthenticationFilter.class)
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,
