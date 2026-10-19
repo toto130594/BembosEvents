@@ -986,3 +986,36 @@ FASE 9 todavia no activa:
 Siguiente subfase:
 
 - 9.0.4 - Auditoria de seguridad + intentos fallidos.
+
+## 31. Cierre 9.0.4
+
+Auditoria de seguridad e intentos fallidos implementados.
+
+Resultado:
+
+- intentos fallidos persistidos en UsuarioSeguridad;
+- limite de intentos configurable;
+- duracion de bloqueo configurable;
+- bloqueo temporal aplicado antes de AuthenticationManager;
+- lock pesimista para actualizar estado de seguridad;
+- login correcto reinicia contador;
+- bloqueo expirado se limpia mediante el flujo normal;
+- LOGIN_EXITOSO auditado;
+- LOGIN_FALLIDO auditado;
+- USUARIO_BLOQUEADO auditado;
+- USUARIO_DESBLOQUEADO auditado;
+- respuesta publica de bloqueo permanece generica;
+- usuario inexistente no crea UsuarioSeguridad;
+- password no se registra en logs;
+- JWT no se imprime;
+- smoke HTTP real validado;
+- bloqueo y desbloqueo natural validados;
+- Reserva y Pago permanecen intactos;
+- Spring Security continua STATELESS;
+- frontend no modificado.
+
+La auditoria generada por el smoke se conserva como evidencia.
+
+Siguiente subfase:
+
+- 9.0.5 - Recuperacion de password + verificacion de correo.

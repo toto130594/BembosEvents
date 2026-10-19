@@ -12,6 +12,7 @@ import com.bembosevents.repository.UsuarioRolRepository;
 import com.bembosevents.repository.ClienteRepository;
 import com.bembosevents.security.JwtService;
 import com.bembosevents.security.UsuarioDetailsService;
+import com.bembosevents.service.LoginSecurityService;
 import com.bembosevents.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,6 +63,9 @@ class AuthServiceImplTest {
 
     @Mock
     private JwtService jwtService;
+
+    @Mock
+    private LoginSecurityService loginSecurityService;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -130,6 +134,10 @@ class AuthServiceImplTest {
 
         verify(usuarioRolRepository)
                 .save(any(UsuarioRol.class));
+
+        verify(loginSecurityService)
+                .initializeForCurrentRegistration(
+                        any(Usuario.class));
 
         verify(clienteRepository)
                 .save(argThat(cliente ->
@@ -214,6 +222,14 @@ class AuthServiceImplTest {
         assertEquals(
                 3600000L,
                 response.expiresInMs());
+
+        verify(loginSecurityService)
+                .validateLoginAllowed(
+                        "cliente@bembos.test");
+
+        verify(loginSecurityService)
+                .recordSuccess(
+                        "cliente@bembos.test");
     }
 
     @Test
@@ -233,5 +249,46 @@ class AuthServiceImplTest {
         assertThrows(
                 BadCredentialsException.class,
                 () -> authService.login(request));
+
+        verify(loginSecurityService)
+                .validateLoginAllowed(
+                        "cliente@bembos.test");
+
+        verify(loginSecurityService)
+                .recordFailure(
+                        "cliente@bembos.test");
+    }
+    @Test
+    void debeRechazarBloqueadoAntesDeAutenticar() {
+
+        LoginRequest request =
+                new LoginRequest(
+                        "cliente@bembos.test",
+                        "Segura123");
+
+        org.mockito.Mockito
+                .doThrow(
+                        new BadCredentialsException(
+                                "Credenciales invalidas"))
+                .when(loginSecurityService)
+                .validateLoginAllowed(
+                        "cliente@bembos.test");
+
+        BadCredentialsException ex =
+                assertThrows(
+                        BadCredentialsException.class,
+                        () -> authService.login(request));
+
+        assertEquals(
+                "Credenciales invalidas",
+                ex.getMessage());
+
+        verify(authenticationManager, never())
+                .authenticate(
+                        any(Authentication.class));
+
+        verify(loginSecurityService)
+                .recordRejected(
+                        "cliente@bembos.test");
     }
 }

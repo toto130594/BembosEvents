@@ -13,8 +13,11 @@ import com.bembosevents.repository.UsuarioRepository;
 import com.bembosevents.repository.UsuarioRolRepository;
 import com.bembosevents.security.JwtService;
 import com.bembosevents.security.UsuarioDetailsService;
+import com.bembosevents.service.LoginSecurityService;
 import com.bembosevents.service.AuthService;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final UsuarioDetailsService usuarioDetailsService;
     private final JwtService jwtService;
+    private final LoginSecurityService loginSecurityService;
 
     public AuthServiceImpl(
             UsuarioRepository usuarioRepository,
@@ -47,7 +51,8 @@ public class AuthServiceImpl implements AuthService {
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
             UsuarioDetailsService usuarioDetailsService,
-            JwtService jwtService) {
+            JwtService jwtService,
+            LoginSecurityService loginSecurityService) {
 
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
@@ -57,6 +62,7 @@ public class AuthServiceImpl implements AuthService {
         this.authenticationManager = authenticationManager;
         this.usuarioDetailsService = usuarioDetailsService;
         this.jwtService = jwtService;
+        this.loginSecurityService = loginSecurityService;
     }
 
     @Override
@@ -142,6 +148,10 @@ public class AuthServiceImpl implements AuthService {
         cliente.setActivo(true);
 
         clienteRepository.save(cliente);
+
+        loginSecurityService
+                .initializeForCurrentRegistration(
+                        usuarioGuardado);
     }
 
     @Override
@@ -151,10 +161,42 @@ public class AuthServiceImpl implements AuthService {
         String correo =
                 normalizarCorreo(request.correo());
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        correo,
-                        request.password()));
+        try {
+            loginSecurityService
+                    .validateLoginAllowed(
+                            correo);
+        } catch (AuthenticationException ex) {
+
+            loginSecurityService
+                    .recordRejected(
+                            correo);
+
+            throw new BadCredentialsException(
+                    "Credenciales invalidas");
+        }
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            correo,
+                            request.password()));
+        } catch (BadCredentialsException ex) {
+
+            loginSecurityService
+                    .recordFailure(
+                            correo);
+
+            throw new BadCredentialsException(
+                    "Credenciales invalidas");
+        } catch (AuthenticationException ex) {
+
+            loginSecurityService
+                    .recordRejected(
+                            correo);
+
+            throw new BadCredentialsException(
+                    "Credenciales invalidas");
+        }
 
         UserDetails userDetails =
                 usuarioDetailsService
@@ -163,6 +205,10 @@ public class AuthServiceImpl implements AuthService {
         String token =
                 jwtService.generateToken(
                         userDetails);
+
+        loginSecurityService
+                .recordSuccess(
+                        correo);
 
         return new AuthResponse(
                 token,

@@ -398,3 +398,28 @@ FASE 7.6 - Auditoria REST definitiva.
 - Spring Security permanece stateless.
 - Frontend no modificado.
 - Siguiente fase: 9.0.4 - Auditoria + intentos fallidos.
+
+### FASE 9.0.4 - Auditoria e intentos fallidos
+
+- Agregado SecurityAuditService.
+- Agregado LoginSecurityService.
+- Agregado bloqueo temporal por intentos fallidos.
+- Maximo de intentos configurable.
+- Duracion de bloqueo configurable.
+- Agregado lock pesimista de UsuarioSeguridad.
+- Login correcto reinicia contador.
+- Expiracion de bloqueo desbloquea por flujo normal.
+- LOGIN_EXITOSO auditado.
+- LOGIN_FALLIDO auditado.
+- USUARIO_BLOQUEADO auditado.
+- USUARIO_DESBLOQUEADO auditado.
+- Registro actual inicializa UsuarioSeguridad.
+- Respuesta publica permanece generica.
+- Agregados tests unitarios de seguridad de login.
+- Smoke HTTP real validado.
+- Password y JWT no impresos durante smoke.
+- Evidencia de auditoria del smoke preservada.
+- Reserva 1, Reserva 2 y Pago 1 preservados.
+- Flyway no modificado.
+- Frontend no modificado.
+- Siguiente fase: 9.0.5 - Recuperacion de password + verificacion de correo.
