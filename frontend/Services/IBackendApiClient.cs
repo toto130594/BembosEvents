@@ -83,4 +83,17 @@ public interface IBackendApiClient
     Task<BackendApiResult<ReservaDetalleDto>> CancelarReservaPropiaAsync(
         int idReserva,
         CancellationToken cancellationToken = default);
+
+    Task<BackendApiResult<PagoDto>> CrearPagoAsync(
+        int idReserva,
+        CrearPagoRequestDto request,
+        CancellationToken cancellationToken = default);
+
+    Task<BackendApiResult<IReadOnlyList<PagoDto>>> GetPagosReservaAsync(
+        int idReserva,
+        CancellationToken cancellationToken = default);
+
+    Task<BackendApiResult<PagoDto>> GetPagoPropioAsync(
+        int idPago,
+        CancellationToken cancellationToken = default);
 }

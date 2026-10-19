@@ -248,3 +248,22 @@
         </div>
     </div>
 </section>
+
+<section class="be-payment-link-panel">
+    <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-md-between">
+        <div>
+            <strong>Pagos de la reserva</strong>
+
+            <p class="mb-0 text-muted">
+                Consulta el historial de pagos asociado a esta reserva.
+            </p>
+        </div>
+
+        <a asp-controller="Pago"
+           asp-action="PagosReserva"
+           asp-route-idReserva="@Model.IdReserva"
+           class="btn btn-outline-primary">
+            Ver pagos
+        </a>
+    </div>
+</section>

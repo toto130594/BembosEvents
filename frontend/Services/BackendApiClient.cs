@@ -839,4 +839,115 @@ public sealed class BackendApiClient : IBackendApiClient
                     cancellationToken)
         };
     }
+
+    public async Task<BackendApiResult<PagoDto>> CrearPagoAsync(
+        int idReserva,
+        CrearPagoRequestDto request,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.PostAsJsonAsync(
+                $"api/reservas/{idReserva}/pagos",
+                request,
+                cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var data =
+                await response.Content.ReadFromJsonAsync<PagoDto>(
+                    cancellationToken: cancellationToken);
+
+            return new BackendApiResult<PagoDto>
+            {
+                StatusCode =
+                    (int)response.StatusCode,
+
+                Data =
+                    data
+            };
+        }
+
+        return new BackendApiResult<PagoDto>
+        {
+            StatusCode =
+                (int)response.StatusCode,
+
+            ErrorBody =
+                await response.Content.ReadAsStringAsync(
+                    cancellationToken)
+        };
+    }
+
+    public async Task<BackendApiResult<IReadOnlyList<PagoDto>>> GetPagosReservaAsync(
+        int idReserva,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/reservas/{idReserva}/pagos",
+                cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var data =
+                await response.Content.ReadFromJsonAsync<List<PagoDto>>(
+                    cancellationToken: cancellationToken)
+                ?? new List<PagoDto>();
+
+            return new BackendApiResult<IReadOnlyList<PagoDto>>
+            {
+                StatusCode =
+                    (int)response.StatusCode,
+
+                Data =
+                    data
+            };
+        }
+
+        return new BackendApiResult<IReadOnlyList<PagoDto>>
+        {
+            StatusCode =
+                (int)response.StatusCode,
+
+            ErrorBody =
+                await response.Content.ReadAsStringAsync(
+                    cancellationToken)
+        };
+    }
+
+    public async Task<BackendApiResult<PagoDto>> GetPagoPropioAsync(
+        int idPago,
+        CancellationToken cancellationToken = default)
+    {
+        using var response =
+            await _httpClient.GetAsync(
+                $"api/pagos/{idPago}",
+                cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var data =
+                await response.Content.ReadFromJsonAsync<PagoDto>(
+                    cancellationToken: cancellationToken);
+
+            return new BackendApiResult<PagoDto>
+            {
+                StatusCode =
+                    (int)response.StatusCode,
+
+                Data =
+                    data
+            };
+        }
+
+        return new BackendApiResult<PagoDto>
+        {
+            StatusCode =
+                (int)response.StatusCode,
+
+            ErrorBody =
+                await response.Content.ReadAsStringAsync(
+                    cancellationToken)
+        };
+    }
 }

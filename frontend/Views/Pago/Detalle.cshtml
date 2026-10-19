@@ -1,0 +1,96 @@
+@model BembosEvents.Web.ViewModels.PagoDetalleViewModel
+
+@{
+    ViewData["Title"] = "Detalle de pago";
+
+    var pago =
+        Model.Pago;
+
+    var fechaPago =
+        pago.FechaPago.HasValue
+            ? pago.FechaPago.Value.ToString("dd/MM/yyyy HH:mm")
+            : "Pendiente";
+
+    var referencia =
+        string.IsNullOrWhiteSpace(
+            pago.ReferenciaExterna)
+            ? "Sin referencia"
+            : pago.ReferenciaExterna;
+}
+
+<link rel="stylesheet"
+      href="~/css/payment.css"
+      asp-append-version="true" />
+
+<main class="be-payment-page">
+    <section class="be-payment-shell">
+        <div class="be-payment-heading">
+            <div>
+                <span class="be-payment-kicker">
+                    Pago
+                </span>
+
+                <h1>
+                    Detalle de pago #@pago.IdPago
+                </h1>
+
+                <p>
+                    Informacion oficial devuelta por Spring Boot.
+                </p>
+            </div>
+
+            <a asp-controller="Pago"
+               asp-action="PagosReserva"
+               asp-route-idReserva="@pago.IdReserva"
+               class="btn btn-outline-primary">
+                Volver a pagos
+            </a>
+        </div>
+
+        <section class="be-payment-detail-grid">
+            <div class="be-payment-detail-item">
+                <span>ID de pago</span>
+                <strong>@pago.IdPago</strong>
+            </div>
+
+            <div class="be-payment-detail-item">
+                <span>ID de reserva</span>
+                <strong>@pago.IdReserva</strong>
+            </div>
+
+            <div class="be-payment-detail-item">
+                <span>Monto</span>
+                <strong>
+                    S/ @pago.Monto.ToString("N2")
+                </strong>
+            </div>
+
+            <div class="be-payment-detail-item">
+                <span>Metodo de pago</span>
+                <strong>@pago.MetodoPago</strong>
+            </div>
+
+            <div class="be-payment-detail-item">
+                <span>Estado</span>
+                <strong>@pago.EstadoPago</strong>
+            </div>
+
+            <div class="be-payment-detail-item">
+                <span>Referencia externa</span>
+                <strong>@referencia</strong>
+            </div>
+
+            <div class="be-payment-detail-item">
+                <span>Fecha de pago</span>
+                <strong>@fechaPago</strong>
+            </div>
+
+            <div class="be-payment-detail-item">
+                <span>Fecha de creacion</span>
+                <strong>
+                    @pago.FechaCreacion.ToString("dd/MM/yyyy HH:mm")
+                </strong>
+            </div>
+        </section>
+    </section>
+</main>

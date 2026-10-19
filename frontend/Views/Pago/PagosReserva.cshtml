@@ -1,0 +1,139 @@
+@model BembosEvents.Web.ViewModels.PagosReservaViewModel
+
+@{
+    ViewData["Title"] = "Pagos de mi reserva";
+}
+
+<link rel="stylesheet"
+      href="~/css/payment.css"
+      asp-append-version="true" />
+
+<main class="be-payment-page">
+    <section class="be-payment-shell">
+        <div class="be-payment-heading">
+            <div>
+                <span class="be-payment-kicker">
+                    Mis pagos
+                </span>
+
+                <h1>
+                    Pagos de mi reserva
+                </h1>
+
+                <p>
+                    Consulta los pagos registrados para
+                    @Model.Reserva.CodigoReserva.
+                </p>
+            </div>
+
+            <div class="be-payment-heading-actions">
+                <a asp-controller="Reserva"
+                   asp-action="MisReservaDetalle"
+                   asp-route-idReserva="@Model.Reserva.IdReserva"
+                   class="btn btn-outline-primary">
+                    Volver al detalle
+                </a>
+
+                <a asp-controller="Pago"
+                   asp-action="Nuevo"
+                   asp-route-idReserva="@Model.Reserva.IdReserva"
+                   class="btn btn-primary">
+                    Registrar pago
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["PaymentSuccess"] is string paymentSuccess)
+        {
+            <div class="alert alert-success">
+                @paymentSuccess
+            </div>
+        }
+
+        @if (TempData["PaymentError"] is string paymentError)
+        {
+            <div class="alert alert-danger">
+                @paymentError
+            </div>
+        }
+
+        <section class="be-payment-reservation-summary">
+            <div>
+                <span>Reserva</span>
+                <strong>@Model.Reserva.CodigoReserva</strong>
+            </div>
+
+            <div>
+                <span>Estado</span>
+                <strong>@Model.Reserva.Estado</strong>
+            </div>
+
+            <div>
+                <span>Monto total</span>
+                <strong>
+                    S/ @Model.Reserva.MontoTotal.ToString("N2")
+                </strong>
+            </div>
+
+            <div>
+                <span>Deposito requerido</span>
+                <strong>
+                    S/ @Model.Reserva.MontoDeposito.ToString("N2")
+                </strong>
+            </div>
+        </section>
+
+        @if (Model.Pagos.Count == 0)
+        {
+            <section class="be-payment-empty">
+                <h2>
+                    Aun no existen pagos registrados
+                </h2>
+
+                <p>
+                    Aun no existen pagos registrados para esta reserva.
+                </p>
+            </section>
+        }
+        else
+        {
+            <section class="be-payment-list">
+                <h2>
+                    Historial de pagos
+                </h2>
+
+                @foreach (var pago in Model.Pagos)
+                {
+                    <article class="be-payment-card">
+                        <div>
+                            <span class="be-payment-label">
+                                Pago #@pago.IdPago
+                            </span>
+
+                            <strong>
+                                S/ @pago.Monto.ToString("N2")
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Metodo</span>
+                            <strong>@pago.MetodoPago</strong>
+                        </div>
+
+                        <div>
+                            <span>Estado</span>
+                            <strong>@pago.EstadoPago</strong>
+                        </div>
+
+                        <a asp-controller="Pago"
+                           asp-action="Detalle"
+                           asp-route-idPago="@pago.IdPago"
+                           class="btn btn-outline-primary">
+                            Ver detalle
+                        </a>
+                    </article>
+                }
+            </section>
+        }
+    </section>
+</main>
