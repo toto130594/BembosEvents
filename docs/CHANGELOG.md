@@ -371,3 +371,30 @@ FASE 7.6 - Auditoria REST definitiva.
 - No se modifico backend.
 - No se modifico Flyway.
 - Siguiente fase: FASE 9 - Seguridad avanzada.
+
+### FASE 9.0.3 - Persistencia y primitivas de seguridad
+
+- Agregada migracion Flyway V8 de seguridad avanzada.
+- Agregada entidad UsuarioSeguridad.
+- Agregada entidad TokenSeguridadUsuario.
+- Agregada entidad SesionUsuario.
+- Agregada entidad MfaRecoveryCode.
+- Agregada entidad AuditoriaSeguridad.
+- Agregados repositories de persistencia de seguridad.
+- Agregados enums TipoTokenSeguridad y TipoEventoSeguridad.
+- Usuarios existentes migrados como correo verificado.
+- MFA inicia deshabilitado.
+- Intentos fallidos inicia en cero.
+- Agregado SecurityTokenService.
+- Tokens opacos generados con SecureRandom de 256 bits.
+- Persistencia preparada para hashes SHA-256.
+- Comparacion de hashes mediante MessageDigest.isEqual.
+- Agregados tests de SecurityTokenService.
+- Backend validator validado.
+- V8 aplicada correctamente en SQL Server.
+- Datos existentes de reservas y pagos preservados.
+- Flujo de autenticacion actual no modificado.
+- JWT actual no modificado.
+- Spring Security permanece stateless.
+- Frontend no modificado.
+- Siguiente fase: 9.0.4 - Auditoria + intentos fallidos.
