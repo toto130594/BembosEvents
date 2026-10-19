@@ -136,7 +136,7 @@ Reglas:
 - regenerables.
 - los anteriores quedan invalidados al regenerar.
 
-# 4. Recuperacion de password - planeado
+# 4. Recuperacion de password - implementado
 
 Flujo:
 
@@ -160,7 +160,7 @@ Reglas:
 - guardar hash del token, no token original.
 - invalidar token despues de uso.
 
-# 5. Verificacion de correo - planeado
+# 5. Verificacion de correo - implementado
 
 Las cuentas podran verificar la propiedad del correo registrado.
 
@@ -361,3 +361,21 @@ Adicionalmente:
 - el frontend no puede ampliar el alcance enviando otro `idSede`.
 - Sedes, Reservas y Pagos pertenecientes a otra sede no quedan visibles para `ENCARGADO_LOCAL`.
 - cuando corresponde proteger la existencia del recurso se responde 404 en lugar de 403.
+
+## Cierre tecnico FASE 9.0.5
+
+- Tokens de recuperacion y verificacion almacenados solo como SHA-256.
+- Tokens opacos de un solo uso con expiracion.
+- Tokens anteriores activos se revocan al emitir uno nuevo.
+- Password reset usa PasswordEncoder con BCrypt.
+- Password reset revoca sesiones activas.
+- Password reset limpia estado de bloqueo de login.
+- Solicitudes publicas usan respuestas genericas anti-enumeration.
+- Entrega de correo abstraida mediante SecurityEmailService.
+- Provider SMTP implementado mediante JavaMailSender.
+- Mailpit v1.31.5 se utiliza exclusivamente como SMTP local de desarrollo.
+- Nuevos usuarios se crean inicialmente con correo no verificado.
+- Los usuarios preexistentes permanecen verificados.
+- El enforcement de correo existe y fue validado end-to-end.
+- El Docker estable mantiene enforcement deshabilitado hasta la integracion MVC de FASE 9.0.9.
+- Los raw tokens no se imprimen ni se persisten.

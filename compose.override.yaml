@@ -1,0 +1,16 @@
+services:
+  mailpit:
+    image: axllent/mailpit:v1.31.5
+    ports:
+      - "8025:8025"
+    restart: unless-stopped
+
+  backend:
+    environment:
+      SECURITY_EMAIL_ENABLED: "true"
+      SECURITY_EMAIL_VERIFICATION_ENFORCE: "false"
+      SECURITY_EMAIL_FROM: no-reply@bembosevents.local
+      MAIL_HOST: mailpit
+      MAIL_PORT: "1025"
+      MAIL_SMTP_AUTH: "false"
+      MAIL_SMTP_STARTTLS: "false"

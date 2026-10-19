@@ -54,7 +54,8 @@ class LoginSecurityServiceTest {
                         usuarioSeguridadRepository,
                         securityAuditService,
                         3,
-                        15);
+                        15,
+                        true);
     }
 
     @Test
@@ -85,7 +86,7 @@ class LoginSecurityServiceTest {
                 estado.getUsuario());
 
         assertEquals(
-                true,
+                false,
                 estado.getCorreoVerificado());
 
         assertEquals(
@@ -335,7 +336,84 @@ class LoginSecurityServiceTest {
                         anyString());
     }
 
-    private Usuario usuario() {
+        @Test
+    void debeRechazarCorreoNoVerificado() {
+
+        Usuario usuario =
+                usuario();
+
+        UsuarioSeguridad estado =
+                estado(
+                        usuario,
+                        0,
+                        null);
+
+        estado.setCorreoVerificado(
+                false);
+
+        when(usuarioRepository
+                .findByCorreoIgnoreCase(
+                        "cliente@bembos.test"))
+                .thenReturn(
+                        Optional.of(usuario));
+
+        when(usuarioSeguridadRepository
+                .findByIdUsuarioForUpdate(1))
+                .thenReturn(
+                        Optional.of(estado));
+
+        BadCredentialsException ex =
+                assertThrows(
+                        BadCredentialsException.class,
+                        () ->
+                                service.validateLoginAllowed(
+                                        "cliente@bembos.test"));
+
+        assertEquals(
+                "Credenciales invalidas",
+                ex.getMessage());
+    }
+
+    @Test
+    void enforcementDeshabilitadoPermiteNoVerificado() {
+
+        LoginSecurityService serviceWithoutEnforcement =
+                new LoginSecurityService(
+                        usuarioRepository,
+                        usuarioSeguridadRepository,
+                        securityAuditService,
+                        3,
+                        15,
+                        false);
+
+        Usuario usuario =
+                usuario();
+
+        UsuarioSeguridad estado =
+                estado(
+                        usuario,
+                        0,
+                        null);
+
+        estado.setCorreoVerificado(
+                false);
+
+        when(usuarioRepository
+                .findByCorreoIgnoreCase(
+                        "cliente@bembos.test"))
+                .thenReturn(
+                        Optional.of(usuario));
+
+        when(usuarioSeguridadRepository
+                .findByIdUsuarioForUpdate(1))
+                .thenReturn(
+                        Optional.of(estado));
+
+        serviceWithoutEnforcement
+                .validateLoginAllowed(
+                        "cliente@bembos.test");
+    }
+private Usuario usuario() {
 
         Usuario usuario =
                 new Usuario();

@@ -423,3 +423,30 @@ FASE 7.6 - Auditoria REST definitiva.
 - Flyway no modificado.
 - Frontend no modificado.
 - Siguiente fase: 9.0.5 - Recuperacion de password + verificacion de correo.
+
+### FASE 9.0.5 - Password recovery y verificacion de correo
+
+- Agregado SecurityTokenLifecycleService.
+- Agregada abstraccion SecurityEmailService.
+- Agregado provider SMTP mediante JavaMailSender.
+- Agregado Mailpit v1.31.5 para desarrollo Docker.
+- Agregados endpoints de recuperacion de password.
+- Agregados endpoints de verificacion de correo.
+- Agregado TTL configurable de tokens.
+- Agregado consumo one-time con lock pesimista.
+- Agregada revocacion de tokens anteriores.
+- Password reset usa BCrypt y revoca sesiones.
+- Password reset limpia bloqueo temporal de login.
+- Nuevos usuarios quedan inicialmente no verificados.
+- Usuarios existentes permanecen verificados.
+- Agregado enforcement configurable de correo.
+- Enforcement validado con backend temporal.
+- Docker estable mantiene enforcement deshabilitado hasta FASE 9.0.9.
+- Smoke SMTP Mailpit real validado.
+- Anti-enumeration validada para password y correo.
+- Tokens raw no se imprimen ni persisten.
+- Evidencia de tokens usados y auditoria preservada.
+- Reserva 1, Reserva 2 y Pago 1 preservados.
+- Flyway no modificado.
+- Frontend no modificado.
+- Siguiente fase: 9.0.6 - Rate limiting.

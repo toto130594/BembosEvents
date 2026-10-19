@@ -1019,3 +1019,37 @@ La auditoria generada por el smoke se conserva como evidencia.
 Siguiente subfase:
 
 - 9.0.5 - Recuperacion de password + verificacion de correo.
+
+## 32. Cierre 9.0.5
+
+Recuperacion de password y verificacion de correo implementadas.
+
+Resultado:
+
+- SecurityTokenLifecycleService operativo;
+- tokens opacos de 256 bits reutilizan SecurityTokenService;
+- solo SHA-256 se persiste;
+- expiracion, uso unico y revocacion validados;
+- consumo protegido con lock pesimista;
+- recuperacion de password anti-enumeration;
+- reset utiliza BCrypt PasswordEncoder;
+- sesiones activas se revocan tras reset;
+- estado de bloqueo de login se limpia tras reset;
+- verificacion de correo anti-enumeration;
+- nuevos usuarios nacen con correoVerificado=false;
+- los cinco usuarios preexistentes permanecen verificados;
+- SecurityEmailService abstrae la entrega;
+- SmtpSecurityEmailService implementa JavaMailSender;
+- Mailpit v1.31.5 funciona como SMTP local de desarrollo;
+- password recovery E2E validado;
+- email verification E2E validada;
+- enforcement de correo validado con backend temporal;
+- Docker estable deja enforcement=false hasta FASE 9.0.9;
+- raw tokens no se imprimen ni se persisten;
+- tokens usados se preservan como evidencia;
+- eventos de auditoria se preservan como evidencia;
+- Reserva 1, Reserva 2 y Pago 1 permanecen intactos.
+
+Siguiente subfase:
+
+- 9.0.6 - Rate limiting.

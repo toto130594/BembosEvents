@@ -31,6 +31,8 @@ public class LoginSecurityService {
 
     private final long lockDurationMinutes;
 
+    private final boolean enforceEmailVerification;
+
     public LoginSecurityService(
             UsuarioRepository usuarioRepository,
             UsuarioSeguridadRepository usuarioSeguridadRepository,
@@ -38,7 +40,9 @@ public class LoginSecurityService {
             @Value("${app.security.login.max-failed-attempts}")
             int maxFailedAttempts,
             @Value("${app.security.login.lock-duration-minutes}")
-            long lockDurationMinutes) {
+            long lockDurationMinutes,
+            @Value("${app.security.email-verification.enforce:false}")
+            boolean enforceEmailVerification) {
 
         if (maxFailedAttempts < 1) {
             throw new IllegalArgumentException(
@@ -64,6 +68,9 @@ public class LoginSecurityService {
 
         this.lockDurationMinutes =
                 lockDurationMinutes;
+
+        this.enforceEmailVerification =
+                enforceEmailVerification;
     }
 
     @Transactional
@@ -84,7 +91,7 @@ public class LoginSecurityService {
 
         createSecurityProfile(
                 usuario,
-                true);
+                false);
     }
 
     @Transactional
@@ -107,32 +114,39 @@ public class LoginSecurityService {
                 getOrCreateForUpdate(
                         usuario);
 
-        LocalDateTime bloqueadoHasta =
-                seguridad.getBloqueadoHasta();
-
-        if (bloqueadoHasta == null) {
-            return;
-        }
-
         LocalDateTime now =
                 utcNow();
 
-        if (bloqueadoHasta.isAfter(now)) {
+        LocalDateTime bloqueadoHasta =
+                seguridad.getBloqueadoHasta();
+
+        if (bloqueadoHasta != null) {
+
+            if (bloqueadoHasta.isAfter(now)) {
+                throw new BadCredentialsException(
+                        PUBLIC_CREDENTIALS_MESSAGE);
+            }
+
+            seguridad.setIntentosFallidos(0);
+            seguridad.setBloqueadoHasta(null);
+
+            usuarioSeguridadRepository.save(
+                    seguridad);
+
+            securityAuditService.record(
+                    usuario,
+                    TipoEventoSeguridad.USUARIO_DESBLOQUEADO,
+                    true,
+                    "Bloqueo temporal expirado");
+        }
+
+        if (enforceEmailVerification
+                && !Boolean.TRUE.equals(
+                        seguridad.getCorreoVerificado())) {
+
             throw new BadCredentialsException(
                     PUBLIC_CREDENTIALS_MESSAGE);
         }
-
-        seguridad.setIntentosFallidos(0);
-        seguridad.setBloqueadoHasta(null);
-
-        usuarioSeguridadRepository.save(
-                seguridad);
-
-        securityAuditService.record(
-                usuario,
-                TipoEventoSeguridad.USUARIO_DESBLOQUEADO,
-                true,
-                "Bloqueo temporal expirado");
     }
 
     @Transactional

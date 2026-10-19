@@ -579,7 +579,7 @@ DELETE /api/auth/mfa
 
 Estos endpoints NO existen actualmente.
 
-# 11. Recuperacion de password - futuro
+# 11. Recuperacion de password - implementado
 
 Endpoints candidatos:
 
@@ -709,3 +709,22 @@ Ejemplo disponible:
   "motivo": "Disponible"
 }
 ```
+
+## FASE 9.0.5 - Endpoints seguridad correo
+
+Implementados:
+
+- POST /api/auth/password/solicitar
+- POST /api/auth/password/restablecer
+- POST /api/auth/correo/reenviar
+- POST /api/auth/correo/verificar
+
+Las solicitudes de recuperacion y reenvio utilizan respuestas genericas para evitar enumeracion de usuarios.
+
+Los tokens son opacos, temporales y de un solo uso. Solo su hash SHA-256 se persiste.
+
+La entrega de correo utiliza SecurityEmailService con implementacion SMTP mediante JavaMailSender.
+
+En desarrollo Docker, Mailpit se utiliza como servidor SMTP local.
+
+El enforcement de correo esta implementado y probado. El entorno Docker estable lo mantiene deshabilitado hasta completar la integracion MVC en FASE 9.0.9.
