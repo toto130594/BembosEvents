@@ -141,6 +141,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers(
+                                        "/api/auth/logout-all",
+                                        "/api/auth/sessions",
+                                        "/api/auth/sessions/**")
+                                .authenticated()
+
+                                .requestMatchers(
                                         "/api/auth/**",
                                         "/error")
                                 .permitAll()

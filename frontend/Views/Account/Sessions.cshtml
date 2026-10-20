@@ -1,0 +1,206 @@
+@model BembosEvents.Web.ViewModels.SessionsViewModel
+
+@{
+    ViewData["Title"] = "Sesiones activas";
+}
+
+<section class="be-auth-page">
+    <div class="be-container">
+
+        <div class="be-auth-card">
+
+            <div class="be-auth-card-heading">
+                <span>
+                    Seguridad
+                </span>
+
+                <h1>
+                    Sesiones activas
+                </h1>
+
+                <p>
+                    Revisa los accesos asociados a tu cuenta
+                    y cierra los que ya no reconozcas.
+                </p>
+            </div>
+
+            @if (
+                TempData["SessionActionSuccess"]
+                    is string successMessage
+            )
+            {
+                <div class="be-auth-success"
+                     role="status">
+                    @successMessage
+                </div>
+            }
+
+            @if (
+                TempData["SessionActionError"]
+                    is string errorMessage
+            )
+            {
+                <div class="be-form-summary"
+                     role="alert">
+                    @errorMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+            {
+                <div class="be-form-summary"
+                     role="alert">
+                    @Model.ErrorMessage
+                </div>
+            }
+
+            <div class="be-auth-card-footer">
+
+                <form asp-controller="Account"
+                      asp-action="LogoutAllSessions"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="be-btn be-btn-primary">
+                        Cerrar todas las sesiones
+                    </button>
+                </form>
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="be-auth-text-link">
+                    Volver al inicio
+                </a>
+            </div>
+        </div>
+
+        @if (Model.Sessions.Count == 0)
+        {
+            <div class="be-auth-card">
+                <div class="be-auth-card-heading">
+                    <h2>
+                        No hay sesiones activas
+                    </h2>
+
+                    <p>
+                        No se encontraron sesiones persistentes
+                        asociadas a tu cuenta.
+                    </p>
+                </div>
+            </div>
+        }
+        else
+        {
+            foreach (var session in Model.Sessions)
+            {
+                <article class="be-auth-card">
+
+                    <div class="be-auth-card-heading">
+                        <span>
+                            Sesion #@session.IdSesionUsuario
+                        </span>
+
+                        <h2>
+                            Dispositivo o navegador
+                        </h2>
+                    </div>
+
+                    <div class="be-auth-form">
+
+                        <div class="be-form-field">
+                            <strong>
+                                Ultimo uso
+                            </strong>
+
+                            <span>
+                                @session.FechaUltimoUso.ToString("yyyy-MM-dd HH:mm")
+                                UTC
+                            </span>
+                        </div>
+
+                        <div class="be-form-field">
+                            <strong>
+                                Creada
+                            </strong>
+
+                            <span>
+                                @session.FechaCreacion.ToString("yyyy-MM-dd HH:mm")
+                                UTC
+                            </span>
+                        </div>
+
+                        <div class="be-form-field">
+                            <strong>
+                                Expira
+                            </strong>
+
+                            <span>
+                                @session.FechaExpiracion.ToString("yyyy-MM-dd HH:mm")
+                                UTC
+                            </span>
+                        </div>
+
+                        <div class="be-form-field">
+                            <strong>
+                                IP
+                            </strong>
+
+                            <span>
+                                @(string.IsNullOrWhiteSpace(session.IpOrigen)
+                                    ? "No disponible"
+                                    : session.IpOrigen)
+                            </span>
+                        </div>
+
+                        <div class="be-form-field">
+                            <strong>
+                                Navegador / dispositivo
+                            </strong>
+
+                            <span>
+                                @(string.IsNullOrWhiteSpace(session.UserAgent)
+                                    ? "No disponible"
+                                    : session.UserAgent)
+                            </span>
+                        </div>
+
+                        <form asp-controller="Account"
+                              asp-action="RevokeSession"
+                              asp-route-idSesionUsuario="@session.IdSesionUsuario"
+                              method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="be-btn be-btn-primary">
+                                Cerrar esta sesion
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            }
+        }
+
+        <div class="be-auth-card">
+            <div class="be-auth-card-heading">
+                <h2>
+                    Importante
+                </h2>
+
+                <p>
+                    El sistema no intenta identificar una sesion como
+                    "este dispositivo" usando IP o navegador.
+                </p>
+
+                <p>
+                    Si cierras la sesion persistente correspondiente a
+                    este navegador, el token de acceso ya emitido puede
+                    seguir siendo valido hasta su expiracion.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>

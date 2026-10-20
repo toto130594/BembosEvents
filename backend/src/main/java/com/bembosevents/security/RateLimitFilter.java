@@ -33,6 +33,12 @@ public class RateLimitFilter
     private static final String EMAIL_VERIFICATION_PATH =
             "/api/auth/correo/reenviar";
 
+    private static final String MFA_VERIFY_PATH =
+            "/api/auth/mfa/verificar";
+
+    private static final String MFA_RECOVERY_PATH =
+            "/api/auth/mfa/recuperacion";
+
     private final RateLimitEnforcementService
             rateLimitEnforcementService;
 
@@ -130,6 +136,12 @@ public class RateLimitFilter
 
         if (EMAIL_VERIFICATION_PATH.equals(uri)) {
             return RateLimitScope.EMAIL_VERIFICATION;
+        }
+
+        if (MFA_VERIFY_PATH.equals(uri)
+                || MFA_RECOVERY_PATH.equals(uri)) {
+
+            return RateLimitScope.MFA_CHALLENGE;
         }
 
         return null;

@@ -1,0 +1,134 @@
+@model BembosEvents.Web.ViewModels.MfaChallengeViewModel
+
+@{
+    ViewData["Title"] = "Verificacion de seguridad";
+}
+
+<section class="be-auth-page">
+    <div class="be-container be-auth-layout">
+
+        <div class="be-auth-promo">
+            <span class="be-auth-kicker">
+                Bembos Events
+            </span>
+
+            <h1>
+                Protegemos tu cuenta
+            </h1>
+
+            <p>
+                Completa el segundo factor para continuar de forma segura.
+            </p>
+
+            <ul class="be-auth-benefits">
+                <li>
+                    Tu contrasena ya fue validada.
+                </li>
+
+                <li>
+                    Ingresa el codigo de tu aplicacion autenticadora.
+                </li>
+
+                <li>
+                    Tambien puedes utilizar un codigo de recuperacion.
+                </li>
+            </ul>
+        </div>
+
+        <div class="be-auth-card">
+
+            <div class="be-auth-card-heading">
+                <span>
+                    Seguridad
+                </span>
+
+                <h2>
+                    Verificacion MFA
+                </h2>
+
+                <p>
+                    Ingresa el codigo temporal de 6 digitos.
+                </p>
+            </div>
+
+            <form asp-controller="Account"
+                  asp-action="MfaVerify"
+                  method="post"
+                  class="be-auth-form">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="be-form-summary"
+                     role="alert">
+                </div>
+
+                <div class="be-form-field">
+                    <label asp-for="Code"
+                           class="be-form-label">
+                    </label>
+
+                    <input asp-for="Code"
+                           class="be-form-control"
+                           autocomplete="one-time-code"
+                           inputmode="numeric"
+                           maxlength="6"
+                           placeholder="123456" />
+
+                    <span asp-validation-for="Code"
+                          class="be-form-error">
+                    </span>
+                </div>
+
+                <button type="submit"
+                        class="be-btn be-btn-primary be-auth-submit">
+                    Verificar codigo
+                </button>
+            </form>
+
+            <div class="be-auth-card-footer">
+                <span>
+                    No tienes acceso a tu aplicacion autenticadora?
+                </span>
+
+                <form asp-controller="Account"
+                      asp-action="MfaRecovery"
+                      method="post"
+                      class="be-auth-form">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="be-form-field">
+                        <label asp-for="RecoveryCode"
+                               class="be-form-label">
+                        </label>
+
+                        <input asp-for="RecoveryCode"
+                               class="be-form-control"
+                               autocomplete="off"
+                               placeholder="Ingresa tu codigo de recuperacion" />
+
+                        <span asp-validation-for="RecoveryCode"
+                              class="be-form-error">
+                        </span>
+                    </div>
+
+                    <button type="submit"
+                            class="be-btn be-btn-primary be-auth-submit">
+                        Usar codigo de recuperacion
+                    </button>
+                </form>
+
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="be-auth-text-link">
+                    Volver a iniciar sesion
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

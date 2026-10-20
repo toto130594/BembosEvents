@@ -26,6 +26,8 @@ public class RateLimitEnforcementService {
 
     private final RateLimitPolicy emailVerificationPolicy;
 
+    private final RateLimitPolicy mfaChallengePolicy;
+
     public RateLimitEnforcementService(
             InMemoryRateLimitService inMemoryRateLimitService,
             SecurityAuditService securityAuditService,
@@ -41,8 +43,12 @@ public class RateLimitEnforcementService {
             long passwordRecoveryWindowSeconds,
             @Value("${app.security.rate-limit.email-verification.max-requests}")
             int emailVerificationMaxRequests,
-            @Value("${app.security.rate-limit.email-verification.window-seconds}")
-            long emailVerificationWindowSeconds) {
+                        @Value("${app.security.rate-limit.email-verification.window-seconds}")
+            long emailVerificationWindowSeconds,
+            @Value("${app.security.rate-limit.mfa-challenge.max-requests}")
+            int mfaChallengeMaxRequests,
+            @Value("${app.security.rate-limit.mfa-challenge.window-seconds}")
+            long mfaChallengeWindowSeconds) {
 
         this.inMemoryRateLimitService =
                 inMemoryRateLimitService;
@@ -67,6 +73,11 @@ public class RateLimitEnforcementService {
                 policy(
                         emailVerificationMaxRequests,
                         emailVerificationWindowSeconds);
+
+        this.mfaChallengePolicy =
+                policy(
+                        mfaChallengeMaxRequests,
+                        mfaChallengeWindowSeconds);
     }
 
     public void enforce(
@@ -117,6 +128,9 @@ public class RateLimitEnforcementService {
 
             case EMAIL_VERIFICATION ->
                     emailVerificationPolicy;
+
+            case MFA_CHALLENGE ->
+                    mfaChallengePolicy;
         };
     }
 

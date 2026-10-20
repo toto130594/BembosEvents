@@ -117,6 +117,9 @@ builder.Services.AddSession(options =>
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddTransient<
+    BackendTokenRefreshService>();
+
+builder.Services.AddTransient<
     BackendBearerHandler>();
 
 builder.Services
@@ -133,6 +136,28 @@ builder.Services
         "BackendApi:BaseUrl debe ser una URL absoluta valida.")
     .ValidateOnStart();
 
+builder.Services
+    .AddHttpClient(
+        "BackendAuthRefresh",
+        (serviceProvider, httpClient) =>
+        {
+            var options =
+                serviceProvider
+                    .GetRequiredService<
+                        IOptions<BackendApiOptions>>()
+                    .Value;
+
+            var baseUrl =
+                options.BaseUrl.TrimEnd('/') + "/";
+
+            httpClient.BaseAddress =
+                new Uri(
+                    baseUrl,
+                    UriKind.Absolute);
+
+            httpClient.Timeout =
+                TimeSpan.FromSeconds(10);
+        });
 builder.Services
     .AddHttpClient<
         IBackendApiClient,

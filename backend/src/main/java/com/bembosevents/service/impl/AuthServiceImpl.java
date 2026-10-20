@@ -1,20 +1,28 @@
 package com.bembosevents.service.impl;
 
 import com.bembosevents.dto.auth.AuthResponse;
+import com.bembosevents.dto.auth.SesionResponse;
 import com.bembosevents.dto.auth.LoginRequest;
+import com.bembosevents.dto.auth.LogoutRequest;
+import com.bembosevents.dto.auth.RefreshRequest;
 import com.bembosevents.dto.auth.RegistroRequest;
 import com.bembosevents.entity.Cliente;
 import com.bembosevents.entity.Rol;
 import com.bembosevents.entity.Usuario;
+import com.bembosevents.entity.UsuarioSeguridad;
 import com.bembosevents.entity.UsuarioRol;
 import com.bembosevents.repository.ClienteRepository;
 import com.bembosevents.repository.RolRepository;
 import com.bembosevents.repository.UsuarioRepository;
+import com.bembosevents.repository.UsuarioSeguridadRepository;
 import com.bembosevents.repository.UsuarioRolRepository;
 import com.bembosevents.security.JwtService;
 import com.bembosevents.security.UsuarioDetailsService;
 import com.bembosevents.service.LoginSecurityService;
+import com.bembosevents.service.MfaLoginChallengeService;
+import com.bembosevents.service.SesionUsuarioService;
 import com.bembosevents.service.AuthService;
+import com.bembosevents.service.AuthSessionIssuanceService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -26,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -42,7 +51,14 @@ public class AuthServiceImpl implements AuthService {
     private final UsuarioDetailsService usuarioDetailsService;
     private final JwtService jwtService;
     private final LoginSecurityService loginSecurityService;
+    private final UsuarioSeguridadRepository usuarioSeguridadRepository;
+    private final MfaLoginChallengeService mfaLoginChallengeService;
 
+    private final AuthSessionIssuanceService
+            authSessionIssuanceService;
+
+    private final SesionUsuarioService
+            sesionUsuarioService;
     public AuthServiceImpl(
             UsuarioRepository usuarioRepository,
             RolRepository rolRepository,
@@ -52,7 +68,11 @@ public class AuthServiceImpl implements AuthService {
             AuthenticationManager authenticationManager,
             UsuarioDetailsService usuarioDetailsService,
             JwtService jwtService,
-            LoginSecurityService loginSecurityService) {
+            LoginSecurityService loginSecurityService,
+            UsuarioSeguridadRepository usuarioSeguridadRepository,
+            MfaLoginChallengeService mfaLoginChallengeService,
+            AuthSessionIssuanceService authSessionIssuanceService,
+            SesionUsuarioService sesionUsuarioService) {
 
         this.usuarioRepository = usuarioRepository;
         this.rolRepository = rolRepository;
@@ -63,6 +83,14 @@ public class AuthServiceImpl implements AuthService {
         this.usuarioDetailsService = usuarioDetailsService;
         this.jwtService = jwtService;
         this.loginSecurityService = loginSecurityService;
+        this.usuarioSeguridadRepository = usuarioSeguridadRepository;
+        this.mfaLoginChallengeService = mfaLoginChallengeService;
+
+        this.authSessionIssuanceService =
+                authSessionIssuanceService;
+
+        this.sesionUsuarioService =
+                sesionUsuarioService;
     }
 
     @Override
@@ -198,24 +226,154 @@ public class AuthServiceImpl implements AuthService {
                     "Credenciales invalidas");
         }
 
-        UserDetails userDetails =
-                usuarioDetailsService
-                        .loadUserByUsername(correo);
+        UsuarioSeguridad seguridad =
+                usuarioSeguridadRepository
+                        .findByUsuario_CorreoIgnoreCase(
+                                correo)
+                        .orElseThrow(
+                                () ->
+                                        new BadCredentialsException(
+                                                "Credenciales invalidas"));
 
-        String token =
-                jwtService.generateToken(
-                        userDetails);
+        Usuario usuario =
+                usuarioRepository
+                        .findByCorreoIgnoreCase(
+                                correo)
+                        .orElseThrow(
+                                () ->
+                                        new BadCredentialsException(
+                                                "Credenciales invalidas"));
+
+        if (Boolean.TRUE.equals(
+                seguridad.getMfaHabilitado())) {
+
+            MfaLoginChallengeService.IssuedChallenge challenge =
+                    mfaLoginChallengeService.issue(
+                            usuario);
+
+            return AuthResponse.mfaRequired(
+                    challenge.rawToken(),
+                    mfaLoginChallengeService
+                            .getChallengeTtlMs());
+        }
+        AuthResponse response =
+                authSessionIssuanceService
+                        .issue(
+                                usuario);
 
         loginSecurityService
                 .recordSuccess(
                         correo);
 
-        return new AuthResponse(
-                token,
-                "Bearer",
-                jwtService.getExpirationMs());
+        return response;
+    }
+    @Override
+    public AuthResponse refresh(
+            RefreshRequest request) {
+
+        return authSessionIssuanceService
+                .refresh(
+                        request.refreshToken());
     }
 
+    @Override
+    public void logout(
+            LogoutRequest request) {
+
+        sesionUsuarioService
+                .revocar(
+                        request.refreshToken());
+    }
+
+    @Override
+    public void logoutAll(
+            String correo) {
+
+        if (correo == null
+                || correo.isBlank()) {
+
+            throw new BadCredentialsException(
+                    "Credenciales invalidas");
+        }
+
+        String correoNormalizado =
+                normalizarCorreo(
+                        correo);
+
+        Usuario usuario =
+                usuarioRepository
+                        .findByCorreoIgnoreCase(
+                                correoNormalizado)
+                        .orElseThrow(
+                                () ->
+                                        new BadCredentialsException(
+                                                "Credenciales invalidas"));
+
+        sesionUsuarioService
+                .revocarTodas(
+                        usuario);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<SesionResponse> listarSesiones(
+            String correo) {
+
+        if (correo == null
+                || correo.isBlank()) {
+
+            throw new BadCredentialsException(
+                    "Credenciales invalidas");
+        }
+
+        String correoNormalizado =
+                normalizarCorreo(
+                        correo);
+
+        Usuario usuario =
+                usuarioRepository
+                        .findByCorreoIgnoreCase(
+                                correoNormalizado)
+                        .orElseThrow(
+                                () ->
+                                        new BadCredentialsException(
+                                                "Credenciales invalidas"));
+
+        return sesionUsuarioService
+                .listarActivas(
+                        usuario);
+    }
+
+    @Override
+    @Transactional
+    public void revocarSesion(
+            String correo,
+            Long idSesionUsuario) {
+
+        if (correo == null
+                || correo.isBlank()) {
+
+            throw new BadCredentialsException(
+                    "Credenciales invalidas");
+        }
+
+        String correoNormalizado =
+                normalizarCorreo(
+                        correo);
+
+        Usuario usuario =
+                usuarioRepository
+                        .findByCorreoIgnoreCase(
+                                correoNormalizado)
+                        .orElseThrow(
+                                () ->
+                                        new BadCredentialsException(
+                                                "Credenciales invalidas"));
+
+        sesionUsuarioService
+                .revocarPropia(
+                        usuario,
+                        idSesionUsuario);
+    }
     private String normalizarCorreo(
             String correo) {
 

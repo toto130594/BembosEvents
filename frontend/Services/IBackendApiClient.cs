@@ -23,6 +23,43 @@ public interface IBackendApiClient
     Task<BackendLoginResult> LoginAsync(
         LoginRequestDto request,
         CancellationToken cancellationToken = default);
+
+    Task<BackendLoginResult> VerifyMfaTotpAsync(
+        string challengeToken,
+        string code,
+        CancellationToken cancellationToken = default);
+
+    Task<BackendLoginResult> VerifyMfaRecoveryAsync(
+        string challengeToken,
+        string recoveryCode,
+        CancellationToken cancellationToken = default);
+    Task<BackendSecurityActionResult> RequestPasswordRecoveryAsync(
+        string correo,
+        CancellationToken cancellationToken = default);
+
+    Task<BackendSecurityActionResult> ResetPasswordAsync(
+        string token,
+        string nuevaPassword,
+        CancellationToken cancellationToken = default);
+    Task<BackendSecurityActionResult> ResendEmailVerificationAsync(
+        string correo,
+        CancellationToken cancellationToken = default);
+
+    Task<BackendSecurityActionResult> VerifyEmailAsync(
+        string token,
+        CancellationToken cancellationToken = default);
+    Task<BackendSessionListResult> GetSessionsAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<BackendSecurityActionResult> RevokeSessionAsync(
+        long idSesionUsuario,
+        CancellationToken cancellationToken = default);
+
+    Task<BackendSecurityActionResult> LogoutAllSessionsAsync(
+        CancellationToken cancellationToken = default);
+    Task<bool> LogoutAsync(
+        string refreshToken,
+        CancellationToken cancellationToken = default);
     Task<BackendRegistrationResult> RegisterAsync(
         RegistroRequestDto request,
         CancellationToken cancellationToken = default);

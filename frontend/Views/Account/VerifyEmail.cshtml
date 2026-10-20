@@ -1,0 +1,108 @@
+@model BembosEvents.Web.ViewModels.VerifyEmailViewModel
+
+@{
+    ViewData["Title"] = "Verificar correo";
+}
+
+<section class="be-auth-page">
+    <div class="be-container be-auth-layout">
+
+        <div class="be-auth-promo">
+            <span class="be-auth-kicker">
+                Bembos Events
+            </span>
+
+            <h1>
+                Confirma tu correo
+            </h1>
+
+            <p>
+                Ingresa el token de verificacion recibido
+                para confirmar la propiedad de tu correo.
+            </p>
+
+            <ul class="be-auth-benefits">
+                <li>
+                    El token es temporal.
+                </li>
+
+                <li>
+                    Solo puede utilizarse mientras permanezca valido.
+                </li>
+
+                <li>
+                    Tambien puede precargarse desde un enlace de verificacion.
+                </li>
+            </ul>
+        </div>
+
+        <div class="be-auth-card">
+
+            <div class="be-auth-card-heading">
+                <span>
+                    Seguridad
+                </span>
+
+                <h2>
+                    Verificar correo
+                </h2>
+
+                <p>
+                    Pega el token recibido para completar la verificacion.
+                </p>
+            </div>
+
+            <form asp-controller="Account"
+                  asp-action="VerifyEmail"
+                  method="post"
+                  class="be-auth-form">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="be-form-summary"
+                     role="alert">
+                </div>
+
+                <div class="be-form-field">
+                    <label asp-for="Token"
+                           class="be-form-label">
+                    </label>
+
+                    <input asp-for="Token"
+                           class="be-form-control"
+                           autocomplete="off"
+                           spellcheck="false"
+                           placeholder="Pega el token de verificacion" />
+
+                    <span asp-validation-for="Token"
+                          class="be-form-error">
+                    </span>
+                </div>
+
+                <button type="submit"
+                        class="be-btn be-btn-primary be-auth-submit">
+                    Verificar correo
+                </button>
+            </form>
+
+            <div class="be-auth-card-footer">
+                <a asp-controller="Account"
+                   asp-action="ResendEmailVerification"
+                   class="be-auth-text-link">
+                    Solicitar un nuevo token
+                </a>
+
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="be-auth-text-link">
+                    Volver a iniciar sesion
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

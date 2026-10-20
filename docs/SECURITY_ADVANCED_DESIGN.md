@@ -29,15 +29,15 @@ El navegador nunca recibe directamente los JWT ni los refresh tokens del backend
 
 La auditoria 9.0.1 determino:
 
-- recuperacion de password: no implementada;
-- verificacion de correo: no implementada;
-- MFA TOTP: no implementado;
-- recovery codes: no implementados;
+- recuperacion de password: implementada en 9.0.5;
+- verificacion de correo: implementada en 9.0.5;
+- MFA TOTP: enrollment implementado en 9.0.7B/9.0.7C; login MFA pendiente en 9.0.7D;
+- recovery codes: generacion y persistencia implementadas en 9.0.7C; consumo durante login pendiente en 9.0.7D;
 - refresh tokens: no implementados;
 - sesiones persistentes: no implementadas;
-- rate limiting: no implementado;
-- intentos fallidos: no implementados;
-- auditoria de seguridad general: no implementada.
+- rate limiting: implementado en 9.0.6;
+- intentos fallidos: implementados en 9.0.4;
+- auditoria de seguridad base: implementada desde 9.0.4.
 
 La unica referencia a sesiones existente corresponde a:
 
@@ -1182,3 +1182,312 @@ Evidencia runtime RATE_LIMIT_EXCEDIDO se preserva.
 Siguiente subfase:
 
 - 9.0.7 - MFA TOTP + recovery codes.
+
+## 36. Decision criptografica MFA 9.0.7B
+
+La base MFA utiliza TOTP compatible con RFC 6238.
+
+Parametros iniciales:
+
+- algoritmo HMAC-SHA1;
+- secreto aleatorio de 160 bits;
+- codigo de 6 digitos;
+- periodo de 30 segundos;
+- tolerancia de una ventana anterior y una posterior.
+
+Se prepara un URI otpauth compatible con aplicaciones autenticadoras.
+
+Proteccion del secreto TOTP:
+
+- el secreto TOTP no debe almacenarse en texto plano;
+- se protege mediante AES-256-GCM;
+- cada cifrado utiliza un IV aleatorio de 96 bits;
+- authentication tag de 128 bits;
+- payload versionado;
+- AAD especifico de Bembos Events MFA;
+- la clave de cifrado se obtiene desde SECURITY_MFA_ENCRYPTION_KEY;
+- la clave debe contener 32 bytes codificados en Base64;
+- no existe una clave hardcoded ni un valor seguro por defecto;
+- si la clave no esta configurada, las operaciones de proteccion fallan de forma cerrada.
+
+Recovery codes:
+
+- se generan mediante SecureRandom;
+- ocho codigos por defecto;
+- cada codigo utiliza al menos 80 bits de aleatoriedad;
+- se muestran en claro solamente al usuario durante su generacion;
+- en persistencia se almacena solamente SHA-256;
+- la comparacion de hash utiliza MessageDigest.isEqual;
+- los codigos son de un solo uso cuando se integren con MfaRecoveryCode en 9.0.7C.
+
+Estado de esta subfase:
+
+- no se habilita MFA para ningun usuario;
+- no se escriben secretos en BD;
+- no se generan recovery codes en BD;
+- no se modifica login;
+- no se exponen endpoints;
+- no se modifica Docker;
+- SECURITY_MFA_ENABLED permanece false por defecto.
+
+La integracion con UsuarioSeguridad, MfaRecoveryCode, endpoints de setup/activacion y auditoria se realiza en 9.0.7C.
+
+## 37. Estado MFA despues de 9.0.7C
+
+FASE 9.0.7C completa el enrollment MFA.
+
+Implementado:
+
+- `POST /api/mfa/setup` autenticado;
+- generacion del secreto TOTP;
+- proteccion AES-256-GCM antes de persistencia;
+- URI `otpauth`;
+- activacion solamente despues de validar un TOTP correcto;
+- ocho recovery codes por defecto;
+- recovery codes raw mostrados solamente en la respuesta de activacion;
+- persistencia exclusiva de SHA-256;
+- preservacion del historial de recovery codes ya usados;
+- invalidacion de recovery codes no usados pertenecientes a una configuracion anterior;
+- `mfaHabilitado=true` solamente despues de almacenar correctamente los recovery codes;
+- transacciones y lock pesimista para proteger enrollment concurrente;
+- tests negativos y de seguridad;
+- backend validator completo aprobado.
+
+No forma parte de 9.0.7C:
+
+- alterar el flujo normal de login;
+- emitir un challenge MFA;
+- consumir recovery codes durante login;
+- aplicar rate limiting especifico al segundo factor;
+- modificar JWT.
+
+Por lo tanto, tener MFA activado en persistencia todavia no significa que el login exija MFA. Ese enforcement corresponde a 9.0.7D.
+
+## 38. Diseno aprobado para 9.0.7D
+
+El login MFA utilizara un estado intermedio antes de entregar el JWT completo.
+
+Diseno:
+
+1. correo y password se validan normalmente;
+2. si MFA esta deshabilitado, se mantiene el JWT normal;
+3. si MFA esta habilitado, no se entrega JWT completo;
+4. se utilizara un challenge temporal opaco;
+5. el challenge reutilizara la infraestructura de tokens de seguridad existente;
+6. solamente el hash SHA-256 del challenge podra persistirse;
+7. el challenge tendra expiracion corta y consumo one-time;
+8. TOTP correcto o recovery code valido completaran el segundo factor;
+9. solamente despues se emitira el JWT normal.
+
+No se utilizara un pre-MFA JWT.
+
+En el checkpoint de diseno la implementacion permanecia pendiente. Estado actual: COMPLETADA en FASE 9.0.7D. hasta completar 9.0.7D.
+
+## 39. Implementacion final MFA login 9.0.7D
+
+El diseno aprobado para login MFA fue implementado y validado.
+
+Flujo final:
+
+1. POST /api/auth/login autentica correo y password.
+2. Si mfaHabilitado=false, se conserva el JWT normal.
+3. Si mfaHabilitado=true, no se emite JWT.
+4. Se genera MFA_LOGIN_CHALLENGE mediante la infraestructura TokenSeguridadUsuario.
+5. El challenge raw se devuelve una vez al cliente.
+6. En BD persiste solamente SHA-256.
+7. El challenge tiene TTL de cinco minutos por defecto.
+8. POST /api/auth/mfa/verificar valida TOTP.
+9. POST /api/auth/mfa/recuperacion valida un recovery code no usado.
+10. Solamente despues del segundo factor correcto se consume el challenge y se emite JWT.
+
+Concurrencia y replay:
+
+- TokenSeguridadUsuario se consulta mediante PESSIMISTIC_WRITE;
+- UsuarioSeguridad se bloquea mediante PESSIMISTIC_WRITE;
+- recovery codes no usados se bloquean mediante PESSIMISTIC_WRITE;
+- challenge consumido no puede reutilizarse;
+- recovery code con fechaUso no puede reutilizarse.
+
+Auditoria:
+
+- MFA_VERIFICACION_EXITOSA en verificaciones exitosas;
+- MFA_VERIFICACION_FALLIDA en verificaciones fallidas;
+- los fallos usan una transaccion REQUIRES_NEW;
+- MFA_RECOVERY_CODE_USADO registra consumo recovery;
+- los secretos raw no forman parte del detalle de auditoria.
+
+Rate limiting:
+
+- scope MFA_CHALLENGE;
+- independiente del scope LOGIN;
+- TOTP y recovery comparten el mismo contador MFA;
+- cinco solicitudes por sesenta segundos por defecto;
+- valores configurables mediante variables de entorno.
+
+Flyway:
+
+- V8 no fue modificado;
+- V9 amplia CK_TokenSeguridadUsuario_tipo con MFA_LOGIN_CHALLENGE.
+
+Validacion final 9.0.7D:
+
+- tests: OK;
+- Docker Build: OK;
+- scripts/validate-backend.ps1: OK;
+- git diff --check: OK.
+
+## 40. Implementacion final 9.0.8
+
+FASE 9.0.8 - Refresh tokens + sesiones fue implementada y validada.
+
+Objetivos completados:
+
+- refresh token opaco;
+- hash SHA-256 persistido;
+- rotacion;
+- reutilizacion del token anterior rechazada;
+- revocacion;
+- listar sesiones propias;
+- cerrar sesion;
+- cerrar todas las sesiones.
+
+Lifecycle implementado:
+
+```text
+LOGIN MFA OFF
+  -> access JWT
+  -> refresh token
+  -> SesionUsuario
+
+LOGIN MFA ON
+  -> challenge
+  -> TOTP/recovery correcto
+  -> access JWT
+  -> refresh token
+  -> SesionUsuario
+
+REFRESH
+  -> hash del token recibido
+  -> PESSIMISTIC_WRITE
+  -> validar activa/no expirada
+  -> rotar hash
+  -> conservar expiracion absoluta
+  -> nuevo access JWT
+  -> nuevo refresh token
+
+LOGOUT
+  -> revocar SesionUsuario asociada al refresh token
+
+SESSION MANAGEMENT
+  -> GET /api/auth/sessions
+  -> DELETE /api/auth/sessions/{idSesionUsuario}
+  -> POST /api/auth/logout-all
+```
+
+Reglas finales:
+
+- Spring Boot continua STATELESS;
+- `SesionUsuario` no es HttpSession;
+- raw refresh token nunca se persiste;
+- hash de refresh nunca se expone;
+- sesiones ajenas no pueden enumerarse mediante id;
+- query de revocacion especifica combina idSesionUsuario + idUsuario;
+- revocacion especifica usa PESSIMISTIC_WRITE;
+- sesiones revocadas y expiradas no aparecen en el listado activo;
+- no existe sessionId/jti dentro del access JWT;
+- revocacion de la sesion no invalida inmediatamente access JWT ya emitidos;
+- access JWT permanece valido hasta su expiracion.
+
+Estado:
+
+- backend validator: OK;
+- tests: OK;
+- Docker build: OK;
+- frontend: no modificado en 9.0.8;
+- siguiente subfase: 9.0.9 - Integracion MVC.
+
+## Cierre tecnico 9.0.9 - Integracion MVC - 2026-10-20
+
+La integracion MVC de seguridad avanzada queda completada.
+
+Arquitectura resultante:
+
+Browser
+  |
+  | ASP.NET auth/session cookies
+  v
+ASP.NET Core MVC
+  |
+  | JWT backend + refresh token
+  | almacenados server-side
+  v
+Spring Boot REST API
+  |
+  v
+SQL Server
+
+Reglas verificadas:
+
+- el browser no recibe JWT backend;
+- el browser no recibe refresh token backend;
+- el challenge MFA permanece server-side;
+- password correcto con MFA habilitado no crea sesion MVC antes del segundo factor;
+- refresh es preemptivo y no reactivo a 401;
+- no existe replay automatico del request original;
+- logout actual revoca la sesion backend cuando existe refresh token;
+- logout-all revoca sesiones backend y elimina el estado MVC local;
+- password reset elimina autenticacion local tras completarse;
+- sesiones administrables solamente mediante endpoints autenticados;
+- no se intenta identificar la sesion actual mediante IP o User-Agent.
+
+Hardening diferido a 9.0.10:
+
+- revisar la politica de IdleTimeout de ASP.NET Session, actualmente 1 hora;
+- implementar lifecycle seguro de RefreshLocks sin romper la exclusion mutua entre requests concurrentes.
+
+9.0.9 no mantiene observaciones bloqueantes.
+
+## 9.0.10A - Politica de sesion MVC y lifecycle de refresh locks
+
+Actualizado: 2026-10-20.
+
+### Politica MVC
+
+Se mantiene intencionalmente:
+
+- cookie de autenticacion MVC: 1 hora;
+- SlidingExpiration: false;
+- ASP.NET Session IdleTimeout: 1 hora.
+
+El refresh token backend no se utiliza como mecanismo de
+"recordarme por 30 dias" en el navegador.
+
+Su objetivo en MVC es renovar de forma server-side el access JWT
+mientras la autenticacion MVC actual siga vigente.
+
+Por lo tanto, el TTL largo del refresh token backend no implica
+una cookie MVC de igual duracion.
+
+### RefreshLocks
+
+El diccionario de exclusiones por Session ID utiliza ahora entradas
+con conteo de referencias.
+
+Cada entrada contiene:
+
+- SemaphoreSlim;
+- contador de referencias;
+- SyncRoot para coordinar altas y bajas del diccionario.
+
+La entrada solamente puede eliminarse cuando su ReferenceCount
+llega a cero y continua siendo la misma instancia registrada para
+ese Session ID.
+
+Esto evita el patron inseguro de remover simplemente el
+SemaphoreSlim despues de Release(), lo cual podria permitir que
+un request rezagado utilice el semaphore antiguo mientras otro
+request crea uno nuevo para el mismo Session ID.
+
+El lock es por proceso MVC. Una futura arquitectura multi-instancia
+requerira revisar la coordinacion distribuida y el almacenamiento
+de ASP.NET Session.

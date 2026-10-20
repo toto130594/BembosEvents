@@ -40,3 +40,6 @@ postman/BembosEvents.local.postman_environment.json
 .local-output/
 
 /local-output/
+
+# graphify-axet
+.graphify/

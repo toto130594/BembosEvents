@@ -80,6 +80,45 @@ public class SecurityTokenLifecycleService {
     }
 
     @Transactional
+    public Usuario resolveActive(
+            String rawToken,
+            TipoTokenSeguridad tipo) {
+
+        if (rawToken == null
+                || rawToken.isBlank()
+                || tipo == null) {
+
+            throw new TokenSeguridadInvalidoException();
+        }
+
+        String tokenHash =
+                securityTokenService
+                        .hashToken(rawToken);
+
+        TokenSeguridadUsuario token =
+                tokenSeguridadUsuarioRepository
+                        .findForUpdate(
+                                tokenHash,
+                                tipo)
+                        .orElseThrow(
+                                TokenSeguridadInvalidoException::new);
+
+        LocalDateTime now =
+                utcNow();
+
+        if (token.getFechaUso() != null
+                || token.getFechaRevocacion() != null
+                || token.getFechaExpiracion() == null
+                || !token.getFechaExpiracion()
+                        .isAfter(now)) {
+
+            throw new TokenSeguridadInvalidoException();
+        }
+
+        return token.getUsuario();
+    }
+
+    @Transactional
     public Usuario consume(
             String rawToken,
             TipoTokenSeguridad tipo) {

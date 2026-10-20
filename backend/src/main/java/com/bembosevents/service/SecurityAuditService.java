@@ -5,6 +5,7 @@ import com.bembosevents.entity.AuditoriaSeguridad;
 import com.bembosevents.entity.Usuario;
 import com.bembosevents.repository.AuditoriaSeguridadRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -12,10 +13,12 @@ public class SecurityAuditService {
 
     private static final int MAX_DETALLE_LENGTH = 1000;
 
-    private final AuditoriaSeguridadRepository auditoriaSeguridadRepository;
+    private final AuditoriaSeguridadRepository
+            auditoriaSeguridadRepository;
 
     public SecurityAuditService(
-            AuditoriaSeguridadRepository auditoriaSeguridadRepository) {
+            AuditoriaSeguridadRepository
+                    auditoriaSeguridadRepository) {
 
         this.auditoriaSeguridadRepository =
                 auditoriaSeguridadRepository;
@@ -28,14 +31,49 @@ public class SecurityAuditService {
             boolean exitoso,
             String detalleSeguro) {
 
+        saveAudit(
+                usuario,
+                tipoEvento,
+                exitoso,
+                detalleSeguro);
+    }
+
+    @Transactional(
+            propagation = Propagation.REQUIRES_NEW)
+    public void recordRequiresNew(
+            Usuario usuario,
+            TipoEventoSeguridad tipoEvento,
+            boolean exitoso,
+            String detalleSeguro) {
+
+        saveAudit(
+                usuario,
+                tipoEvento,
+                exitoso,
+                detalleSeguro);
+    }
+
+    private void saveAudit(
+            Usuario usuario,
+            TipoEventoSeguridad tipoEvento,
+            boolean exitoso,
+            String detalleSeguro) {
+
         AuditoriaSeguridad auditoria =
                 new AuditoriaSeguridad();
 
-        auditoria.setUsuario(usuario);
-        auditoria.setTipoEvento(tipoEvento);
-        auditoria.setExitoso(exitoso);
+        auditoria.setUsuario(
+                usuario);
+
+        auditoria.setTipoEvento(
+                tipoEvento);
+
+        auditoria.setExitoso(
+                exitoso);
+
         auditoria.setDetalleSeguro(
-                sanitizeDetail(detalleSeguro));
+                sanitizeDetail(
+                        detalleSeguro));
 
         auditoriaSeguridadRepository.save(
                 auditoria);
@@ -56,6 +94,7 @@ public class SecurityAuditService {
 
         if (sanitized.length()
                 <= MAX_DETALLE_LENGTH) {
+
             return sanitized;
         }
 

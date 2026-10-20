@@ -6,7 +6,7 @@ Sistema para la gestion de eventos, reservas, pagos, sedes, salones y usuarios.
 
 **Fase actual:** FASE 7.6 - Auditoria definitiva de API REST.
 
-**Subfase actual:** FASE 7.6D - Reservas del cliente. 7.6D.1 completada; 7.6D.2 es la siguiente implementacion.
+FASE 9.0.7D - MFA durante login: COMPLETADA.
 
 **Siguiente subfase:** FASE 7.6D.2 - Crear reserva real del cliente.
 
@@ -116,13 +116,13 @@ En FASE 7.6 se integrara esa regla dentro del endpoint real de cambio de estado.
 
 Planeado:
 
-- recuperacion de password.
-- verificacion de correo.
-- MFA mediante TOTP.
+- recuperacion de password: IMPLEMENTADA en 9.0.5.
+- verificacion de correo: IMPLEMENTADA en 9.0.5.
+- MFA mediante TOTP: EN PROGRESO; enrollment implementado, login MFA pendiente.
 - codigos de recuperacion.
 - refresh tokens.
 - gestion de sesiones.
-- rate limiting.
+- rate limiting: IMPLEMENTADO en 9.0.6.
 - bloqueo temporal por intentos.
 - auditoria administrativa.
 
@@ -206,3 +206,56 @@ Debe comprobarse:
 10. Git.
 
 **Codigo actualizado con documentacion desactualizada = tarea incompleta.**
+
+## Estado actual de seguridad avanzada
+
+Implementado y validado:
+
+- persistencia de seguridad mediante Flyway V8;
+- bloqueo por intentos fallidos;
+- auditoria de eventos de seguridad;
+- recuperacion de password;
+- verificacion de correo;
+- rate limiting;
+- primitivas TOTP;
+- cifrado AES-256-GCM del secreto TOTP;
+- setup y activacion MFA;
+- generacion y almacenamiento seguro de recovery codes.
+
+En progreso:
+
+- MFA durante login;
+- challenge temporal;
+- consumo one-time de recovery codes durante login.
+
+Pendiente posteriormente:
+
+- refresh tokens;
+- flujo completo de sesiones persistentes;
+- integracion frontend de MFA.
+
+## Estado MFA - FASE 9.0.7D completada
+
+El backend ya soporta MFA TOTP durante login.
+
+Cuando MFA esta habilitado:
+
+- el password correcto no entrega JWT;
+- se entrega un challenge temporal opaco;
+- el usuario completa TOTP o utiliza un recovery code;
+- solamente entonces se emite el JWT.
+
+Controles implementados:
+
+- challenge one-time;
+- recovery one-time;
+- locks pesimistas;
+- auditoria MFA;
+- failure audit REQUIRES_NEW;
+- rate limit especifico MFA_CHALLENGE.
+
+El frontend MFA todavia no forma parte de esta subfase.
+
+## Estado actual
+
+**Subfase actual:** FASE 9.0.10 - Smoke y hardening. 9.0.9 Integracion MVC completada el 2026-10-20.

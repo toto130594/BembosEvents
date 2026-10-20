@@ -144,3 +144,67 @@ Repository / JPA
         v
 SQL Server
 ```
+
+## Estado final FASE 9.0.9 - 2026-10-20
+
+La integracion MVC de autenticacion queda completada.
+
+Flujos disponibles:
+
+- login normal;
+- login con challenge MFA;
+- TOTP;
+- MFA recovery code;
+- recuperacion y reset de password;
+- reenvio de verificacion de correo;
+- verificacion de correo;
+- refresh automatico server-side;
+- logout actual;
+- listado de sesiones;
+- revocacion individual;
+- logout-all.
+
+Estado sensible almacenado en ASP.NET Session:
+
+- BackendJwt;
+- BackendJwtExpiresAtUtc;
+- BackendRefreshToken;
+- BackendRefreshTokenExpiresAtUtc;
+- PendingMfaChallengeToken y metadata temporal MFA cuando aplica.
+
+El navegador recibe solamente cookies ASP.NET y los tokens de accion
+que necesariamente pertenecen al usuario, como password reset o
+email verification.
+
+No existe replay automatico de requests despues de 401.
+
+Hardening pendiente para 9.0.10:
+
+- politica definitiva de Session IdleTimeout;
+- lifecycle concurrency-safe de RefreshLocks.
+
+## Hardening 9.0.10A - Session lifetime y refresh concurrency
+
+Actualizado: 2026-10-20.
+
+Politica de autenticacion MVC:
+
+- ExpireTimeSpan de cookie: 1 hora;
+- SlidingExpiration: false;
+- Session IdleTimeout: 1 hora.
+
+La duracion de la autenticacion del navegador esta desacoplada
+del TTL absoluto del refresh token backend.
+
+Refresh concurrency:
+
+- un solo refresh backend por Session ID a la vez;
+- requests concurrentes comparten una entrada de lock;
+- la entrada mantiene reference counting;
+- la entrada se elimina solamente cuando no quedan owners ni waiters
+  registrados;
+- no se dispone el SemaphoreSlim durante la eliminacion para evitar
+  carreras con referencias rezagadas.
+
+Este mecanismo protege la instancia MVC actual. Multi-instancia
+queda fuera del alcance de FASE 9.

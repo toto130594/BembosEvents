@@ -46,8 +46,29 @@
                     @registrationSuccess
                 </div>
             }
+            @if (TempData["PasswordResetSuccess"] is string passwordResetSuccess)
+            {
+                <div class="be-auth-success"
+                     role="status">
+                    @passwordResetSuccess
+                </div>
+            }
 
-            <div class="be-auth-card-heading">
+                        @if (TempData["EmailVerificationSuccess"] is string emailVerificationSuccess)
+            {
+                <div class="be-auth-success"
+                     role="status">
+                    @emailVerificationSuccess
+                </div>
+            }
+            @if (TempData["AuthenticationNotice"] is string authenticationNotice)
+            {
+                <div class="be-auth-success"
+                     role="status">
+                    @authenticationNotice
+                </div>
+            }
+<div class="be-auth-card-heading">
                 <span>
                     Mi cuenta
                 </span>
@@ -107,6 +128,28 @@
                     </span>
                 </div>
 
+                <div>
+                    <a asp-controller="Account"
+                       asp-action="ForgotPassword"
+                       class="be-auth-text-link">
+                        Olvidaste tu contrasena?
+                    </a>
+                </div>
+                <div>
+                    <a asp-controller="Account"
+                       asp-action="VerifyEmail"
+                       class="be-auth-text-link">
+                        Verificar mi correo
+                    </a>
+                </div>
+
+                <div>
+                    <a asp-controller="Account"
+                       asp-action="ResendEmailVerification"
+                       class="be-auth-text-link">
+                        Reenviar verificacion de correo
+                    </a>
+                </div>
                 <button type="submit"
                         class="be-btn be-btn-primary be-auth-submit">
                     Iniciar sesion

@@ -86,8 +86,7 @@ Nunca deben versionarse:
 - secretos TOTP.
 - recovery codes sin proteccion.
 
-# 2. MFA - planeado
-
+# 2. MFA - implementada
 Se utilizara TOTP.
 
 Compatible con aplicaciones como:
@@ -125,7 +124,7 @@ Politica objetivo:
 
 El secreto TOTP nunca debe almacenarse sin proteccion.
 
-# 3. Codigos de recuperacion - planeado
+# 3. Codigos de recuperacion - implementacion parcial
 
 Al activar MFA se generaran codigos de recuperacion.
 
@@ -166,7 +165,7 @@ Las cuentas podran verificar la propiedad del correo registrado.
 
 La verificacion utilizara un token temporal.
 
-# 6. Refresh Tokens - planeado
+# 6. Refresh Tokens - implementado
 
 Arquitectura objetivo:
 
@@ -181,7 +180,7 @@ revocable
 
 Permitira renovar autenticacion sin mantener un access token excesivamente largo.
 
-# 7. Sesiones - planeado
+# 7. Sesiones - implementado
 
 El usuario podra administrar sesiones activas.
 
@@ -192,7 +191,7 @@ Objetivo:
 - cerrar todas las sesiones.
 - revocar refresh tokens.
 
-# 8. Proteccion de login - planeado
+# 8. Proteccion de login - implementada parcialmente
 
 Se incorporara:
 
@@ -203,8 +202,7 @@ Se incorporara:
 
 El bloqueo no debe permitir ataques simples de denegacion dirigidos contra cuentas de terceros.
 
-# 9. Auditoria - planeado
-
+# 9. Auditoria - implementada
 Acciones administrativas importantes deberan registrarse.
 
 Ejemplos:
@@ -404,3 +402,154 @@ Caracteristicas:
 Limitacion:
 
 La implementacion es local por instancia. Un despliegue multi-instancia requiere almacenamiento compartido, por ejemplo Redis o equivalente.
+
+## Estado MFA validado - FASE 9.0.7C
+
+Implementado:
+
+- TOTP RFC 6238 con HMAC-SHA1;
+- secreto TOTP aleatorio de 160 bits;
+- periodo de 30 segundos;
+- tolerancia de una ventana anterior y posterior;
+- secreto TOTP protegido mediante AES-256-GCM;
+- setup MFA autenticado mediante `POST /api/mfa/setup`;
+- activacion MFA autenticada mediante `POST /api/mfa/activate`;
+- recovery codes generados con aleatoriedad criptografica;
+- solamente SHA-256 de recovery codes queda persistido;
+- activacion atomica y protegida mediante lock pesimista.
+
+Pendiente para FASE 9.0.7D:
+
+- enforcement MFA durante login;
+- challenge MFA temporal;
+- validacion TOTP durante login;
+- consumo one-time de recovery code durante login;
+- rate limiting especifico para MFA login.
+
+Mientras 9.0.7D no este completada, el login existente todavia no exige el segundo factor.
+
+## Estado final MFA login - FASE 9.0.7D
+
+IMPLEMENTADO:
+
+- password correcto con MFA deshabilitado entrega JWT normal;
+- password correcto con MFA habilitado entrega challenge temporal, no JWT;
+- challenge opaco de 256 bits;
+- challenge persistido solamente mediante SHA-256;
+- un unico challenge activo por usuario y tipo;
+- challenge de un solo uso;
+- expiracion configurable, cinco minutos por defecto;
+- verificacion TOTP durante login;
+- recovery code como segundo factor alternativo;
+- recovery codes de un solo uso mediante fechaUso;
+- locks pesimistas para challenge, UsuarioSeguridad y recovery codes;
+- MFA_VERIFICACION_EXITOSA;
+- MFA_VERIFICACION_FALLIDA mediante REQUIRES_NEW;
+- MFA_RECOVERY_CODE_USADO;
+- rate limit MFA_CHALLENGE independiente del rate limit LOGIN;
+- TOTP y recovery comparten el mismo presupuesto MFA_CHALLENGE.
+
+La implementacion no entrega un access JWT antes de completar el segundo factor.
+
+## Estado final Refresh Tokens + Sesiones - FASE 9.0.8
+
+FASE 9.0.8 implementa el lifecycle backend de sesiones persistentes.
+
+Refresh token:
+
+- opaco y generado con aleatoriedad criptografica;
+- solamente su hash SHA-256 se persiste;
+- el valor raw se devuelve solamente al cliente autorizado;
+- rota en cada uso exitoso;
+- el token anterior deja de ser valido despues de la rotacion;
+- la rotacion no extiende la expiracion absoluta de la sesion;
+- tokens revocados o expirados son rechazados.
+
+SesionUsuario:
+
+- representa una sesion logica persistente;
+- Spring Security permanece STATELESS;
+- no se utiliza HttpSession para autenticar el backend;
+- permite listar sesiones activas propias;
+- permite revocar una sesion propia especifica;
+- permite cerrar la sesion identificada por refresh token;
+- permite revocar todas las sesiones activas del usuario.
+
+Endpoints:
+
+- `POST /api/auth/refresh`;
+- `POST /api/auth/logout`;
+- `POST /api/auth/logout-all`;
+- `GET /api/auth/sessions`;
+- `DELETE /api/auth/sessions/{idSesionUsuario}`.
+
+Seguridad:
+
+- `/api/auth/sessions` y `/api/auth/sessions/**` requieren autenticacion;
+- `/api/auth/logout-all` requiere autenticacion;
+- una sesion inexistente y una sesion perteneciente a otro usuario responden 404;
+- `refreshTokenHash` nunca forma parte del DTO publico;
+- no existe flag de sesion actual porque el access JWT no contiene sessionId/jti;
+- revocar una sesion no invalida inmediatamente un access JWT ya emitido;
+- el access JWT existente continua valido hasta su propia expiracion.
+
+Auditoria:
+
+- SESION_CREADA;
+- SESION_RENOVADA;
+- SESION_REVOCADA;
+- TODAS_SESIONES_REVOCADAS.
+
+## Estado FASE 9.0.9 - Integracion MVC completada
+
+Actualizado: 2026-10-20.
+
+El frontend ASP.NET Core MVC integra los controles de seguridad
+implementados por Spring Boot sin trasladar la autoridad de seguridad
+al navegador.
+
+Implementado y validado:
+
+- MFA TOTP durante login;
+- recovery code como segundo factor;
+- recuperacion de password;
+- verificacion de correo;
+- refresh tokens rotatorios;
+- sesiones persistentes;
+- logout con revocacion;
+- cierre global de sesiones;
+- administracion de sesiones propias;
+- JWT y refresh token exclusivamente server-side en MVC;
+- anti-enumeration en recuperacion y reenvio de verificacion;
+- CSRF en acciones MVC que modifican estado.
+
+Los estados historicos anteriores que describan estos controles como
+"planeados" o "pendientes" quedan reemplazados por este estado para
+FASE 9.0.9.
+
+Pendiente para 9.0.10:
+
+- smoke real de los flujos de seguridad;
+- hardening del IdleTimeout MVC;
+- hardening concurrency-safe del lifecycle de RefreshLocks;
+- regresion completa por roles.
+
+<!-- PHASE9_SECURITY_FINAL_START -->
+## Estado final de seguridad - FASE 9
+
+- Spring Boot permanece STATELESS respecto de HttpSession.
+- Access JWT permanece valido hasta su expiracion natural.
+- Revocar una sesion impide refresh posteriores; no existe jti/session-id coupling para revocacion inmediata del access JWT.
+- Refresh tokens son opacos, se persisten solo mediante hash y rotan en cada refresh.
+- True refresh reuse detection revoca las sesiones persistentes de la cuenta.
+- MFA TOTP protege el secreto mediante AES-256-GCM.
+- Recovery codes se persisten mediante SHA-256 y son one-time.
+- Login con MFA no emite access JWT ni refresh antes de completar el segundo factor.
+- TOTP y recovery comparten el scope MFA_CHALLENGE.
+- Rate limiting devuelve HTTP 429 + Retry-After.
+- RATE_LIMIT_EXCEDIDO audita solo el primer rechazo del bucket/ventana.
+- Browser no recibe JWT ni refresh backend; ASP.NET MVC los mantiene server-side en Session.
+- logout y logout-all revocan sesiones persistentes.
+- CLIENTE, ENCARGADO_LOCAL y ADMINISTRADOR fueron validados en runtime.
+- ENCARGADO_LOCAL obtiene HTTP 404 para sedes fuera de alcance como control anti-enumeration.
+<!-- PHASE9_SECURITY_FINAL_END -->

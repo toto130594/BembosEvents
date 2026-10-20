@@ -248,7 +248,7 @@ Siguiente fase:
 
 # FASE 9 - Seguridad avanzada
 
-Estado: PENDIENTE.
+Estado: COMPLETADA.
 
 - recuperacion de password.
 - verificacion de correo.
@@ -297,3 +297,174 @@ Estado: PENDIENTE.
 # Regla del roadmap
 
 No se debe marcar una fase como COMPLETADA mientras su codigo y documentacion no esten sincronizados.
+
+## Avance detallado FASE 9 - 2026-10-19
+
+Estado general de FASE 9: COMPLETADA.
+
+Subfases verificadas:
+
+- 9.0.3 - Persistencia y primitivas de seguridad: COMPLETADA.
+- 9.0.4 - Auditoria e intentos fallidos: COMPLETADA.
+- 9.0.5 - Recuperacion de password y verificacion de correo: COMPLETADA.
+- 9.0.6 - Rate limiting: COMPLETADA.
+- 9.0.7A - Auditoria MFA TOTP + recovery codes: COMPLETADA.
+- 9.0.7B - Crypto + primitivas TOTP: COMPLETADA.
+- 9.0.7C - Enrollment MFA: COMPLETADA.
+- 9.0.7D - MFA durante login: COMPLETADA.
+- 9.0.8 - Refresh tokens y sesiones: COMPLETADA.
+
+9.0.7C incluye:
+
+- setup MFA;
+- activacion MFA;
+- AES-256-GCM para secreto TOTP;
+- RFC 6238;
+- recovery codes almacenados solamente mediante SHA-256;
+- activacion atomica.
+
+9.0.7D completada con:
+
+- challenge MFA;
+- bifurcacion del login segun `mfaHabilitado`;
+- validacion TOTP durante login;
+- consumo one-time de recovery code;
+- rate limiting del segundo factor.
+
+FASE 9 completa permanece abierta hasta finalizar las subfases restantes.
+
+## Cierre 9.0.7D - 2026-10-19
+
+FASE 9.0.7D - MFA durante login: COMPLETADA.
+
+Incluye:
+
+- challenge temporal MFA_LOGIN_CHALLENGE;
+- Flyway V9;
+- bloqueo de JWT antes del segundo factor;
+- verificacion TOTP;
+- recovery code de un solo uso;
+- auditoria de exito y fallo;
+- MFA_VERIFICACION_FALLIDA con REQUIRES_NEW;
+- rate limit MFA_CHALLENGE;
+- pruebas de replay y concurrencia;
+- auditoria final 9.0.7D-8 aprobada.
+
+FASE 9 permanece abierta hasta completar sus subfases restantes.
+
+## Cierre 9.0.8 - 2026-10-19
+
+FASE 9.0.8 - Refresh tokens + sesiones: COMPLETADA.
+
+Incluye:
+
+- refresh token opaco de 256 bits;
+- solamente SHA-256 del refresh token queda persistido;
+- rotacion one-time en cada refresh;
+- reutilizacion de refresh token anterior rechazada;
+- expiracion absoluta de la sesion preservada durante rotacion;
+- `SesionUsuario` como sesion logica persistente, no HttpSession;
+- `POST /api/auth/refresh`;
+- `POST /api/auth/logout`;
+- `POST /api/auth/logout-all`;
+- `GET /api/auth/sessions`;
+- `DELETE /api/auth/sessions/{idSesionUsuario}`;
+- ownership por usuario para administracion de sesiones;
+- sesion inexistente o ajena responde 404 para evitar enumeracion;
+- PESSIMISTIC_WRITE en rotacion y revocacion sensible;
+- auditoria SESION_CREADA;
+- auditoria SESION_RENOVADA;
+- auditoria SESION_REVOCADA;
+- auditoria TODAS_SESIONES_REVOCADAS;
+- refreshTokenHash nunca se expone mediante la API;
+- access JWT no se revoca inmediatamente y permanece valido hasta su expiracion;
+- no existe acoplamiento JWT sessionId/jti en esta subfase;
+- auditoria final 9.0.8G e implementacion de gestion de sesiones 9.0.8I aprobadas;
+- backend validator, tests y Docker build aprobados.
+
+FASE 9 permanece EN PROGRESO.
+
+Siguiente subfase:
+
+- 9.0.9 - Integracion MVC.
+
+## Cierre 9.0.9 - Integracion MVC - 2026-10-20
+
+FASE 9.0.9 - Integracion MVC: COMPLETADA.
+
+Objetivos completados:
+
+- recuperacion de password integrada en MVC;
+- verificacion de correo integrada en MVC;
+- login MFA TOTP y recovery code integrado en MVC;
+- JWT backend almacenado solamente server-side;
+- refresh token backend almacenado solamente server-side;
+- refresh automatico preemptivo y controlado;
+- rotacion de refresh token actualizada server-side;
+- logout MVC con revocacion backend;
+- listado de sesiones propias;
+- revocacion de una sesion propia;
+- cierre de todas las sesiones;
+- limpieza local de JWT, refresh, expiraciones y cookie MVC;
+- proteccion CSRF en acciones MVC mutables;
+- sin retry reactivo ante HTTP 401;
+- sin replay automatico de requests;
+- JWT, refresh token, MFA challenge y hashes de sesion no llegan al browser.
+
+Validaciones finales:
+
+- 9.0.9D MFA MVC: VALIDADA;
+- 9.0.9E Password Recovery MVC: VALIDADA;
+- 9.0.9F Email Verification MVC: VALIDADA;
+- 9.0.9G Session Management UI: VALIDADA;
+- 9.0.9H auditoria integral MVC: APROBADA;
+- limpieza parcial de auth en PagoController: CORREGIDA;
+- limpieza parcial de auth en ReservaController: CORREGIDA;
+- frontend Release build: OK.
+
+Hardening diferido a 9.0.10:
+
+1. definir y documentar la politica definitiva de ASP.NET Session IdleTimeout;
+2. resolver el lifecycle de RefreshLocks con una estrategia concurrency-safe.
+
+No son bloqueantes para 9.0.9.
+
+Estado general de FASE 9: EN PROGRESO.
+
+Siguiente subfase:
+
+- 9.0.10 - Smoke y hardening.
+
+<!-- PHASE9_FINAL_CLOSE_START -->
+## Cierre formal FASE 9 - 2026-10-20
+
+Estado final: COMPLETADA.
+
+Subfases finales verificadas:
+
+- 9.0.7 - MFA TOTP + recovery codes: COMPLETADA.
+- 9.0.8 - Refresh tokens + sesiones persistentes: COMPLETADA.
+- 9.0.9 - Integracion MVC de seguridad: COMPLETADA.
+- 9.0.10 - Smoke + hardening: COMPLETADA.
+- 9.0.11 - Cierre formal: COMPLETADA tecnicamente y documentalmente; checkpoint commit pendiente de autorizacion explicita.
+
+Validacion final:
+
+- login normal y controles de bloqueo;
+- password reset y verificacion de correo;
+- MFA TOTP y recovery code one-time;
+- refresh rotation y true reuse detection;
+- logout, logout-all y sesiones persistentes;
+- rate limiting LOGIN y MFA con HTTP 429 + Retry-After;
+- auditoria RATE_LIMIT_EXCEDIDO verificada en SQL;
+- CLIENTE, ENCARGADO_LOCAL y ADMINISTRADOR;
+- resource hiding cross-sede mediante HTTP 404;
+- backend validator, tests y Docker build OK;
+- frontend Release build OK;
+- backend runtime HTTP 200;
+- frontend Docker runtime HTTP 200;
+- SQL Server healthy;
+- sin fallos transaccionales/Hikari en regresion final.
+
+Commit y push no se ejecutan automaticamente.
+<!-- PHASE9_FINAL_CLOSE_END -->

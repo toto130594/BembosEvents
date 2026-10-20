@@ -361,7 +361,7 @@ Ejemplo de cambio valido:
 PENDIENTE -> CONFIRMADA
 ```
 
-Las transiciones definitivas continÃºan siendo responsabilidad de ReglasTransicionReserva.
+Las transiciones definitivas continÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âºan siendo responsabilidad de ReglasTransicionReserva.
 
 # 7. Pagos
 
@@ -566,15 +566,24 @@ Debe permitir consultar tematicas activas.
 
 Debe permitir consultar servicios adicionales activos.
 
-# 10. MFA - futuro
+# 10. MFA - implementacion por subfases
+
+Estado actual verificado:
+
+- [IMPLEMENTADO - 9.0.7C] Enrollment MFA autenticado.
+- [IMPLEMENTADO] `POST /api/mfa/setup`.
+- [IMPLEMENTADO] `POST /api/mfa/activate`.
+- [IMPLEMENTADO - 9.0.7D] Verificacion MFA durante login.
+- [PENDIENTE] Desactivacion MFA; contrato API final aun no definido.
+- el login MFA no debe emitir JWT completo antes de validar el segundo factor.
 
 Endpoints candidatos:
 
 ```text
-POST   /api/auth/mfa/setup
-POST   /api/auth/mfa/activar
-POST   /api/auth/mfa/verificar
-DELETE /api/auth/mfa
+POST   /api/mfa/setup
+POST   /api/mfa/activate
+
+
 ```
 
 Estos endpoints NO existen actualmente.
@@ -753,3 +762,207 @@ Politicas por defecto:
 Los limites son configurables mediante properties y variables de entorno.
 
 La implementacion actual es in-memory y por instancia.
+
+## 10.1 MFA login implementado - FASE 9.0.7D
+
+El login MFA esta implementado mediante un challenge temporal opaco.
+
+Flujo de POST /api/auth/login:
+
+- si MFA esta deshabilitado, el login devuelve el JWT normal;
+- si MFA esta habilitado, no se entrega JWT;
+- se devuelve mfaRequired=true;
+- se devuelve un mfaChallengeToken temporal;
+- el challenge tiene TTL configurable y se almacena solamente mediante SHA-256.
+
+Verificacion TOTP:
+
+POST /api/auth/mfa/verificar
+
+Request:
+
+```json
+{
+  "challengeToken": "<challenge-opaco>",
+  "code": "123456"
+}
+```
+
+Un TOTP correcto consume el challenge y devuelve el JWT normal.
+
+Un TOTP incorrecto:
+
+- no consume el challenge;
+- no genera JWT;
+- registra MFA_VERIFICACION_FALLIDA.
+
+Verificacion mediante recovery code:
+
+POST /api/auth/mfa/recuperacion
+
+Request:
+
+```json
+{
+  "challengeToken": "<challenge-opaco>",
+  "recoveryCode": "<recovery-code>"
+}
+```
+
+Un recovery code correcto:
+
+- se valida mediante el hash SHA-256 almacenado;
+- utiliza comparacion constant-time;
+- marca fechaUso;
+- no puede reutilizarse;
+- consume el challenge;
+- registra MFA_RECOVERY_CODE_USADO;
+- devuelve el JWT normal.
+
+Los endpoints de enrollment continÃƒÂºan separados:
+
+- POST /api/mfa/setup
+- POST /api/mfa/activate
+
+Estos endpoints requieren autenticacion existente.
+
+## 10.2 Refresh tokens y sesiones - FASE 9.0.8
+
+### Refresh
+
+```http
+POST /api/auth/refresh
+```
+
+Body:
+
+```json
+{
+  "refreshToken": "<refresh-token>"
+}
+```
+
+La operacion:
+
+- valida la sesion persistente;
+- rota el refresh token;
+- conserva la expiracion absoluta original;
+- devuelve nuevo access JWT y nuevo refresh token;
+- un refresh token anterior, revocado o expirado es rechazado.
+
+### Logout de la sesion actual por refresh
+
+```http
+POST /api/auth/logout
+```
+
+Body:
+
+```json
+{
+  "refreshToken": "<refresh-token>"
+}
+```
+
+Respuesta exitosa:
+
+```text
+204 No Content
+```
+
+### Logout de todas las sesiones
+
+```http
+POST /api/auth/logout-all
+```
+
+Requiere autenticacion.
+
+Revoca todas las sesiones persistentes activas del usuario autenticado.
+
+Respuesta exitosa:
+
+```text
+204 No Content
+```
+
+### Listar sesiones propias
+
+```http
+GET /api/auth/sessions
+```
+
+Requiere autenticacion.
+
+Devuelve solamente sesiones:
+
+- pertenecientes al usuario autenticado;
+- no revocadas;
+- no expiradas.
+
+Cada elemento contiene:
+
+- idSesionUsuario;
+- fechaCreacion;
+- fechaExpiracion;
+- fechaUltimoUso;
+- userAgent;
+- ipOrigen.
+
+No devuelve:
+
+- refreshToken;
+- refreshTokenHash;
+- indicador de sesion actual.
+
+### Revocar una sesion propia
+
+```http
+DELETE /api/auth/sessions/{idSesionUsuario}
+```
+
+Requiere autenticacion.
+
+Reglas:
+
+- el usuario se obtiene desde la identidad autenticada;
+- el frontend no envia idUsuario;
+- la busqueda combina idSesionUsuario + idUsuario;
+- utiliza lock pesimista;
+- una sesion inexistente o de otro usuario responde 404;
+- nunca se revela si el id pertenece a otro usuario.
+
+Respuesta exitosa:
+
+```text
+204 No Content
+```
+
+Nota:
+
+Revocar una sesion invalida su refresh token, pero un access JWT emitido previamente continua valido hasta su expiracion porque FASE 9.0.8 no utiliza acoplamiento sessionId/jti.
+
+<!-- PHASE9_AUTH_API_FINAL_START -->
+## API de autenticacion y sesiones - FASE 9
+
+Endpoints relevantes:
+
+- POST /api/auth/login
+- POST /api/auth/refresh
+- POST /api/auth/logout
+- POST /api/auth/logout-all
+- POST /api/auth/mfa/verificar
+- POST /api/auth/mfa/recuperacion
+- POST /api/mfa/setup
+- POST /api/mfa/activate
+
+Contratos:
+
+- MFA ON: login devuelve challenge temporal y no access JWT/refresh.
+- MFA OFF: login devuelve access JWT + refresh.
+- refresh rota refresh token.
+- true reuse detection revoca sesiones persistentes.
+- recovery code es one-time.
+- rate limit puede responder HTTP 429 + Retry-After.
+- recursos cross-sede fuera de alcance pueden responder HTTP 404 para anti-enumeration.
+<!-- PHASE9_AUTH_API_FINAL_END -->

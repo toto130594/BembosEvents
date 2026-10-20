@@ -171,3 +171,39 @@ Decision:
 - SQL Server genera el consecutivo mediante dbo.ReservaCodigoSequence.
 - Java construira el formato BEM-AAAA-NNNNNN.
 - no se utilizara MAX(id) + 1 por riesgo de concurrencia.
+
+## Decision FASE 9.0.8 - Refresh tokens y sesiones persistentes
+
+Se adopta un modelo de sesion logica persistente basado en `SesionUsuario`, manteniendo Spring Security stateless respecto de HttpSession.
+
+Decisiones:
+
+- refresh token opaco y aleatorio;
+- solamente SHA-256 queda persistido;
+- rotacion en cada uso exitoso;
+- expiracion absoluta de la sesion no se extiende durante refresh;
+- revocacion actual mediante refresh token;
+- revocacion masiva por usuario;
+- listado de sesiones limitado al usuario autenticado;
+- revocacion especifica combina idSesionUsuario + idUsuario;
+- recursos de sesion inexistentes o ajenos responden 404;
+- raw refresh token y refreshTokenHash no forman parte de DTOs de sesiones;
+- no se agrega sessionId/jti al access JWT en 9.0.8;
+- la revocacion de SesionUsuario no invalida inmediatamente access JWT ya emitidos;
+- integracion server-side con ASP.NET Core MVC se difiere a FASE 9.0.9.
+
+<!-- PHASE9_ADR_FINAL_START -->
+## ADR - Cierre arquitectura de seguridad FASE 9
+
+- Spring Boot conserva SessionCreationPolicy.STATELESS.
+- Browser no recibe access JWT ni refresh token backend.
+- ASP.NET MVC mantiene tokens backend server-side en Session.
+- Refresh tokens son opacos, rotatorios y persistidos solo como hash.
+- SesionUsuario controla revocacion persistente.
+- Access JWT no se revoca inmediatamente al revocar refresh; permanece valido hasta expirar.
+- No se agrega jti/session-id coupling en FASE 9.
+- MFA TOTP usa AES-256-GCM y recovery codes SHA-256 one-time.
+- TOTP y recovery comparten MFA_CHALLENGE.
+- ENCARGADO_LOCAL usa resource hiding HTTP 404 fuera de su sede.
+- Frontend nunca accede directamente a SQL Server.
+<!-- PHASE9_ADR_FINAL_END -->

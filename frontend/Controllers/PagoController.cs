@@ -451,5 +451,11 @@ public sealed class PagoController : Controller
 
         HttpContext.Session.Remove(
             FrontendSessionKeys.BackendJwtExpiresAtUtc);
+
+        HttpContext.Session.Remove(
+            FrontendSessionKeys.BackendRefreshToken);
+
+        HttpContext.Session.Remove(
+            FrontendSessionKeys.BackendRefreshTokenExpiresAtUtc);
     }
 }

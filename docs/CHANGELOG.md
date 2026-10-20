@@ -473,3 +473,188 @@ FASE 7.6 - Auditoria REST definitiva.
 - Flyway no modificado.
 - Frontend no modificado.
 - Siguiente subfase: 9.0.7 - MFA TOTP + recovery codes.
+
+## 2026-10-19
+
+### FASE 9.0.7B - MFA crypto + TOTP
+
+- Implementadas primitivas TOTP compatibles con RFC 6238.
+- HMAC-SHA1, 6 digitos, periodo de 30 segundos y ventana +/-1.
+- Secretos TOTP aleatorios de 160 bits.
+- Agregada proteccion AES-256-GCM para secretos TOTP.
+- IV aleatorio de 96 bits y tag de autenticacion de 128 bits.
+- Clave criptografica externa; no existe clave hardcoded.
+- Recovery codes generados con SecureRandom.
+- Recovery codes persistibles solamente mediante SHA-256.
+- Comparacion de hash constant-time.
+- Login y JWT no fueron modificados.
+
+### FASE 9.0.7C - MFA enrollment
+
+- Implementado `POST /api/mfa/setup`.
+- Implementado `POST /api/mfa/activate`.
+- Ambos endpoints requieren usuario autenticado.
+- Setup persiste solamente el secreto TOTP protegido.
+- MFA permanece deshabilitado hasta validar el primer TOTP.
+- Activacion genera recovery codes y habilita MFA atomicamente.
+- Recovery raw se devuelve solamente durante activacion.
+- Recovery raw no queda persistido ni registrado en logs.
+- Recovery codes usados historicamente se preservan.
+- Recovery codes no usados de configuraciones anteriores se invalidan.
+- Agregado lock pesimista para proteger enrollment concurrente.
+- Corregido test de tampering AES-GCM para alterar bytes reales del payload.
+- Backend validator completo aprobado.
+- Login, JWT y frontend permanecieron sin cambios.
+
+### FASE 9.0.7D - Estado inicial
+
+- Auditoria de login MFA completada.
+- Aprobado diseno sin pre-MFA JWT.
+- Se reutilizara la infraestructura de tokens opacos para challenge MFA.
+- El en el estado inicial de 9.0.7D el challenge MFA aun no estaba implementado.
+- Flyway V9 todavia NO esta creado en este checkpoint.
+- Consumo de recovery code durante login permanece pendiente.
+- Rate limiting MFA permanece pendiente.
+
+## 2026-10-19 - FASE 9.0.7D MFA login completada
+
+Implementado:
+
+- MFA_LOGIN_CHALLENGE como nuevo TipoTokenSeguridad;
+- V9 para ampliar el CHECK constraint de TokenSeguridadUsuario;
+- TTL configurable del challenge;
+- login MFA ON devuelve challenge y no JWT;
+- login MFA OFF conserva flujo JWT existente;
+- POST /api/auth/mfa/verificar;
+- POST /api/auth/mfa/recuperacion;
+- TOTP validado antes de consumir challenge;
+- recovery code one-time con fechaUso;
+- locks pesimistas para operaciones sensibles;
+- MFA_VERIFICACION_EXITOSA;
+- MFA_VERIFICACION_FALLIDA mediante REQUIRES_NEW;
+- MFA_RECOVERY_CODE_USADO;
+- scope de rate limiting MFA_CHALLENGE;
+- TOTP y recovery comparten el presupuesto MFA;
+- tests backend y Docker Build validados.
+
+No se modifico:
+
+- implementacion interna de JwtService;
+- JwtAuthenticationFilter;
+- frontend;
+- V8.
+
+## 2026-10-19 - FASE 9.0.8 - Refresh tokens y sesiones
+
+- Implementado refresh token opaco.
+- Solamente SHA-256 del refresh token se persiste.
+- Implementada `SesionUsuario` como sesion logica persistente.
+- Implementada emision de access JWT + refresh despues de autenticacion completa.
+- MFA habilitado no crea sesion antes de completar el segundo factor.
+- Implementada rotacion one-time de refresh tokens.
+- La rotacion conserva la expiracion absoluta original.
+- Refresh revocado, expirado o reutilizado es rechazado.
+- Implementado `POST /api/auth/refresh`.
+- Implementado `POST /api/auth/logout`.
+- Implementado `POST /api/auth/logout-all`.
+- Implementado `GET /api/auth/sessions`.
+- Implementado `DELETE /api/auth/sessions/{idSesionUsuario}`.
+- Listado limitado a sesiones activas propias.
+- Revocacion especifica utiliza ownership por usuario y PESSIMISTIC_WRITE.
+- Sesion inexistente o ajena responde 404 para evitar enumeracion.
+- `refreshTokenHash` no se expone en respuestas.
+- Agregados eventos SESION_CREADA, SESION_RENOVADA, SESION_REVOCADA y TODAS_SESIONES_REVOCADAS al lifecycle.
+- Access JWT no tiene revocacion inmediata por sesion.
+- No se agrego sessionId/jti al JWT.
+- Backend validator: OK.
+- Tests: OK.
+- Docker build: OK.
+- Frontend no modificado.
+- FASE 9 permanece EN PROGRESO.
+- Siguiente subfase: 9.0.9 - Integracion MVC.
+
+## 2026-10-20 - FASE 9.0.9 Integracion MVC completada
+
+### Added
+
+- integracion MVC de MFA TOTP y recovery code;
+- almacenamiento server-side de refresh token;
+- refresh automatico controlado;
+- logout con revocacion backend;
+- Password Recovery MVC;
+- Email Verification MVC;
+- UI de gestion de sesiones;
+- cierre individual y global de sesiones;
+- mensajes y rutas MVC de seguridad.
+
+### Security
+
+- JWT backend nunca llega al browser;
+- refresh token backend nunca llega al browser;
+- challenge MFA permanece server-side;
+- password recovery y resend de correo mantienen anti-enumeration;
+- acciones MVC mutables protegidas mediante antiforgery;
+- no se realiza retry reactivo ante HTTP 401;
+- no se realiza replay automatico del request;
+- PagoController limpia JWT y refresh al invalidar auth;
+- ReservaController limpia JWT y refresh al invalidar auth.
+
+### Deferred to 9.0.10
+
+- definir politica definitiva para ASP.NET Session IdleTimeout;
+- implementar cleanup/lifecycle concurrency-safe de RefreshLocks.
+
+### Validation
+
+- frontend Release build: OK;
+- 9.0.9D: VALIDADA;
+- 9.0.9E: VALIDADA;
+- 9.0.9F: VALIDADA;
+- 9.0.9G: VALIDADA;
+- 9.0.9H: APROBADA;
+- observaciones bloqueantes: 0.
+
+No se realizo commit ni push.
+
+## 2026-10-20 - FASE 9.0.10A refresh concurrency hardening
+
+### Security
+
+- se clasifica como intencional la politica MVC de 1 hora;
+- auth cookie: 1 hora y no sliding;
+- ASP.NET Session IdleTimeout: 1 hora;
+- el refresh token backend no funciona como remember-me del browser;
+- RefreshLocks deja de mantener entradas indefinidamente;
+- se agrega reference counting por Session ID;
+- TryRemove solamente ocurre al llegar a cero referencias;
+- se evita retirar el lock mientras existen owners o waiters registrados;
+- se conserva refresh preemptivo;
+- no se agrega retry reactivo ante 401;
+- no se agrega replay automatico de requests.
+
+Backend, Flyway y base de datos no fueron modificados.
+
+<!-- PHASE9_CHANGELOG_FINAL_START -->
+## 2026-10-20 - FASE 9 seguridad avanzada cerrada
+
+- MFA TOTP + recovery codes completados.
+- Refresh tokens opacos + rotacion completados.
+- Persistent sessions completadas.
+- True refresh reuse detection validada en runtime.
+- Logout y logout-all validados.
+- Integracion MVC de password reset, email verification, MFA y session UI completada.
+- JWT y refresh backend permanecen server-side en ASP.NET Session.
+- Rate limiting LOGIN y MFA validado con HTTP 429 + Retry-After.
+- RATE_LIMIT_EXCEDIDO verificado directamente en SQL.
+- CLIENTE, ADMINISTRADOR y ENCARGADO_LOCAL validados en runtime.
+- Resource hiding cross-sede mediante HTTP 404 confirmado.
+- Backend validator: Tests OK + Docker Build OK.
+- Frontend Release build: 0 warnings + 0 errors.
+- Backend runtime HTTP 200.
+- Frontend Docker runtime HTTP 200.
+- SQL Server healthy.
+- Sin errores transaccionales/Hikari en regresion final.
+- 9.0.10 Smoke + Hardening aprobado.
+- 9.0.11 documentacion sincronizada y lista para checkpoint commit.
+- Commit y push no ejecutados automaticamente.
+<!-- PHASE9_CHANGELOG_FINAL_END -->

@@ -130,9 +130,9 @@ CLIENTE -> IA -> ENCARGADO_LOCAL
 
 Al escalar se conserva la misma conversacion.
 
-## MFA futuro
+## MFA
 
-Se utilizara TOTP.
+MFA utiliza TOTP. Las primitivas criptograficas y el enrollment estan implementados; el enforcement durante login permanece pendiente en FASE 9.0.7D.
 
 Politica objetivo:
 
@@ -197,3 +197,17 @@ git diff --cached
 ```
 
 Nunca agregar secretos.
+
+## Estado MFA 9.0.7D
+
+MFA durante login esta implementado.
+
+Reglas actuales:
+
+- nunca emitir access JWT antes del segundo factor cuando mfaHabilitado=true;
+- challenge MFA opaco, temporal y one-time;
+- TOTP y recovery code son factores validos;
+- recovery codes usados no pueden reutilizarse;
+- fallos MFA se auditan mediante REQUIRES_NEW;
+- endpoints MFA de login usan rate limit MFA_CHALLENGE;
+- enrollment permanece en /api/mfa y requiere autenticacion.

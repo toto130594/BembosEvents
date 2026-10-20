@@ -1461,6 +1461,12 @@ public sealed class ReservaController : Controller
 
         HttpContext.Session.Remove(
             BembosEvents.Web.Security.FrontendSessionKeys.BackendJwtExpiresAtUtc);
+
+        HttpContext.Session.Remove(
+            BembosEvents.Web.Security.FrontendSessionKeys.BackendRefreshToken);
+
+        HttpContext.Session.Remove(
+            BembosEvents.Web.Security.FrontendSessionKeys.BackendRefreshTokenExpiresAtUtc);
     }
     private async Task<ReservationResumenBuildResult> BuildResumenAsync(
         ReservationDraft draft)

@@ -136,6 +136,15 @@ public sealed class BackendApiClient : IBackendApiClient
                     "Revisa los datos ingresados.");
             }
 
+            if (response.StatusCode == HttpStatusCode.TooManyRequests)
+            {
+                return new BackendLoginResult(
+                    false,
+                    null,
+                    response.StatusCode,
+                    "Demasiados intentos. Intenta nuevamente mas tarde.");
+            }
+
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning(
@@ -155,20 +164,38 @@ public sealed class BackendApiClient : IBackendApiClient
                         cancellationToken:
                             cancellationToken);
 
+            if (auth is null)
+            {
+                return InvalidAuthenticationResponse(
+                    response.StatusCode);
+            }
+
+            var isMfaChallenge =
+                auth.MfaRequired &&
+                !string.IsNullOrWhiteSpace(
+                    auth.MfaChallengeToken) &&
+                auth.MfaChallengeExpiresInMs > 0 &&
+                string.IsNullOrWhiteSpace(
+                    auth.Token) &&
+                string.IsNullOrWhiteSpace(
+                    auth.RefreshToken);
+
+            var isCompleteSession =
+                !auth.MfaRequired &&
+                !string.IsNullOrWhiteSpace(
+                    auth.Token) &&
+                auth.ExpiresInMs > 0 &&
+                !string.IsNullOrWhiteSpace(
+                    auth.RefreshToken) &&
+                auth.RefreshTokenExpiresInMs > 0;
+
             if (
-                auth is null ||
-                string.IsNullOrWhiteSpace(auth.Token) ||
-                auth.ExpiresInMs <= 0
+                !isMfaChallenge &&
+                !isCompleteSession
             )
             {
-                _logger.LogWarning(
-                    "Login backend devolvio una respuesta incompleta.");
-
-                return new BackendLoginResult(
-                    false,
-                    null,
-                    response.StatusCode,
-                    "La respuesta de autenticacion no es valida.");
+                return InvalidAuthenticationResponse(
+                    response.StatusCode);
             }
 
             return new BackendLoginResult(
@@ -215,6 +242,825 @@ public sealed class BackendApiClient : IBackendApiClient
         }
     }
 
+    public Task<BackendLoginResult> VerifyMfaTotpAsync(
+        string challengeToken,
+        string code,
+        CancellationToken cancellationToken = default)
+    {
+        return CompleteMfaAsync(
+            "api/auth/mfa/verificar",
+            new MfaVerifyRequestDto
+            {
+                ChallengeToken =
+                    challengeToken,
+
+                Code =
+                    code
+            },
+            cancellationToken);
+    }
+
+    public Task<BackendLoginResult> VerifyMfaRecoveryAsync(
+        string challengeToken,
+        string recoveryCode,
+        CancellationToken cancellationToken = default)
+    {
+        return CompleteMfaAsync(
+            "api/auth/mfa/recuperacion",
+            new MfaRecoveryRequestDto
+            {
+                ChallengeToken =
+                    challengeToken,
+
+                RecoveryCode =
+                    recoveryCode
+            },
+            cancellationToken);
+    }
+
+    private async Task<BackendLoginResult> CompleteMfaAsync(
+        string endpoint,
+        object request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var response =
+                await _httpClient.PostAsJsonAsync(
+                    endpoint,
+                    request,
+                    cancellationToken);
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.Unauthorized ||
+                response.StatusCode ==
+                    HttpStatusCode.BadRequest
+            )
+            {
+                return new BackendLoginResult(
+                    false,
+                    null,
+                    response.StatusCode,
+                    "El codigo no es valido o el desafio ha expirado.");
+            }
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.TooManyRequests
+            )
+            {
+                return new BackendLoginResult(
+                    false,
+                    null,
+                    response.StatusCode,
+                    "Demasiados intentos de verificacion. Intenta nuevamente mas tarde.");
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Verificacion MFA backend respondio HTTP {StatusCode}.",
+                    (int)response.StatusCode);
+
+                return new BackendLoginResult(
+                    false,
+                    null,
+                    response.StatusCode,
+                    "No fue posible completar la verificacion de seguridad.");
+            }
+
+            var auth =
+                await response.Content
+                    .ReadFromJsonAsync<AuthResponseDto>(
+                        cancellationToken:
+                            cancellationToken);
+
+            if (
+                auth is null ||
+                auth.MfaRequired ||
+                string.IsNullOrWhiteSpace(
+                    auth.Token) ||
+                auth.ExpiresInMs <= 0 ||
+                string.IsNullOrWhiteSpace(
+                    auth.RefreshToken) ||
+                auth.RefreshTokenExpiresInMs <= 0
+            )
+            {
+                return InvalidAuthenticationResponse(
+                    response.StatusCode);
+            }
+
+            return new BackendLoginResult(
+                true,
+                auth,
+                response.StatusCode,
+                null);
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(
+                "Timeout durante verificacion MFA.");
+
+            return new BackendLoginResult(
+                false,
+                null,
+                null,
+                "La verificacion demoro demasiado en responder.");
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "No fue posible conectar con verificacion MFA.");
+
+            return new BackendLoginResult(
+                false,
+                null,
+                null,
+                "El servicio de autenticacion no esta disponible.");
+        }
+        catch (JsonException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Respuesta JSON invalida durante verificacion MFA.");
+
+            return new BackendLoginResult(
+                false,
+                null,
+                null,
+                "La respuesta de autenticacion no es valida.");
+        }
+    }
+
+    private BackendLoginResult InvalidAuthenticationResponse(
+        HttpStatusCode? statusCode)
+    {
+        _logger.LogWarning(
+            "Backend devolvio una respuesta de autenticacion incompleta.");
+
+        return new BackendLoginResult(
+            false,
+            null,
+            statusCode,
+            "La respuesta de autenticacion no es valida.");
+    }
+    public async Task<BackendSecurityActionResult>
+        RequestPasswordRecoveryAsync(
+            string correo,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response =
+                await _httpClient.PostAsJsonAsync(
+                    "api/auth/password/solicitar",
+                    new PasswordRecoveryRequestDto
+                    {
+                        Correo =
+                            correo
+                    },
+                    cancellationToken);
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.TooManyRequests
+            )
+            {
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "Demasiadas solicitudes. Intenta nuevamente mas tarde.");
+            }
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.BadRequest
+            )
+            {
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "Revisa el correo ingresado.");
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Solicitud de recuperacion respondio HTTP {StatusCode}.",
+                    (int)response.StatusCode);
+
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "No fue posible procesar la solicitud.");
+            }
+
+            var message =
+                await response.Content
+                    .ReadFromJsonAsync<MensajeResponseDto>(
+                        cancellationToken:
+                            cancellationToken);
+
+            return new BackendSecurityActionResult(
+                true,
+                response.StatusCode,
+                message?.Mensaje ??
+                "Si el correo existe, se enviaran instrucciones para restablecer la contrasena.");
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(
+                "Timeout durante solicitud de recuperacion de contrasena.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio demoro demasiado en responder.");
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "No fue posible conectar con recuperacion de contrasena.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio de autenticacion no esta disponible.");
+        }
+        catch (JsonException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Respuesta JSON invalida en recuperacion de contrasena.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "La respuesta del servicio no es valida.");
+        }
+    }
+
+    public async Task<BackendSecurityActionResult>
+        ResetPasswordAsync(
+            string token,
+            string nuevaPassword,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response =
+                await _httpClient.PostAsJsonAsync(
+                    "api/auth/password/restablecer",
+                    new PasswordResetRequestDto
+                    {
+                        Token =
+                            token,
+
+                        NuevaPassword =
+                            nuevaPassword
+                    },
+                    cancellationToken);
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.BadRequest ||
+                response.StatusCode ==
+                    HttpStatusCode.Unauthorized ||
+                response.StatusCode ==
+                    HttpStatusCode.NotFound
+            )
+            {
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "El token no es valido o ha expirado.");
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Restablecimiento de contrasena respondio HTTP {StatusCode}.",
+                    (int)response.StatusCode);
+
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "No fue posible restablecer la contrasena.");
+            }
+
+            var message =
+                await response.Content
+                    .ReadFromJsonAsync<MensajeResponseDto>(
+                        cancellationToken:
+                            cancellationToken);
+
+            return new BackendSecurityActionResult(
+                true,
+                response.StatusCode,
+                message?.Mensaje ??
+                "Contrasena restablecida correctamente.");
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(
+                "Timeout durante restablecimiento de contrasena.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio demoro demasiado en responder.");
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "No fue posible conectar con restablecimiento de contrasena.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio de autenticacion no esta disponible.");
+        }
+        catch (JsonException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Respuesta JSON invalida en restablecimiento de contrasena.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "La respuesta del servicio no es valida.");
+        }
+    }
+    public async Task<BackendSecurityActionResult>
+        ResendEmailVerificationAsync(
+            string correo,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response =
+                await _httpClient.PostAsJsonAsync(
+                    "api/auth/correo/reenviar",
+                    new EmailVerificationRequestDto
+                    {
+                        Correo =
+                            correo
+                    },
+                    cancellationToken);
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.TooManyRequests
+            )
+            {
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "Demasiadas solicitudes. Intenta nuevamente mas tarde.");
+            }
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.BadRequest
+            )
+            {
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "Revisa el correo ingresado.");
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Reenvio de verificacion de correo respondio HTTP {StatusCode}.",
+                    (int)response.StatusCode);
+
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "No fue posible procesar la solicitud.");
+            }
+
+            var message =
+                await response.Content
+                    .ReadFromJsonAsync<MensajeResponseDto>(
+                        cancellationToken:
+                            cancellationToken);
+
+            return new BackendSecurityActionResult(
+                true,
+                response.StatusCode,
+                message?.Mensaje ??
+                "Si el correo requiere verificacion, se enviaran instrucciones.");
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(
+                "Timeout durante reenvio de verificacion de correo.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio demoro demasiado en responder.");
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "No fue posible conectar con verificacion de correo.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio de autenticacion no esta disponible.");
+        }
+        catch (JsonException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Respuesta JSON invalida en reenvio de verificacion.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "La respuesta del servicio no es valida.");
+        }
+    }
+
+    public async Task<BackendSecurityActionResult>
+        VerifyEmailAsync(
+            string token,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response =
+                await _httpClient.PostAsJsonAsync(
+                    "api/auth/correo/verificar",
+                    new EmailVerificationTokenRequestDto
+                    {
+                        Token =
+                            token
+                    },
+                    cancellationToken);
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.BadRequest ||
+                response.StatusCode ==
+                    HttpStatusCode.Unauthorized ||
+                response.StatusCode ==
+                    HttpStatusCode.NotFound
+            )
+            {
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "El token no es valido o ha expirado.");
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Verificacion de correo respondio HTTP {StatusCode}.",
+                    (int)response.StatusCode);
+
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "No fue posible verificar el correo.");
+            }
+
+            var message =
+                await response.Content
+                    .ReadFromJsonAsync<MensajeResponseDto>(
+                        cancellationToken:
+                            cancellationToken);
+
+            return new BackendSecurityActionResult(
+                true,
+                response.StatusCode,
+                message?.Mensaje ??
+                "Correo verificado correctamente.");
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(
+                "Timeout durante verificacion de correo.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio demoro demasiado en responder.");
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "No fue posible conectar con verificacion de correo.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio de autenticacion no esta disponible.");
+        }
+        catch (JsonException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Respuesta JSON invalida en verificacion de correo.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "La respuesta del servicio no es valida.");
+        }
+    }
+    public async Task<BackendSessionListResult>
+        GetSessionsAsync(
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response =
+                await _httpClient.GetAsync(
+                    "api/auth/sessions",
+                    cancellationToken);
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.Unauthorized
+            )
+            {
+                return new BackendSessionListResult(
+                    false,
+                    Array.Empty<BackendSessionDto>(),
+                    response.StatusCode,
+                    "La sesion de autenticacion ya no es valida.");
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Listado de sesiones respondio HTTP {StatusCode}.",
+                    (int)response.StatusCode);
+
+                return new BackendSessionListResult(
+                    false,
+                    Array.Empty<BackendSessionDto>(),
+                    response.StatusCode,
+                    "No fue posible consultar las sesiones activas.");
+            }
+
+            var sessions =
+                await response.Content
+                    .ReadFromJsonAsync<List<BackendSessionDto>>(
+                        cancellationToken:
+                            cancellationToken);
+
+            return new BackendSessionListResult(
+                true,
+                sessions ??
+                    new List<BackendSessionDto>(),
+                response.StatusCode,
+                null);
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(
+                "Timeout consultando sesiones activas.");
+
+            return new BackendSessionListResult(
+                false,
+                Array.Empty<BackendSessionDto>(),
+                null,
+                "El servicio demoro demasiado en responder.");
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "No fue posible conectar al listado de sesiones.");
+
+            return new BackendSessionListResult(
+                false,
+                Array.Empty<BackendSessionDto>(),
+                null,
+                "El servicio de autenticacion no esta disponible.");
+        }
+        catch (JsonException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Respuesta JSON invalida al listar sesiones.");
+
+            return new BackendSessionListResult(
+                false,
+                Array.Empty<BackendSessionDto>(),
+                null,
+                "La respuesta del servicio no es valida.");
+        }
+    }
+
+    public async Task<BackendSecurityActionResult>
+        RevokeSessionAsync(
+            long idSesionUsuario,
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response =
+                await _httpClient.DeleteAsync(
+                    $"api/auth/sessions/{idSesionUsuario}",
+                    cancellationToken);
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.Unauthorized
+            )
+            {
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "La sesion de autenticacion ya no es valida.");
+            }
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.NotFound
+            )
+            {
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "La sesion indicada no esta disponible.");
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Revocacion de sesion respondio HTTP {StatusCode}.",
+                    (int)response.StatusCode);
+
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "No fue posible cerrar la sesion seleccionada.");
+            }
+
+            return new BackendSecurityActionResult(
+                true,
+                response.StatusCode,
+                "Sesion cerrada correctamente.");
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(
+                "Timeout revocando sesion.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio demoro demasiado en responder.");
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "No fue posible conectar para revocar la sesion.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio de autenticacion no esta disponible.");
+        }
+    }
+
+    public async Task<BackendSecurityActionResult>
+        LogoutAllSessionsAsync(
+            CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response =
+                await _httpClient.PostAsync(
+                    "api/auth/logout-all",
+                    content: null,
+                    cancellationToken);
+
+            if (
+                response.StatusCode ==
+                    HttpStatusCode.Unauthorized
+            )
+            {
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "La sesion de autenticacion ya no es valida.");
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Logout-all respondio HTTP {StatusCode}.",
+                    (int)response.StatusCode);
+
+                return new BackendSecurityActionResult(
+                    false,
+                    response.StatusCode,
+                    "No fue posible cerrar todas las sesiones.");
+            }
+
+            return new BackendSecurityActionResult(
+                true,
+                response.StatusCode,
+                "Todas las sesiones fueron cerradas.");
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(
+                "Timeout cerrando todas las sesiones.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio demoro demasiado en responder.");
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "No fue posible conectar para cerrar todas las sesiones.");
+
+            return new BackendSecurityActionResult(
+                false,
+                null,
+                "El servicio de autenticacion no esta disponible.");
+        }
+    }
+    public async Task<bool> LogoutAsync(
+        string refreshToken,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return false;
+        }
+
+        try
+        {
+            using var response =
+                await _httpClient.PostAsJsonAsync(
+                    "api/auth/logout",
+                    new LogoutRequestDto
+                    {
+                        RefreshToken =
+                            refreshToken
+                    },
+                    cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            _logger.LogWarning(
+                "Logout backend respondio HTTP {StatusCode}.",
+                (int)response.StatusCode);
+
+            return false;
+        }
+        catch (OperationCanceledException)
+            when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(
+                "Timeout durante logout contra Spring Boot.");
+
+            return false;
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "No fue posible conectar con logout Spring Boot.");
+
+            return false;
+        }
+    }
     public async Task<BackendRegistrationResult> RegisterAsync(
         RegistroRequestDto request,
         CancellationToken cancellationToken = default)

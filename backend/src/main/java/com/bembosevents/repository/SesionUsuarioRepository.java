@@ -1,7 +1,9 @@
 package com.bembosevents.repository;
 
 import com.bembosevents.entity.SesionUsuario;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,8 +19,32 @@ public interface SesionUsuarioRepository
             String refreshTokenHash
     );
 
-    Optional<SesionUsuario> findByRefreshTokenHashAndFechaRevocacionIsNull(
+    Optional<SesionUsuario>
+    findByRefreshTokenHashAndFechaRevocacionIsNull(
             String refreshTokenHash
+    );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            select s
+            from SesionUsuario s
+            join fetch s.usuario
+            where s.refreshTokenHash = :refreshTokenHash
+            """)
+    Optional<SesionUsuario> findByRefreshTokenHashForUpdate(
+            @Param("refreshTokenHash") String refreshTokenHash
+    );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            select s
+            from SesionUsuario s
+            join fetch s.usuario
+            where s.idSesionUsuario = :idSesionUsuario
+            """)
+    Optional<SesionUsuario> findByIdSesionUsuarioForUpdate(
+            @Param("idSesionUsuario")
+            Long idSesionUsuario
     );
 
     List<SesionUsuario>
@@ -37,4 +63,24 @@ public interface SesionUsuarioRepository
             @Param("idUsuario") Integer idUsuario,
             @Param("fechaRevocacion") LocalDateTime fechaRevocacion
     );
+
+    List<SesionUsuario>
+    findAllByUsuario_IdUsuarioAndFechaRevocacionIsNullAndFechaExpiracionAfterOrderByFechaCreacionDesc(
+            Integer idUsuario,
+            LocalDateTime fechaActual);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            select s
+            from SesionUsuario s
+            join fetch s.usuario
+            where s.idSesionUsuario = :idSesionUsuario
+              and s.usuario.idUsuario = :idUsuario
+              and s.fechaRevocacion is null
+              and s.fechaExpiracion > :fechaActual
+            """)
+    Optional<SesionUsuario> findActiveOwnedByIdForUpdate(
+            @Param("idSesionUsuario") Long idSesionUsuario,
+            @Param("idUsuario") Integer idUsuario,
+            @Param("fechaActual") LocalDateTime fechaActual);
 }

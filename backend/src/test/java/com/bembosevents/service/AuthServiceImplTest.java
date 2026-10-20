@@ -2,12 +2,16 @@ package com.bembosevents.service;
 
 import com.bembosevents.dto.auth.AuthResponse;
 import com.bembosevents.dto.auth.LoginRequest;
+import com.bembosevents.dto.auth.LogoutRequest;
+import com.bembosevents.dto.auth.RefreshRequest;
 import com.bembosevents.dto.auth.RegistroRequest;
 import com.bembosevents.entity.Rol;
 import com.bembosevents.entity.Usuario;
+import com.bembosevents.entity.UsuarioSeguridad;
 import com.bembosevents.entity.UsuarioRol;
 import com.bembosevents.repository.RolRepository;
 import com.bembosevents.repository.UsuarioRepository;
+import com.bembosevents.repository.UsuarioSeguridadRepository;
 import com.bembosevents.repository.UsuarioRolRepository;
 import com.bembosevents.repository.ClienteRepository;
 import com.bembosevents.security.JwtService;
@@ -36,10 +40,14 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
+    @Mock
+    private AuthSessionIssuanceService
+            authSessionIssuanceService;
 
     @Mock
     private UsuarioRepository usuarioRepository;
@@ -66,6 +74,15 @@ class AuthServiceImplTest {
 
     @Mock
     private LoginSecurityService loginSecurityService;
+
+    @Mock
+    private UsuarioSeguridadRepository usuarioSeguridadRepository;
+
+    @Mock
+    private MfaLoginChallengeService mfaLoginChallengeService;
+    @Mock
+    private SesionUsuarioService
+            sesionUsuarioService;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -174,45 +191,64 @@ class AuthServiceImplTest {
     }
 
     @Test
-    void debeRealizarLoginYRetornarJwt() {
+    void debeRealizarLoginYRetornarAccessYRefresh() {
 
         LoginRequest request =
                 new LoginRequest(
                         "CLIENTE@BEMBOS.TEST",
                         "Segura123");
 
-        Authentication authentication =
-                mock(Authentication.class);
+        Usuario usuario =
+                new Usuario();
 
-        when(authenticationManager
-                .authenticate(any(Authentication.class)))
-                .thenReturn(authentication);
+        usuario.setIdUsuario(1);
+        usuario.setCorreo(
+                "cliente@bembos.test");
+        usuario.setActivo(true);
 
-        UserDetails userDetails =
-                User.withUsername(
-                                "cliente@bembos.test")
-                        .password("hash")
-                        .roles("CLIENTE")
-                        .build();
+        UsuarioSeguridad seguridad =
+                new UsuarioSeguridad();
 
-        when(usuarioDetailsService
-                .loadUserByUsername(
+        seguridad.setUsuario(
+                usuario);
+
+        seguridad.setMfaHabilitado(
+                false);
+
+        when(usuarioSeguridadRepository
+                .findByUsuario_CorreoIgnoreCase(
                         "cliente@bembos.test"))
-                .thenReturn(userDetails);
+                .thenReturn(
+                        Optional.of(
+                                seguridad));
 
-        when(jwtService
-                .generateToken(userDetails))
-                .thenReturn("jwt-token");
+        when(usuarioRepository
+                .findByCorreoIgnoreCase(
+                        "cliente@bembos.test"))
+                .thenReturn(
+                        Optional.of(
+                                usuario));
 
-        when(jwtService
-                .getExpirationMs())
-                .thenReturn(3600000L);
+        AuthResponse issued =
+                AuthResponse.authenticated(
+                        "access-jwt",
+                        "Bearer",
+                        3600000L,
+                        "refresh-raw",
+                        2592000000L);
+
+        when(authSessionIssuanceService
+                .issue(
+                        usuario))
+                .thenReturn(
+                        issued);
 
         AuthResponse response =
-                authService.login(request);
+                authService.login(
+                        request);
 
         assertEquals(
-                "jwt-token",
+                "access-jwt",
                 response.token());
 
         assertEquals(
@@ -223,9 +259,17 @@ class AuthServiceImplTest {
                 3600000L,
                 response.expiresInMs());
 
-        verify(loginSecurityService)
-                .validateLoginAllowed(
-                        "cliente@bembos.test");
+        assertEquals(
+                "refresh-raw",
+                response.refreshToken());
+
+        assertEquals(
+                2592000000L,
+                response.refreshTokenExpiresInMs());
+
+        verify(authSessionIssuanceService)
+                .issue(
+                        usuario);
 
         verify(loginSecurityService)
                 .recordSuccess(
@@ -290,5 +334,199 @@ class AuthServiceImplTest {
         verify(loginSecurityService)
                 .recordRejected(
                         "cliente@bembos.test");
+    }
+
+    @Test
+    void debeDelegarRefreshASessionIssuanceService() {
+
+        RefreshRequest request =
+                new RefreshRequest(
+                        "refresh-anterior");
+
+        AuthResponse issued =
+                AuthResponse.authenticated(
+                        "access-nuevo",
+                        "Bearer",
+                        3600000L,
+                        "refresh-nuevo",
+                        864000000L);
+
+        when(authSessionIssuanceService
+                .refresh(
+                        "refresh-anterior"))
+                .thenReturn(
+                        issued);
+
+        AuthResponse response =
+                authService.refresh(
+                        request);
+
+        assertEquals(
+                "access-nuevo",
+                response.token());
+
+        assertEquals(
+                "refresh-nuevo",
+                response.refreshToken());
+
+        verify(authSessionIssuanceService)
+                .refresh(
+                        "refresh-anterior");
+    }
+
+    @Test
+    void debeDelegarLogoutActualASesionUsuarioService() {
+
+        LogoutRequest request =
+                new LogoutRequest(
+                        "refresh-activo");
+
+        authService.logout(
+                request);
+
+        verify(sesionUsuarioService)
+                .revocar(
+                        "refresh-activo");
+    }
+
+    @Test
+    void debeRevocarTodasLasSesionesDelUsuarioAutenticado() {
+
+        Usuario usuario =
+                new Usuario();
+
+        usuario.setIdUsuario(1);
+
+        usuario.setCorreo(
+                "cliente@bembos.test");
+
+        usuario.setActivo(
+                true);
+
+        when(usuarioRepository
+                .findByCorreoIgnoreCase(
+                        "cliente@bembos.test"))
+                .thenReturn(
+                        Optional.of(
+                                usuario));
+
+        authService.logoutAll(
+                "CLIENTE@BEMBOS.TEST");
+
+        verify(usuarioRepository)
+                .findByCorreoIgnoreCase(
+                        "cliente@bembos.test");
+
+        verify(sesionUsuarioService)
+                .revocarTodas(
+                        usuario);
+    }
+
+    @Test
+    void debeRechazarLogoutAllSinPrincipal() {
+
+        assertThrows(
+                BadCredentialsException.class,
+                () ->
+                        authService.logoutAll(
+                                null));
+
+        verify(
+                sesionUsuarioService,
+                org.mockito.Mockito.never())
+                .revocarTodas(
+                        org.mockito.ArgumentMatchers
+                                .any(Usuario.class));
+    }
+
+    @Test
+    void debeListarSesionesDelUsuarioAutenticado() {
+
+        Usuario usuario =
+                new Usuario();
+
+        usuario.setIdUsuario(1);
+        usuario.setCorreo(
+                "cliente@bembos.test");
+        usuario.setActivo(
+                true);
+
+        when(usuarioRepository
+                .findByCorreoIgnoreCase(
+                        "cliente@bembos.test"))
+                .thenReturn(
+                        Optional.of(
+                                usuario));
+
+        when(sesionUsuarioService
+                .listarActivas(
+                        usuario))
+                .thenReturn(
+                        java.util.List.of());
+
+        var sesiones =
+                authService.listarSesiones(
+                        "CLIENTE@BEMBOS.TEST");
+
+        assertEquals(
+                0,
+                sesiones.size());
+
+        verify(usuarioRepository)
+                .findByCorreoIgnoreCase(
+                        "cliente@bembos.test");
+
+        verify(sesionUsuarioService)
+                .listarActivas(
+                        usuario);
+    }
+
+    @Test
+    void debeRevocarSesionEspecificaDelUsuarioAutenticado() {
+
+        Usuario usuario =
+                new Usuario();
+
+        usuario.setIdUsuario(1);
+        usuario.setCorreo(
+                "cliente@bembos.test");
+        usuario.setActivo(
+                true);
+
+        when(usuarioRepository
+                .findByCorreoIgnoreCase(
+                        "cliente@bembos.test"))
+                .thenReturn(
+                        Optional.of(
+                                usuario));
+
+        authService.revocarSesion(
+                "CLIENTE@BEMBOS.TEST",
+                10L);
+
+        verify(sesionUsuarioService)
+                .revocarPropia(
+                        usuario,
+                        10L);
+    }
+
+    @Test
+    void debeRechazarGestionSesionesSinUsuarioAutenticado() {
+
+        assertThrows(
+                BadCredentialsException.class,
+                () ->
+                        authService.listarSesiones(
+                                null));
+
+        assertThrows(
+                BadCredentialsException.class,
+                () ->
+                        authService.revocarSesion(
+                                null,
+                                10L));
+
+        verifyNoInteractions(
+                sesionUsuarioService);
     }
 }

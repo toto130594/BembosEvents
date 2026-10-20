@@ -129,6 +129,8 @@ class RateLimitEnforcementServiceTest {
                 maxRequests,
                 60,
                 maxRequests,
+                60,
+                maxRequests,
                 60);
     }
 }

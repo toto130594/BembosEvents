@@ -1,18 +1,20 @@
 using System.Net.Http.Headers;
+using BembosEvents.Web.Services;
 
 namespace BembosEvents.Web.Security;
 
 public sealed class BackendBearerHandler : DelegatingHandler
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly BackendTokenRefreshService _tokenRefreshService;
 
     public BackendBearerHandler(
-        IHttpContextAccessor httpContextAccessor)
+        BackendTokenRefreshService tokenRefreshService)
     {
-        _httpContextAccessor = httpContextAccessor;
+        _tokenRefreshService =
+            tokenRefreshService;
     }
 
-    protected override Task<HttpResponseMessage> SendAsync(
+    protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
@@ -20,27 +22,20 @@ public sealed class BackendBearerHandler : DelegatingHandler
             request.RequestUri?.AbsolutePath ??
             string.Empty;
 
-        if (
-            path.StartsWith(
-                "/api/auth/",
-                StringComparison.OrdinalIgnoreCase)
-        )
+        if (IsAnonymousAuthPath(path))
         {
-            request.Headers.Authorization = null;
+            request.Headers.Authorization =
+                null;
 
-            return base.SendAsync(
+            return await base.SendAsync(
                 request,
                 cancellationToken);
         }
 
-        var httpContext =
-            _httpContextAccessor.HttpContext;
-
         var token =
-            httpContext?
-                .Session
-                .GetString(
-                    FrontendSessionKeys.BackendJwt);
+            await _tokenRefreshService
+                .GetValidAccessTokenAsync(
+                    cancellationToken);
 
         if (!string.IsNullOrWhiteSpace(token))
         {
@@ -49,9 +44,50 @@ public sealed class BackendBearerHandler : DelegatingHandler
                     "Bearer",
                     token);
         }
+        else
+        {
+            request.Headers.Authorization =
+                null;
+        }
 
-        return base.SendAsync(
+        return await base.SendAsync(
             request,
             cancellationToken);
+    }
+
+    private static bool IsAnonymousAuthPath(
+        string path)
+    {
+        if (
+            !path.StartsWith(
+                "/api/auth/",
+                StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return false;
+        }
+
+        if (
+            path.Equals(
+                "/api/auth/logout-all",
+                StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return false;
+        }
+
+        if (
+            path.Equals(
+                "/api/auth/sessions",
+                StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith(
+                "/api/auth/sessions/",
+                StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            return false;
+        }
+
+        return true;
     }
 }
