@@ -2,10 +2,8 @@
 
 ## Estado
 
-PLANEADO.
-
-No se encuentra implementado todavia.
-
+IMPLEMENTADO EN FASE 10.
+La implementacion base de Chat e IA fue completada en FASE 10.
 ## Objetivo
 
 Permitir que un cliente converse inicialmente con una IA y pueda ser transferido posteriormente a un encargado humano.
@@ -251,3 +249,89 @@ Funciones avanzadas posibles:
 - preguntas frecuentes mediante RAG.
 - analisis administrativo.
 - resumen de conversaciones para encargado.
+
+<!-- PHASE10_AI_CHAT_FINAL_START -->
+## Cierre implementacion base FASE 10 - 2026-10-21
+
+Estado: IMPLEMENTADO.
+
+### Flujo implementado
+
+```text
+CLIENTE
+   |
+   v
+BOT / IA
+   |
+   +---- responde consulta general
+   |
+   +---- escalamiento explicito
+           |
+           v
+ESPERANDO_ENCARGADO
+           |
+           v
+ENCARGADO_LOCAL de la sede
+           |
+           v
+EN_ATENCION
+```
+
+Estados disponibles:
+
+- BOT.
+- ESPERANDO_ENCARGADO.
+- EN_ATENCION.
+- CERRADO.
+
+### Persistencia
+
+- Conversacion y MensajeChat se persisten en SQL Server mediante JPA.
+- El historial reutiliza MensajeChat; no existe una tabla de historial duplicada.
+- Mensajes soportados: CLIENTE, IA, ENCARGADO_LOCAL y tipos ya definidos por el dominio.
+
+### IA
+
+- ChatAiProvider define la abstraccion del proveedor.
+- BasicChatAiProvider funciona sin credenciales externas.
+- OpenAiCompatibleChatAiProvider es opcional y configurable.
+- La IA solamente responde mientras la conversacion esta en BOT.
+- La IA no accede directamente a SQL Server.
+- La IA no posee privilegios especiales ni aprueba pagos.
+
+Configuracion:
+
+```properties
+app.chat.ai.provider=${AI_CHAT_PROVIDER:basic}
+app.chat.ai.base-url=${AI_CHAT_BASE_URL:http://host.docker.internal:11434/v1}
+app.chat.ai.api-key=${AI_CHAT_API_KEY:}
+app.chat.ai.model=${AI_CHAT_MODEL:qwen3:8b}
+app.chat.ai.temperature=${AI_CHAT_TEMPERATURE:0.2}
+```
+
+### Realtime
+
+- Handshake Spring WebSocket/STOMP: /ws/chat.
+- Application prefix: /app.
+- Topic por conversacion: /topic/chat/conversaciones/{idConversacion}.
+- Notificacion global BackOffice: /topic/backoffice/chat/notificaciones.
+- Notificacion por sede: /topic/backoffice/chat/sedes/{idSede}/notificaciones.
+- STOMP CONNECT requiere autenticacion.
+- SUBSCRIBE valida ownership, rol y sede.
+- SEND directo a /topic/** esta bloqueado.
+- SEND permitido solamente por /app/chat/conversaciones/{idConversacion}/mensajes y con ownership CLIENTE.
+
+### MVC
+
+- El browser no recibe JWT backend.
+- El browser no recibe refresh token backend.
+- ASP.NET Core MVC conserva los tokens server-side.
+- El browser no conecta directamente a /ws/chat.
+- La UI MVC actualiza historial mediante polling same-origin.
+
+### Limites de FASE 10
+
+- No se implementaron heuristicas automaticas de intent detection para escalamiento.
+- No se implemento bandeja persistente de notificaciones leido/no-leido.
+- Disponibilidad conversacional, recomendaciones, borradores de reserva, RAG, analitica y dashboard inteligente permanecen en FASE 12.
+<!-- PHASE10_AI_CHAT_FINAL_END -->

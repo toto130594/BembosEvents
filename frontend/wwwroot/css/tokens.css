@@ -1,42 +1,87 @@
+@font-face {
+    font-family: "Duplicate Slab";
+    src:
+        local("Duplicate Slab"),
+        local("DuplicateSlab"),
+        local("Duplicate Slab Bold"),
+        local("DuplicateSlab-Bold");
+    font-style: normal;
+    font-weight: 400 900;
+    font-display: swap;
+}
+
 :root {
-    --be-blue-900: #003b71;
-    --be-blue-700: #00529b;
-    --be-blue-500: #1479c9;
+    --be-blue-950: #10006f;
+    --be-blue-900: #1a00d8;
+    --be-blue-800: #2208c9;
+    --be-blue-700: #2e1df2;
+    --be-blue-500: #5148ff;
 
-    --be-red-600: #e1251b;
-    --be-red-700: #bd1d16;
+    --be-navy-950: #063563;
+    --be-navy-900: #084579;
+    --be-navy-800: #0a548f;
 
-    --be-yellow-400: #ffd428;
-    --be-yellow-300: #ffe26b;
+    --be-red-600: #ff3b30;
+    --be-red-700: #db2a21;
 
+    --be-orange-500: #ffa340;
+    --be-orange-400: #ffb562;
+
+    --be-pink-500: #ef78d9;
+    --be-pink-400: #f38be2;
+    --be-pink-300: #f8a9ec;
+
+    --be-yellow-500: #ffc400;
+    --be-yellow-400: #ffd000;
+    --be-yellow-300: #ffe063;
+
+    --be-cream: #fffaf1;
     --be-white: #ffffff;
 
-    --be-gray-50: #f8f9fa;
-    --be-gray-100: #f1f3f5;
-    --be-gray-200: #e5e7eb;
-    --be-gray-300: #d1d5db;
-    --be-gray-500: #6b7280;
-    --be-gray-700: #374151;
-    --be-gray-900: #171717;
+    --be-gray-50: #fafafa;
+    --be-gray-100: #f4f5f7;
+    --be-gray-200: #e4e6eb;
+    --be-gray-300: #d2d5dc;
+    --be-gray-500: #6a6f7b;
+    --be-gray-700: #343844;
+    --be-gray-900: #17181c;
 
     --be-success: #198754;
     --be-warning: #f59e0b;
     --be-danger: #dc3545;
     --be-info: #0d6efd;
 
-    --be-radius-sm: 8px;
-    --be-radius-md: 14px;
-    --be-radius-lg: 22px;
+    --be-radius-sm: 10px;
+    --be-radius-md: 16px;
+    --be-radius-lg: 24px;
+    --be-radius-xl: 34px;
     --be-radius-pill: 999px;
 
     --be-shadow-sm:
-        0 2px 8px rgba(0, 0, 0, 0.08);
+        0 5px 18px rgba(24, 13, 82, 0.08);
 
     --be-shadow-md:
-        0 8px 24px rgba(0, 0, 0, 0.12);
+        0 18px 44px rgba(24, 13, 82, 0.13);
 
-    --be-container: 1200px;
+    --be-shadow-lg:
+        0 30px 76px rgba(24, 13, 82, 0.18);
+
+    --be-container: 1240px;
+
+    --be-display:
+        "Duplicate Slab",
+        "Rockwell Extra Bold",
+        Rockwell,
+        "Roboto Slab",
+        Georgia,
+        serif;
+
+    --be-body:
+        Montserrat,
+        Arial,
+        Helvetica,
+        sans-serif;
 
     --be-transition-fast: 160ms ease;
-    --be-transition-normal: 220ms ease;
+    --be-transition-normal: 240ms ease;
 }

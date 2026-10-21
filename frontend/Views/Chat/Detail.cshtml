@@ -1,0 +1,173 @@
+@model BembosEvents.Web.ViewModels.ChatDetailViewModel
+
+@{
+    ViewData["Title"] = $"Chat #{Model.Conversacion.IdConversacion}";
+
+    var stateClass =
+        Model.Conversacion.Estado.ToLowerInvariant()
+            .Replace("_", "-");
+}
+
+<link rel="stylesheet"
+      href="~/css/chat.css"
+      asp-append-version="true" />
+
+<section class="chat-page">
+    <div class="be-container">
+        <header class="chat-thread-header">
+            <div>
+                <a asp-action="Index"
+                   class="chat-back-link">
+                    ← Mis conversaciones
+                </a>
+
+                <span class="chat-kicker">
+                    Conversacion
+                </span>
+
+                <h1>
+                    Chat #@Model.Conversacion.IdConversacion
+                </h1>
+
+                <p>
+                    Sede:
+                    <strong>
+                        @(Model.Conversacion.IdSede?.ToString() ?? "No asociada")
+                    </strong>
+                </p>
+            </div>
+
+            <span class="chat-state chat-state--@stateClass">
+                @Model.Conversacion.Estado.Replace("_", " ")
+            </span>
+        </header>
+
+        @if (TempData["ChatError"] is string error)
+        {
+            <div class="chat-alert chat-alert--error">@error</div>
+        }
+
+        @if (TempData["ChatSuccess"] is string success)
+        {
+            <div class="chat-alert chat-alert--success">@success</div>
+        }
+
+        <section class="chat-thread"
+                 data-chat-history-url="@Url.Action(
+                    "HistoryJson",
+                    "Chat",
+                    new
+                    {
+                        idConversacion =
+                            Model.Conversacion.IdConversacion
+                    })">
+
+            <div class="chat-messages"
+                 data-chat-messages>
+                @foreach (var message in Model.Conversacion.Mensajes)
+                {
+                    var senderClass =
+                        message.TipoEmisor.ToLowerInvariant()
+                            .Replace("_", "-");
+
+                    <article class="chat-message chat-message--@senderClass">
+                        <div class="chat-message__meta">
+                            <strong>
+                                @message.TipoEmisor.Replace("_", " ")
+                            </strong>
+
+                            <time>
+                                @message.FechaEnvio.ToString("dd/MM/yyyy HH:mm")
+                            </time>
+                        </div>
+
+                        <p>@message.Contenido</p>
+                    </article>
+                }
+            </div>
+        </section>
+
+        @if (Model.Conversacion.Estado != "CERRADO")
+        {
+            <form asp-action="SendMessage"
+                  asp-route-idConversacion="@Model.Conversacion.IdConversacion"
+                  method="post"
+                  class="chat-composer">
+                @Html.AntiForgeryToken()
+
+                <label for="contenido">
+                    Tu mensaje
+                </label>
+
+                <textarea id="contenido"
+                          name="contenido"
+                          maxlength="4000"
+                          rows="3"
+                          required
+                          placeholder="Escribe aqui..."></textarea>
+
+                <button type="submit"
+                        class="chat-primary-button">
+                    Enviar
+                </button>
+            </form>
+        }
+
+        @if (
+            Model.Conversacion.Estado == "BOT" &&
+            Model.Conversacion.IdSede.HasValue
+        )
+        {
+            <form asp-action="Escalate"
+                  asp-route-idConversacion="@Model.Conversacion.IdConversacion"
+                  method="post"
+                  class="chat-escalation">
+                @Html.AntiForgeryToken()
+
+                <div>
+                    <strong>
+                        ¿Necesitas una persona?
+                    </strong>
+
+                    <span>
+                        Solicita atencion de un encargado de esta sede.
+                    </span>
+                </div>
+
+                <button type="submit"
+                        class="chat-secondary-button">
+                    Solicitar encargado
+                </button>
+            </form>
+        }
+        else if (
+            Model.Conversacion.Estado == "BOT" &&
+            !Model.Conversacion.IdSede.HasValue
+        )
+        {
+            <div class="chat-info">
+                Esta conversacion no tiene sede y no puede escalarse
+                a un encargado.
+            </div>
+        }
+        else if (
+            Model.Conversacion.Estado == "ESPERANDO_ENCARGADO"
+        )
+        {
+            <div class="chat-info">
+                Tu solicitud esta en la cola de atencion de la sede.
+            </div>
+        }
+        else if (
+            Model.Conversacion.Estado == "EN_ATENCION"
+        )
+        {
+            <div class="chat-info">
+                Un encargado de la sede puede responder esta conversacion.
+            </div>
+        }
+    </div>
+</section>
+
+<script src="~/js/chat.js"
+        asp-append-version="true"></script>

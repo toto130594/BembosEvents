@@ -1,19 +1,30 @@
-<footer class="be-footer">
+﻿<footer class="be-footer">
     <div class="be-footer-main">
         <div class="be-container be-footer-grid">
-            <section>
-                <a class="be-brand be-footer-brand"
+
+            <section class="be-footer-intro">
+                <a class="be-r6-footer-brand"
                    asp-controller="Home"
                    asp-action="Index"
                    aria-label="Bembos Events - Inicio">
-
-                    <span class="be-brand-main">BEMBOS</span>
-                    <span class="be-brand-events">EVENTS</span>
+                    <span class="be-r6-footer-logo-box">
+                        <img src="~/images/bembos-events-r6/logo-bembos.svg"
+                             alt="Bembos"
+                             class="be-r6-footer-logo" />
+                    </span>
+                    <span class="be-r6-footer-events">EVENTS</span>
                 </a>
 
-                <p class="be-footer-description">
-                    Reserva y organiza tu celebracion desde un solo lugar.
+                <p>
+                    Convierte tu celebracion en una experiencia Bembos:
+                    sede, salon, paquete, tematica y servicios en un solo flujo.
                 </p>
+
+                <a class="be-footer-cta"
+                   asp-controller="Reserva"
+                   asp-action="Index">
+                    Reserva tu evento
+                </a>
             </section>
 
             <section>
@@ -24,28 +35,33 @@
                 <ul class="be-footer-list">
                     <li>
                         <a class="be-footer-link"
-                           asp-controller="Home"
-                           asp-action="Index"
-                           asp-fragment="paquetes">
+                           asp-controller="Paquetes"
+                           asp-action="Index">
                             Paquetes
                         </a>
                     </li>
 
                     <li>
                         <a class="be-footer-link"
-                           asp-controller="Home"
-                           asp-action="Index"
-                           asp-fragment="sedes">
-                            Sedes
+                           asp-controller="Sedes"
+                           asp-action="Index">
+                            Locales
                         </a>
                     </li>
 
                     <li>
                         <a class="be-footer-link"
-                           asp-controller="Home"
-                           asp-action="Index"
-                           asp-fragment="tematicas">
+                           asp-controller="Tematicas"
+                           asp-action="Index">
                             Tematicas
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="be-footer-link"
+                           asp-controller="Servicios"
+                           asp-action="Index">
+                            Servicios
                         </a>
                     </li>
                 </ul>
@@ -71,6 +87,14 @@
                             Estado del servicio
                         </a>
                     </li>
+
+                    <li>
+                        <a class="be-footer-link"
+                           asp-controller="Account"
+                           asp-action="Login">
+                            Mi cuenta
+                        </a>
+                    </li>
                 </ul>
             </section>
         </div>
@@ -83,7 +107,7 @@
             </span>
 
             <span>
-                Portal de reservas de eventos.
+                Portal de reservas para celebraciones.
             </span>
         </div>
     </div>

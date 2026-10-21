@@ -1,98 +1,126 @@
-@model IReadOnlyList<BembosEvents.Web.Models.Api.TematicaPublicaDto>
+﻿@model IReadOnlyList<BembosEvents.Web.Models.Api.TematicaPublicaDto>
 
 @{
     ViewData["Title"] = "Tematicas";
 }
 
-<section class="be-catalog-hero">
-    <div class="be-container be-catalog-hero-content">
-        <span class="be-catalog-kicker">
-            Bembos Events
-        </span>
+<section class="be-editorial-banner be-editorial-themes">
+    <div class="be-container be-editorial-banner-inner">
+        <div class="be-editorial-copy">
+            <span class="be-editorial-eyebrow">
+                Dale personalidad
+            </span>
 
-        <h1>
-            Dale una tematica a tu fiesta
-        </h1>
+            <h1>
+                TEMATICAS QUE
+                <strong>TRANSFORMAN</strong>
+            </h1>
 
-        <p>
-            Explora las tematicas configuradas para personalizar
-            tu celebracion.
-        </p>
+            <p>
+                Elige una ambientacion y convierte tu reserva
+                en una celebracion con identidad propia.
+            </p>
+
+            <a asp-controller="Reserva"
+               asp-action="Index"
+               class="be-editorial-cta">
+                Personalizar evento
+            </a>
+        </div>
+
+        <div class="be-editorial-art be-theme-art"
+             aria-hidden="true">
+            <span class="be-theme-word be-theme-word-a">COLOR</span>
+            <span class="be-theme-word be-theme-word-b">FIESTA</span>
+            <span class="be-theme-word be-theme-word-c">WOW!</span>
+            <i class="be-theme-shape be-theme-shape-a"></i>
+            <i class="be-theme-shape be-theme-shape-b"></i>
+            <i class="be-theme-shape be-theme-shape-c"></i>
+        </div>
     </div>
 </section>
 
-<section class="be-catalog-section">
+<section class="be-store-section">
     <div class="be-container">
-
-        <div class="be-section-heading">
+        <div class="be-store-heading">
             <div>
-                <span class="be-catalog-kicker">
-                    Tematicas
+                <span class="be-store-kicker">
+                    Personaliza tu evento
                 </span>
 
                 <h2>
-                    Personaliza tu evento
+                    ELIGE UNA TEMATICA
                 </h2>
             </div>
-
-            <p>
-                Los precios adicionales provienen directamente
-                del catalogo administrado por Bembos Events.
-            </p>
         </div>
 
         @if (Model.Count == 0)
         {
-            <div class="be-catalog-empty">
-                <h3>
-                    Aun no hay tematicas disponibles
-                </h3>
+            <div class="be-designed-empty be-designed-empty-themes">
+                <span class="be-designed-empty-mark">
+                    ✦
+                </span>
 
-                <p>
-                    Cuando existan tematicas activas apareceran aqui.
-                </p>
+                <div>
+                    <h3>
+                        Estamos preparando nuevas tematicas
+                    </h3>
+
+                    <p>
+                        Cuando existan tematicas activas apareceran aqui.
+                        La pagina mantiene su experiencia visual incluso
+                        mientras el catalogo esta vacio.
+                    </p>
+
+                    <a asp-controller="Paquetes"
+                       asp-action="Index">
+                        Ver paquetes
+                    </a>
+                </div>
             </div>
         }
         else
         {
-            <div class="be-catalog-grid">
+            <div class="be-explore-grid">
                 @foreach (var tematica in Model)
                 {
-                    <article class="be-catalog-card">
-                        <div class="be-catalog-card-accent"></div>
+                    var tone = tematica.IdTematica % 4;
 
-                        <div class="be-catalog-card-body">
-                            <span class="be-catalog-eyebrow">
-                                Tematica
+                    <article class="be-explore-card be-explore-theme be-explore-tone-@tone">
+                        <div class="be-explore-card-art">
+                            <span>
+                                TEMATICA
                             </span>
 
-                            <h3>
+                            <strong>
                                 @tematica.Nombre
-                            </h3>
+                            </strong>
 
-                            @if (!string.IsNullOrWhiteSpace(tematica.Descripcion))
-                            {
-                                <p>
-                                    @tematica.Descripcion
-                                </p>
-                            }
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                        </div>
 
-                            <div class="be-catalog-price">
-                                <small>
-                                    Adicional
-                                </small>
+                        <div class="be-explore-card-body">
+                            <h3>@tematica.Nombre</h3>
+
+                            <p>
+                                @(string.IsNullOrWhiteSpace(tematica.Descripcion)
+                                    ? "Ambientacion disponible para personalizar tu evento."
+                                    : tematica.Descripcion)
+                            </p>
+
+                            <div class="be-explore-card-footer">
+                                <span>Adicional</span>
 
                                 <strong>
                                     S/ @tematica.PrecioAdicional.ToString("0.00")
                                 </strong>
                             </div>
-                        </div>
 
-                        <div class="be-catalog-card-footer">
                             <a asp-controller="Tematicas"
                                asp-action="Details"
-                               asp-route-idTematica="@tematica.IdTematica"
-                               class="be-btn be-btn-primary">
+                               asp-route-idTematica="@tematica.IdTematica">
                                 Ver tematica
                             </a>
                         </div>
@@ -100,5 +128,24 @@
                 }
             </div>
         }
+    </div>
+</section>
+
+<section class="be-explore-bottom-cta be-explore-bottom-cta-pink">
+    <div class="be-container">
+        <div>
+            <span>
+                ¿Ya tienes una idea?
+            </span>
+
+            <strong>
+                Llevala a tu reserva
+            </strong>
+        </div>
+
+        <a asp-controller="Reserva"
+           asp-action="Index">
+            Empezar ahora
+        </a>
     </div>
 </section>

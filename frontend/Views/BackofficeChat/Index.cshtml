@@ -1,0 +1,159 @@
+@model BembosEvents.Web.ViewModels.BackofficeChatIndexViewModel
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = "Chat";
+}
+
+<link rel="stylesheet"
+      href="~/css/chat.css"
+      asp-append-version="true" />
+
+<section class="backoffice-page-heading">
+    <div>
+        <p class="backoffice-eyebrow">
+            BackOffice
+        </p>
+
+        <h1>Chat y atencion</h1>
+
+        <p>
+            Spring Boot determina las conversaciones visibles
+            segun rol y sede.
+        </p>
+    </div>
+
+    <span class="backoffice-count">
+        @Model.Conversaciones.Count
+    </span>
+</section>
+
+@if (TempData["ChatError"] is string error)
+{
+    <div class="chat-alert chat-alert--error">@error</div>
+}
+
+<section class="chat-backoffice-section">
+    <div class="chat-section-heading">
+        <div>
+            <span class="chat-kicker">
+                Cola
+            </span>
+
+            <h2>
+                Esperando encargado
+            </h2>
+        </div>
+
+        <span class="chat-count">
+            @Model.Pendientes.Count
+        </span>
+    </div>
+
+    @if (Model.Pendientes.Count == 0)
+    {
+        <div class="chat-empty">
+            <h3>Sin conversaciones pendientes</h3>
+            <p>
+                No hay chats esperando atencion dentro de tu alcance.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="chat-conversation-grid">
+            @foreach (var item in Model.Pendientes)
+            {
+                <a class="chat-conversation-card"
+                   asp-action="Detail"
+                   asp-route-idConversacion="@item.IdConversacion">
+                    <div class="chat-conversation-card__top">
+                        <strong>
+                            Chat #@item.IdConversacion
+                        </strong>
+
+                        <span class="chat-state chat-state--esperando-encargado">
+                            ESPERANDO ENCARGADO
+                        </span>
+                    </div>
+
+                    <dl>
+                        <div>
+                            <dt>Sede</dt>
+                            <dd>@item.IdSede</dd>
+                        </div>
+
+                        <div>
+                            <dt>Actualizado</dt>
+                            <dd>
+                                @item.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")
+                            </dd>
+                        </div>
+                    </dl>
+                </a>
+            }
+        </div>
+    }
+</section>
+
+<section class="chat-backoffice-section">
+    <div class="chat-section-heading">
+        <div>
+            <span class="chat-kicker">
+                Historial
+            </span>
+
+            <h2>
+                Conversaciones accesibles
+            </h2>
+        </div>
+    </div>
+
+    @if (Model.Conversaciones.Count == 0)
+    {
+        <div class="chat-empty">
+            <h3>Sin conversaciones</h3>
+        </div>
+    }
+    else
+    {
+        <div class="chat-conversation-grid">
+            @foreach (var item in Model.Conversaciones)
+            {
+                var stateClass =
+                    item.Estado.ToLowerInvariant()
+                        .Replace("_", "-");
+
+                <a class="chat-conversation-card"
+                   asp-action="Detail"
+                   asp-route-idConversacion="@item.IdConversacion">
+                    <div class="chat-conversation-card__top">
+                        <strong>
+                            Chat #@item.IdConversacion
+                        </strong>
+
+                        <span class="chat-state chat-state--@stateClass">
+                            @item.Estado.Replace("_", " ")
+                        </span>
+                    </div>
+
+                    <dl>
+                        <div>
+                            <dt>Sede</dt>
+                            <dd>
+                                @(item.IdSede?.ToString() ?? "Sin sede")
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>Actualizado</dt>
+                            <dd>
+                                @item.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")
+                            </dd>
+                        </div>
+                    </dl>
+                </a>
+            }
+        </div>
+    }
+</section>

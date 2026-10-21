@@ -1,134 +1,153 @@
-<header class="be-header">
-    <div class="be-header-top">
-        <div class="be-container be-header-top-content">
-            Celebra momentos inolvidables con Bembos Events
+@{
+    var accountDisplayName =
+        string.IsNullOrWhiteSpace(User.Identity?.Name)
+            ? "MI CUENTA"
+            : User.Identity!.Name!;
+}
+
+<header class="be-header be-r6-header">
+    <div class="be-header-main">
+        <div class="be-container">
+            <nav class="be-navbar navbar navbar-expand-lg"
+                 aria-label="Navegacion principal">
+
+                <a class="be-r6-brand"
+                   asp-controller="Home"
+                   asp-action="Index"
+                   aria-label="Bembos Events - Inicio">
+                    <span class="be-r6-brand-logo">
+                        <img src="~/images/bembos-events-r6/logo-bembos.svg"
+                             alt="Bembos"
+                             class="be-r6-logo-img" />
+                    </span>
+                    <span class="be-r6-brand-events">EVENTS</span>
+                </a>
+
+                <button class="be-mobile-toggle"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#bePublicNavigation"
+                        aria-controls="bePublicNavigation"
+                        aria-expanded="false"
+                        aria-label="Abrir menu">
+                    <span class="be-r6-menu-lines" aria-hidden="true"></span>
+                </button>
+
+                <div class="collapse navbar-collapse be-nav-collapse"
+                     id="bePublicNavigation">
+
+                    <ul class="be-nav">
+                        <li>
+                            <a class="be-nav-link"
+                               asp-controller="Paquetes"
+                               asp-action="Index">
+                                PAQUETES
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="be-nav-link"
+                               asp-controller="Tematicas"
+                               asp-action="Index">
+                                TEMATICAS
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="be-nav-link"
+                               asp-controller="Sedes"
+                               asp-action="Index">
+                                LOCALES
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="be-nav-link"
+                               asp-controller="Servicios"
+                               asp-action="Index">
+                                SERVICIOS
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="be-header-actions be-r6-header-actions">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <a class="be-r6-account"
+                               asp-controller="Account"
+                               asp-action="Sessions">
+                                <span>HOLA,</span>
+                                <strong>@accountDisplayName</strong>
+                            </a>
+
+                            <a class="be-r6-simple-link"
+                               asp-controller="Reserva"
+                               asp-action="MisReservas">
+                                MIS RESERVAS
+                            </a>
+
+                            <a class="be-header-icon-link"
+   asp-controller="Chat"
+   asp-action="Index">
+    <span aria-hidden="true">●</span>
+    Chat
+</a>
+
+<form asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post"
+                                  class="be-r6-logout-form">
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="be-r6-logout">
+                                    CERRAR SESION
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="be-r6-login-link"
+                               href="/cuenta/iniciar-sesion"
+                               aria-label="Iniciar sesion">
+                                <span class="be-r6-login-hello">HOLA,</span>
+                                <span class="be-r6-login-text">INICIAR SESION</span>
+                            </a>
+                        }
+
+                        <a class="be-r6-reserve"
+                           asp-controller="Reserva"
+                           asp-action="Index">
+                            <span class="be-r6-lightning"
+                                  aria-hidden="true"></span>
+                            RESERVAR
+                        </a>
+                    </div>
+                </div>
+            </nav>
         </div>
     </div>
 
-    <div class="be-container">
-        <nav class="be-navbar navbar navbar-expand-lg"
-             aria-label="Navegacion principal">
-
-            <a class="be-brand"
-               asp-controller="Home"
-               asp-action="Index"
-               aria-label="Bembos Events - Inicio">
-
-                <span class="be-brand-main">BEMBOS</span>
-                <span class="be-brand-events">EVENTS</span>
+    <div class="be-header-subbar be-r6-subbar">
+        <div class="be-container be-header-subbar-content">
+            <a class="be-r6-start-event"
+               asp-controller="Reserva"
+               asp-action="Index">
+                <span class="be-r6-dot" aria-hidden="true"></span>
+                COMIENZA TU EVENTO: ELIGE TU SEDE
             </a>
 
-            <button class="be-mobile-toggle"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#bePublicNavigation"
-                    aria-controls="bePublicNavigation"
-                    aria-expanded="false"
-                    aria-label="Abrir menu de navegacion">
+            <div class="be-subbar-links">
+                <a asp-controller="Paquetes"
+                   asp-action="Index">
+                    PAQUETES
+                </a>
 
-                <span class="be-mobile-toggle-lines"
-                      aria-hidden="true">
-                </span>
-            </button>
-
-            <div class="collapse navbar-collapse be-nav-collapse"
-                 id="bePublicNavigation">
-
-                <ul class="be-nav">
-                    <li>
-                        <a class="be-nav-link"
-                           asp-controller="Home"
-                           asp-action="Index">
-                            Inicio
-                        </a>
-                    </li>
-
-                    <li>
-                        <a class="be-nav-link" asp-controller="Paquetes" asp-action="Index">
-                            Paquetes
-                        </a>
-                    </li>
-
-                    <li>
-                        <a class="be-nav-link" asp-controller="Tematicas" asp-action="Index">
-                            Tematicas
-                        </a>
-                    </li>
-
-                    <li>
-                        <a class="be-nav-link" asp-controller="Sedes" asp-action="Index">
-                            Sedes
-                        </a>
-                    </li>
-
-                    <li>
-                        <a class="be-nav-link" asp-controller="Sedes" asp-action="Index" asp-fragment="salones-por-sede">
-                            Salones
-                        </a>
-                    </li>
-
-                    <li>
-                        <a class="be-nav-link" asp-controller="Servicios" asp-action="Index">
-                            Servicios
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="be-header-actions">
-
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <div class="be-authenticated-user">
-                            <span class="be-authenticated-label">
-                                Sesion iniciada
-                            </span>
-
-                            <span class="be-authenticated-email"
-                                  title="@User.Identity.Name">
-                                @User.Identity.Name
-                            </span>
-                        </div>
-
-                        <a class="be-header-action be-header-account"
-                           asp-controller="Reserva"
-                           asp-action="MisReservas">
-                            Mis reservas
-                        </a>
-                                                <a class="be-header-action be-header-account"
-                           asp-controller="Account"
-                           asp-action="Sessions">
-                            Sesiones
-                        </a>
-<form asp-controller="Account"
-                              asp-action="Logout"
-                              method="post"
-                              class="be-header-logout-form">
-
-                            @Html.AntiForgeryToken()
-
-                            <button type="submit"
-                                    class="be-header-action be-header-account">
-                                Cerrar sesion
-                            </button>
-                        </form>
-                    }
-                    else
-                    {
-                        <a class="be-header-action be-header-account"
-                           asp-controller="Account"
-                           asp-action="Login">
-                            Mi cuenta
-                        </a>
-                    }
-
-                    <a class="be-header-action be-header-reservation"
-                       asp-controller="Home"
-                       asp-action="Index"
-                       asp-fragment="reservar">
-                        Mi reserva
-                    </a>
-                </div>
+                <a asp-controller="Reserva"
+                   asp-action="MisReservas">
+                    SIGUE TU RESERVA
+                </a>
             </div>
-        </nav>
+        </div>
     </div>
 </header>

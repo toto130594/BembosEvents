@@ -1,0 +1,146 @@
+@model BembosEvents.Web.ViewModels.BackofficeChatDetailViewModel
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = $"Chat #{Model.Conversacion.IdConversacion}";
+
+    var stateClass =
+        Model.Conversacion.Estado.ToLowerInvariant()
+            .Replace("_", "-");
+}
+
+<link rel="stylesheet"
+      href="~/css/chat.css"
+      asp-append-version="true" />
+
+<section class="backoffice-page-heading">
+    <div>
+        <a asp-action="Index"
+           class="chat-back-link">
+            ← Volver a chats
+        </a>
+
+        <p class="backoffice-eyebrow">
+            Atencion por sede
+        </p>
+
+        <h1>
+            Chat #@Model.Conversacion.IdConversacion
+        </h1>
+
+        <p>
+            Sede:
+            <strong>
+                @(Model.Conversacion.IdSede?.ToString() ?? "Sin sede")
+            </strong>
+        </p>
+    </div>
+
+    <span class="chat-state chat-state--@stateClass">
+        @Model.Conversacion.Estado.Replace("_", " ")
+    </span>
+</section>
+
+@if (TempData["ChatError"] is string error)
+{
+    <div class="chat-alert chat-alert--error">@error</div>
+}
+
+@if (TempData["ChatSuccess"] is string success)
+{
+    <div class="chat-alert chat-alert--success">@success</div>
+}
+
+<section class="chat-thread chat-thread--backoffice"
+         data-chat-history-url="@Url.Action(
+            "HistoryJson",
+            "BackofficeChat",
+            new
+            {
+                idConversacion =
+                    Model.Conversacion.IdConversacion
+            })">
+
+    <div class="chat-messages"
+         data-chat-messages>
+        @foreach (var message in Model.Conversacion.Mensajes)
+        {
+            var senderClass =
+                message.TipoEmisor.ToLowerInvariant()
+                    .Replace("_", "-");
+
+            <article class="chat-message chat-message--@senderClass">
+                <div class="chat-message__meta">
+                    <strong>
+                        @message.TipoEmisor.Replace("_", " ")
+                    </strong>
+
+                    <time>
+                        @message.FechaEnvio.ToString("dd/MM/yyyy HH:mm")
+                    </time>
+                </div>
+
+                <p>@message.Contenido</p>
+            </article>
+        }
+    </div>
+</section>
+
+@if (Model.Conversacion.Estado == "ESPERANDO_ENCARGADO")
+{
+    <form asp-action="Take"
+          asp-route-idConversacion="@Model.Conversacion.IdConversacion"
+          method="post"
+          class="chat-escalation chat-escalation--backoffice">
+        @Html.AntiForgeryToken()
+
+        <div>
+            <strong>
+                Conversacion pendiente
+            </strong>
+
+            <span>
+                Spring Boot comprobara que perteneces a la sede.
+            </span>
+        </div>
+
+        <button type="submit"
+                class="chat-primary-button">
+            Tomar conversacion
+        </button>
+    </form>
+}
+
+@if (Model.Conversacion.Estado == "EN_ATENCION")
+{
+    <form asp-action="SendMessage"
+          asp-route-idConversacion="@Model.Conversacion.IdConversacion"
+          method="post"
+          class="chat-composer chat-composer--backoffice">
+        @Html.AntiForgeryToken()
+
+        <label for="contenido">
+            Respuesta del encargado
+        </label>
+
+        <textarea id="contenido"
+                  name="contenido"
+                  maxlength="4000"
+                  rows="3"
+                  required
+                  placeholder="Escribe una respuesta..."></textarea>
+
+        <button type="submit"
+                class="chat-primary-button">
+            Responder
+        </button>
+    </form>
+}
+
+<div class="chat-info">
+    Las acciones operativas se validan nuevamente en Spring Boot.
+    El frontend no decide el alcance por sede.
+</div>
+
+<script src="~/js/chat.js"
+        asp-append-version="true"></script>

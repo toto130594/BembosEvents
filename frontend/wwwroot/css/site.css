@@ -1,5 +1,6 @@
 @import url("./reservation.css");
 @import url("./catalog.css");
+@import url("./explore.css");
 @import url("./tokens.css");
 @import url("./utilities.css");
 @import url("./components.css");
@@ -14,27 +15,19 @@ html {
 
 body {
     min-height: 100vh;
-
     margin: 0;
-
     display: flex;
     flex-direction: column;
-
-    background: var(--be-gray-50);
+    overflow-x: hidden;
+    background: var(--be-white);
     color: var(--be-gray-900);
-
-    font-family:
-        Inter,
-        Arial,
-        Helvetica,
-        sans-serif;
-
+    font-family: var(--be-body);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
 
 a {
-    color: var(--be-blue-700);
+    color: var(--be-blue-900);
 }
 
 img {
@@ -53,11 +46,17 @@ main {
     flex: 1;
 }
 
+.be-main {
+    background: var(--be-white);
+}
+
 ::selection {
     background: var(--be-yellow-400);
-    color: var(--be-gray-900);
+    color: var(--be-blue-950);
 }
 
 :focus-visible {
+    outline: 3px solid var(--be-yellow-400);
+    outline-offset: 3px;
     scroll-margin-top: 110px;
 }

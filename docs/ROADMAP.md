@@ -262,16 +262,51 @@ Estado: COMPLETADA.
 
 # FASE 10 - Chat e IA
 
-Estado: PENDIENTE.
+Estado: COMPLETADA.
 
-- conversaciones.
-- mensajes.
-- WebSocket.
-- IA.
-- escalamiento a ENCARGADO_LOCAL.
-- historial.
-- notificaciones.
+Subfases:
 
+- 10.0.1 - Auditoria + diseno exacto: COMPLETADA.
+- 10.0.2 - Persistencia Conversacion/Mensaje + Flyway: COMPLETADA.
+- 10.0.3 - REST Chat base + ownership/scope: COMPLETADA.
+- 10.0.4 - WebSocket realtime: COMPLETADA.
+- 10.0.5 - IA provider abstraction + respuesta basica: COMPLETADA.
+- 10.0.6 - Escalamiento IA -> ENCARGADO_LOCAL por sede: COMPLETADA.
+- 10.0.7 - Historial + notificaciones: COMPLETADA.
+- 10.0.8 - MVC Cliente + BackOffice chat: COMPLETADA.
+- 10.0.9 - Smoke + security hardening: COMPLETADA.
+- 10.0.10 - Documentacion + cierre FASE 10: COMPLETADA tecnicamente y documentalmente; checkpoint commit pendiente de autorizacion explicita.
+
+Incluye:
+
+- conversaciones y mensajes persistidos;
+- ownership de CLIENTE;
+- scope de ENCARGADO_LOCAL por sede;
+- ADMINISTRADOR con alcance global de lectura BackOffice;
+- WebSocket/STOMP backend con topics por conversacion;
+- proveedor IA abstracto con proveedor basico y proveedor OpenAI-compatible opcional;
+- respuesta IA persistida como MensajeChat de tipo IA;
+- IA activa solamente mientras la conversacion permanece en BOT;
+- escalamiento explicito BOT -> ESPERANDO_ENCARGADO -> EN_ATENCION;
+- mensajes humanos del ENCARGADO_LOCAL;
+- historial basado en MensajeChat;
+- notificaciones realtime BackOffice globales y por sede;
+- MVC Cliente y BackOffice;
+- JWT y refresh token backend conservados server-side;
+- browser sin conexion directa al WebSocket de Spring Boot;
+- hardening STOMP CONNECT, SUBSCRIBE y SEND;
+- bloqueo de SEND directo a /topic/** y topics de notificaciones;
+- limite de mensaje de 4000 caracteres;
+- validacion final de backend, frontend y runtime.
+
+Limites deliberados de FASE 10:
+
+- no se implementan heuristicas de intent detection para escalamiento;
+- no se implementa bandeja persistente read/unread de notificaciones;
+- no se implementan RAG, recomendaciones inteligentes, borradores de reserva, disponibilidad conversacional, analitica ni dashboard inteligente;
+- esas capacidades permanecen en FASE 12.
+
+Commit y push no se ejecutan automaticamente.
 # FASE 11 - Mercado Pago
 
 Estado: PENDIENTE.

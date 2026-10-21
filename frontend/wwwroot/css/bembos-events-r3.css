@@ -1,0 +1,119 @@
+:root {
+    --be-blue:#2100dc;
+    --be-blue2:#0f007d;
+    --be-yellow:#ffd600;
+    --be-red:#ff3b38;
+    --be-ink:#17151e;
+    --be-muted:#6f6a78;
+    --be-bg:#f5f5fa;
+}
+
+body { font-weight:500 !important; }
+body :where(h1,h2,h3,h4,h5,h6,p,a,span,small,strong,button,input,select,textarea,label,li,div) { font-weight:500; }
+
+/* HERO */
+#be-r3-home-hero, #be-r3-home-hero * { font-weight:700 !important; box-sizing:border-box; }
+#be-r3-home-hero {
+    position:relative !important;
+    display:block !important;
+    width:100% !important;
+    height:clamp(285px,30vw,340px) !important;
+    min-height:285px !important;
+    max-height:340px !important;
+    overflow:hidden !important;
+    margin:0 !important;
+    padding:0 !important;
+    isolation:isolate;
+    color:#fff;
+    background:#1800bd;
+}
+#be-r3-home-hero .be-r3-bg {
+    position:absolute; inset:0; z-index:-3;
+    background:
+      linear-gradient(90deg,rgba(22,0,177,.98) 0%,rgba(31,0,220,.94) 34%,rgba(39,0,205,.69) 61%,rgba(12,0,67,.18) 100%),
+      url('/images/bembos-events/hero-party.jpg') center 44%/cover no-repeat;
+}
+#be-r3-home-hero .be-r3-glow {
+    position:absolute; width:380px; height:380px; border-radius:50%;
+    right:-90px; top:-230px; background:rgba(255,214,0,.28); z-index:-2;
+}
+#be-r3-home-hero .be-r3-inner {
+    width:min(1180px,calc(100% - 36px)); height:100%; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between; gap:34px;
+}
+#be-r3-home-hero .be-r3-copy { max-width:690px; }
+#be-r3-home-hero .be-r3-kicker {
+    display:inline-flex; padding:7px 13px; margin-bottom:11px; border-radius:999px;
+    background:var(--be-yellow); color:var(--be-blue); font-size:11px; letter-spacing:.12em;
+}
+#be-r3-home-hero h1 {
+    margin:0 !important; color:#fff !important; text-transform:uppercase;
+    font-size:clamp(39px,4.8vw,67px) !important; line-height:.92 !important; letter-spacing:-.045em !important;
+}
+#be-r3-home-hero h1 em { color:var(--be-yellow); font-style:normal; }
+#be-r3-home-hero p { margin:13px 0 18px !important; max-width:590px; font-size:14px !important; line-height:1.45 !important; color:rgba(255,255,255,.94) !important; }
+#be-r3-home-hero .be-r3-actions { display:flex; gap:10px; flex-wrap:wrap; }
+#be-r3-home-hero .be-r3-btn {
+    min-height:41px; display:inline-flex; align-items:center; justify-content:center; padding:0 19px;
+    border-radius:999px; text-decoration:none !important; font-size:13px;
+}
+#be-r3-home-hero .be-r3-btn-primary { background:var(--be-yellow); color:var(--be-blue) !important; box-shadow:0 10px 28px rgba(0,0,0,.18); }
+#be-r3-home-hero .be-r3-btn-secondary { color:#fff !important; border:1px solid rgba(255,255,255,.62); background:rgba(255,255,255,.12); backdrop-filter:blur(8px); }
+#be-r3-home-hero .be-r3-float {
+    width:235px; flex:0 0 235px; align-self:flex-end; margin-bottom:26px; padding:16px;
+    border-radius:21px; background:rgba(255,255,255,.95); color:var(--be-blue); box-shadow:0 24px 60px rgba(0,0,0,.24); transform:rotate(-2deg);
+}
+#be-r3-home-hero .be-r3-float b { display:block; color:var(--be-blue); font-size:14px; }
+#be-r3-home-hero .be-r3-float span { display:block; margin-top:3px; color:#66616f; font-size:11px; }
+#be-r3-home-hero .be-r3-star { width:43px; height:43px; display:grid; place-items:center; margin-bottom:10px; border-radius:13px; background:var(--be-yellow); color:var(--be-blue); }
+
+/* VENUE */
+body.be-r3-venue-body { background:var(--be-bg) !important; }
+#be-r3-venue { font-weight:500 !important; background:var(--be-bg); padding:28px 18px 72px; }
+#be-r3-venue * { box-sizing:border-box; font-weight:500 !important; }
+#be-r3-venue .be-r3-shell { width:min(1160px,100%); margin:0 auto; }
+#be-r3-venue .be-r3-back { display:inline-flex; margin-bottom:16px; color:var(--be-blue) !important; text-decoration:none; font-size:13px; }
+#be-r3-venue .be-r3-venue-hero { display:grid; grid-template-columns:47% 53%; overflow:hidden; border-radius:28px; background:#fff; box-shadow:0 20px 58px rgba(25,16,75,.11); border:1px solid rgba(25,16,75,.07); }
+#be-r3-venue .be-r3-venue-photo { min-height:385px; position:relative; background:linear-gradient(180deg,transparent 55%,rgba(15,0,90,.55) 100%),url('/images/bembos-events/venue-party.jpg') center/cover no-repeat; }
+#be-r3-venue .be-r3-location { position:absolute; left:21px; bottom:21px; padding:8px 13px; border-radius:999px; background:var(--be-yellow); color:var(--be-blue); font-size:12px; }
+#be-r3-venue .be-r3-venue-content { padding:40px; display:flex; flex-direction:column; justify-content:center; }
+#be-r3-venue .be-r3-kicker2 { color:var(--be-red); font-size:11px; letter-spacing:.13em; text-transform:uppercase; }
+#be-r3-venue h1 { margin:7px 0 12px !important; color:var(--be-ink) !important; font-size:clamp(35px,4vw,53px) !important; line-height:1 !important; letter-spacing:-.04em !important; }
+#be-r3-venue .be-r3-desc { margin:0 0 21px !important; color:var(--be-muted) !important; font-size:14px !important; line-height:1.6 !important; }
+#be-r3-venue .be-r3-meta { display:grid; gap:9px; }
+#be-r3-venue .be-r3-meta-item { display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:14px; background:#f7f6fa; }
+#be-r3-venue .be-r3-meta-icon { width:38px; height:38px; flex:0 0 38px; display:grid; place-items:center; border-radius:11px; background:var(--be-blue); color:#fff; }
+#be-r3-venue .be-r3-meta-copy small,#be-r3-venue .be-r3-meta-copy strong { display:block; }
+#be-r3-venue .be-r3-meta-copy small { color:#8a8792; font-size:10px; }
+#be-r3-venue .be-r3-meta-copy strong { color:#292631; font-size:13px; }
+#be-r3-venue .be-r3-salons { padding-top:48px; }
+#be-r3-venue .be-r3-section-head { display:flex; justify-content:space-between; align-items:flex-end; gap:26px; margin-bottom:20px; }
+#be-r3-venue .be-r3-section-head h2 { margin:4px 0 0 !important; color:var(--be-ink) !important; font-size:clamp(30px,3.4vw,41px) !important; letter-spacing:-.03em !important; }
+#be-r3-venue .be-r3-section-head p { margin:0 !important; max-width:350px; color:var(--be-muted) !important; font-size:13px !important; line-height:1.55 !important; }
+#be-r3-venue .be-r3-salon-card { display:grid; grid-template-columns:42% 58%; overflow:hidden; border-radius:24px; background:#fff; box-shadow:0 15px 45px rgba(24,16,74,.09); border:1px solid rgba(25,16,75,.07); }
+#be-r3-venue .be-r3-salon-photo { min-height:275px; position:relative; background:linear-gradient(180deg,transparent 58%,rgba(16,0,100,.40) 100%),url('/images/bembos-events/salon-party.jpg') center/cover no-repeat; }
+#be-r3-venue .be-r3-capacity { position:absolute; left:18px; bottom:18px; padding:8px 13px; border-radius:999px; background:rgba(255,255,255,.95); color:var(--be-blue); font-size:11px; }
+#be-r3-venue .be-r3-salon-body { padding:34px; display:flex; flex-direction:column; justify-content:center; }
+#be-r3-venue .be-r3-salon-body h3 { margin:6px 0 10px !important; color:var(--be-ink) !important; font-size:30px !important; letter-spacing:-.025em !important; }
+#be-r3-venue .be-r3-salon-body p { margin:0 0 22px !important; color:var(--be-muted) !important; font-size:14px !important; line-height:1.6 !important; }
+#be-r3-venue .be-r3-salon-footer { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+#be-r3-venue .be-r3-salon-note { color:#77737f; font-size:12px; }
+#be-r3-venue .be-r3-salon-btn { min-height:41px; display:inline-flex; align-items:center; padding:0 18px; border-radius:999px; background:var(--be-blue); color:#fff !important; text-decoration:none; font-size:13px; }
+
+@media(max-width:900px){
+ #be-r3-home-hero .be-r3-float{display:none}
+ #be-r3-home-hero{height:300px !important;max-height:300px !important}
+ #be-r3-venue .be-r3-venue-hero,#be-r3-venue .be-r3-salon-card{grid-template-columns:1fr}
+ #be-r3-venue .be-r3-venue-photo{min-height:260px}
+ #be-r3-venue .be-r3-salon-photo{min-height:235px}
+}
+@media(max-width:600px){
+ #be-r3-home-hero{height:315px !important;max-height:315px !important}
+ #be-r3-home-hero h1{font-size:39px !important}
+ #be-r3-home-hero .be-r3-inner{width:calc(100% - 28px)}
+ #be-r3-venue{padding:18px 13px 54px}
+ #be-r3-venue .be-r3-venue-hero{border-radius:20px}
+ #be-r3-venue .be-r3-venue-photo{min-height:215px}
+ #be-r3-venue .be-r3-venue-content,#be-r3-venue .be-r3-salon-body{padding:24px 20px}
+ #be-r3-venue .be-r3-section-head,#be-r3-venue .be-r3-salon-footer{align-items:flex-start;flex-direction:column}
+}

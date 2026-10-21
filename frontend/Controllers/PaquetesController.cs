@@ -1,4 +1,5 @@
 using BembosEvents.Web.Services;
+using BembosEvents.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,8 +14,7 @@ public sealed class PaquetesController : Controller
     public PaquetesController(
         IBackendApiClient backendApiClient)
     {
-        _backendApiClient =
-            backendApiClient;
+        _backendApiClient = backendApiClient;
     }
 
     [HttpGet("")]
@@ -25,8 +25,7 @@ public sealed class PaquetesController : Controller
             await _backendApiClient.GetPaquetesAsync(
                 cancellationToken);
 
-        return View(
-            paquetes);
+        return View(paquetes);
     }
 
     [HttpGet("{idPaquete:int}")]
@@ -49,7 +48,21 @@ public sealed class PaquetesController : Controller
             return NotFound();
         }
 
+        var todos =
+            await _backendApiClient.GetPaquetesAsync(
+                cancellationToken);
+
+        var relacionados =
+            todos
+                .Where(item => item.IdPaquete != idPaquete)
+                .Take(3)
+                .ToArray();
+
         return View(
-            paquete);
+            new PaqueteDetailsViewModel
+            {
+                Paquete = paquete,
+                Relacionados = relacionados
+            });
     }
 }

@@ -553,3 +553,30 @@ Pendiente para 9.0.10:
 - CLIENTE, ENCARGADO_LOCAL y ADMINISTRADOR fueron validados en runtime.
 - ENCARGADO_LOCAL obtiene HTTP 404 para sedes fuera de alcance como control anti-enumeration.
 <!-- PHASE9_SECURITY_FINAL_END -->
+
+<!-- PHASE10_SECURITY_FINAL_START -->
+## Seguridad Chat e IA - FASE 10 cerrada
+
+Controles implementados:
+
+- Spring Boot mantiene la autoridad final.
+- CLIENTE solo accede a sus conversaciones.
+- ENCARGADO_LOCAL queda limitado a conversaciones de su sede.
+- ADMINISTRADOR conserva alcance global de lectura BackOffice.
+- WebSocket handshake permanece protegido por autenticacion.
+- STOMP CONNECT requiere Principal autenticado.
+- STOMP SUBSCRIBE valida conversacion, ownership, rol y sede.
+- STOMP SEND directo al broker y topics de notificaciones esta bloqueado.
+- SEND realtime del cliente valida ownership antes de ejecutar negocio.
+- Mensajes REST y WebSocket reutilizan Services del backend.
+- El limite de contenido es 4000 caracteres.
+- MVC POST utiliza anti-forgery.
+- chat.js renderiza contenido mediante textContent y no innerHTML.
+- JWT y refresh token backend permanecen server-side.
+- El browser no conoce la URL directa del backend para Chat.
+- El browser no conecta directamente al WebSocket backend.
+- La IA no accede directamente a SQL Server ni repositories.
+- La IA no salta permisos, sede, ownership ni reglas de negocio.
+
+Notificaciones de FASE 10 son realtime dentro de BackOffice; no existe una bandeja persistente read/unread.
+<!-- PHASE10_SECURITY_FINAL_END -->

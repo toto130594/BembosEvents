@@ -1,106 +1,112 @@
-@model BembosEvents.Web.ViewModels.SedeDetailsViewModel
+﻿@model BembosEvents.Web.ViewModels.SedeDetailsViewModel
 
 @{
     ViewData["Title"] = Model.Sede.Nombre;
 }
 
-<section class="be-catalog-detail-hero">
+<section class="be-r5-sede-hero be-r5-banner">
     <div class="be-container">
-
         <a asp-controller="Sedes"
            asp-action="Index"
-           class="be-catalog-back">
-            Volver a sedes
+           class="be-r5-back-link">
+            ← VOLVER A LOCALES
         </a>
 
-        <div class="be-catalog-detail-grid">
-
-            <div>
-                <span class="be-catalog-kicker">
+        <div class="be-r5-sede-hero-grid">
+            <div class="be-r5-sede-hero-copy">
+                <span class="be-r5-banner-kicker">
                     @Model.Sede.Distrito
                 </span>
 
                 <h1>
-                    @Model.Sede.Nombre
+                    TU FIESTA
+                    <span>EMPIEZA EN</span>
+                    <strong>@Model.Sede.Nombre</strong>
                 </h1>
 
-                <p class="be-catalog-detail-lead">
-                    Selecciona uno de los salones disponibles
-                    en esta sede para conocer su capacidad y horarios.
+                <p>
+                    Conoce los datos del local y elige uno de sus salones
+                    disponibles para continuar con tu celebracion.
                 </p>
             </div>
 
-            <aside class="be-location-panel">
-                <span>
-                    Informacion de la sede
+            <div class="be-r5-sede-hero-photo">
+                <span>@Model.Sede.Nombre</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="be-r5-sede-info">
+    <div class="be-container">
+        <div class="be-r5-section-heading">
+            <span>CONOCE ESTA SEDE</span>
+            <h2>@Model.Sede.Nombre</h2>
+        </div>
+
+        <div class="be-r5-sede-info-grid">
+            <div class="be-r5-sede-photo-card">
+                <div class="be-r5-sede-photo"></div>
+
+                <div class="be-r5-sede-photo-caption">
+                    <span>LOCAL BEMBOS EVENTS</span>
+                    <strong>@Model.Sede.Distrito</strong>
+                </div>
+            </div>
+
+            <aside class="be-r5-sede-data">
+                <span class="be-r5-data-eyebrow">
+                    INFORMACION DEL LOCAL
                 </span>
 
                 <dl>
                     <div>
-                        <dt>
-                            Direccion
-                        </dt>
-
-                        <dd>
-                            @Model.Sede.Direccion
-                        </dd>
+                        <dt>Direccion</dt>
+                        <dd>@Model.Sede.Direccion</dd>
                     </div>
 
                     <div>
-                        <dt>
-                            Distrito
-                        </dt>
-
-                        <dd>
-                            @Model.Sede.Distrito
-                        </dd>
+                        <dt>Distrito</dt>
+                        <dd>@Model.Sede.Distrito</dd>
                     </div>
 
                     @if (!string.IsNullOrWhiteSpace(Model.Sede.Telefono))
                     {
                         <div>
-                            <dt>
-                                Telefono
-                            </dt>
-
-                            <dd>
-                                @Model.Sede.Telefono
-                            </dd>
+                            <dt>Telefono</dt>
+                            <dd>@Model.Sede.Telefono</dd>
                         </div>
                     }
                 </dl>
+
+                <a asp-controller="Reserva"
+                   asp-action="Index"
+                   class="be-r5-reserve-cta">
+                    RESERVA AQUI
+                </a>
             </aside>
         </div>
     </div>
 </section>
 
-<section class="be-catalog-section">
+<section class="be-r5-salones">
     <div class="be-container">
-
-        <div class="be-section-heading">
+        <div class="be-r5-section-heading be-r5-section-heading-row">
             <div>
-                <span class="be-catalog-kicker">
-                    Salones
-                </span>
-
-                <h2>
-                    Salones en @Model.Sede.Nombre
-                </h2>
+                <span>SALONES DISPONIBLES</span>
+                <h2>ELIGE TU ESPACIO</h2>
             </div>
 
             <p>
-                Mostramos exclusivamente los salones asociados
-                a esta sede.
+                Revisa la capacidad y entra al detalle del salon
+                que mejor se adapte a tu celebracion.
             </p>
         </div>
 
         @if (Model.Salones.Count == 0)
         {
-            <div class="be-catalog-empty">
-                <h3>
-                    No hay salones disponibles
-                </h3>
-
+            <div class="be-r5-empty">
+                <h3>No hay salones disponibles</h3>
                 <p>
                     Esta sede aun no tiene salones publicos disponibles.
                 </p>
@@ -108,43 +114,46 @@
         }
         else
         {
-            <div class="be-catalog-grid">
+            <div class="be-r5-salon-list">
                 @foreach (var salon in Model.Salones)
                 {
-                    <article class="be-catalog-card">
-                        <div class="be-catalog-card-accent"></div>
+                    <article class="be-r5-salon-card">
+                        <div class="be-r5-salon-photo">
+                            <span>
+                                HASTA @salon.Capacidad PERSONAS
+                            </span>
+                        </div>
 
-                        <div class="be-catalog-card-body">
-                            <span class="be-catalog-eyebrow">
-                                Capacidad: @salon.Capacidad personas
+                        <div class="be-r5-salon-copy">
+                            <span class="be-r5-salon-eyebrow">
+                                @Model.Sede.Distrito
                             </span>
 
-                            <h3>
-                                @salon.Nombre
-                            </h3>
+                            <h3>@salon.Nombre</h3>
 
                             @if (!string.IsNullOrWhiteSpace(salon.Descripcion))
                             {
-                                <p>
-                                    @salon.Descripcion
-                                </p>
+                                <p>@salon.Descripcion</p>
                             }
                             else
                             {
                                 <p>
-                                    Consulta los horarios disponibles
-                                    para este salon.
+                                    Un espacio preparado para celebrar en Bembos
+                                    con comodidad y una experiencia divertida.
                                 </p>
                             }
-                        </div>
 
-                        <div class="be-catalog-card-footer">
-                            <a asp-controller="Salones"
-                               asp-action="Details"
-                               asp-route-idSalon="@salon.IdSalon"
-                               class="be-btn be-btn-primary">
-                                Ver salon
-                            </a>
+                            <div class="be-r5-salon-footer">
+                                <span>
+                                    Capacidad: @salon.Capacidad personas
+                                </span>
+
+                                <a asp-controller="Salones"
+                                   asp-action="Details"
+                                   asp-route-idSalon="@salon.IdSalon">
+                                    VER SALON →
+                                </a>
+                            </div>
                         </div>
                     </article>
                 }

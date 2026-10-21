@@ -1,0 +1,130 @@
+@model BembosEvents.Web.ViewModels.ChatIndexViewModel
+
+@{
+    ViewData["Title"] = "Chat";
+}
+
+<link rel="stylesheet"
+      href="~/css/chat.css"
+      asp-append-version="true" />
+
+<section class="chat-page">
+    <div class="be-container">
+        <header class="chat-hero">
+            <span class="chat-kicker">Bembos Events</span>
+            <h1>Asistente de eventos</h1>
+            <p>
+                Consulta informacion general y, cuando tu conversacion
+                tenga una sede, solicita ayuda de un encargado.
+            </p>
+        </header>
+
+        @if (TempData["ChatError"] is string error)
+        {
+            <div class="chat-alert chat-alert--error">@error</div>
+        }
+
+        <section class="chat-create-card">
+            <div>
+                <h2>Nueva conversacion</h2>
+                <p>
+                    Puedes iniciar sin sede para una consulta general,
+                    o elegirla desde ahora si luego deseas escalar.
+                </p>
+            </div>
+
+            <form asp-action="Create"
+                  method="post"
+                  class="chat-create-form">
+                @Html.AntiForgeryToken()
+
+                <label for="idSede">
+                    Sede
+                </label>
+
+                <select id="idSede"
+                        name="idSede">
+                    <option value="">
+                        Sin sede por ahora
+                    </option>
+
+                    @foreach (var sede in Model.Sedes)
+                    {
+                        <option value="@sede.IdSede">
+                            @sede.Nombre
+                        </option>
+                    }
+                </select>
+
+                <button type="submit"
+                        class="chat-primary-button">
+                    Iniciar chat
+                </button>
+            </form>
+        </section>
+
+        <section class="chat-list-section">
+            <div class="chat-section-heading">
+                <div>
+                    <span class="chat-kicker">Historial</span>
+                    <h2>Mis conversaciones</h2>
+                </div>
+
+                <span class="chat-count">
+                    @Model.Conversaciones.Count
+                </span>
+            </div>
+
+            @if (Model.Conversaciones.Count == 0)
+            {
+                <div class="chat-empty">
+                    <h3>Aun no tienes conversaciones</h3>
+                    <p>
+                        Inicia un chat para comenzar.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="chat-conversation-grid">
+                    @foreach (var item in Model.Conversaciones)
+                    {
+                        var stateClass =
+                            item.Estado.ToLowerInvariant()
+                                .Replace("_", "-");
+
+                        <a class="chat-conversation-card"
+                           asp-action="Detail"
+                           asp-route-idConversacion="@item.IdConversacion">
+                            <div class="chat-conversation-card__top">
+                                <strong>
+                                    Chat #@item.IdConversacion
+                                </strong>
+
+                                <span class="chat-state chat-state--@stateClass">
+                                    @item.Estado.Replace("_", " ")
+                                </span>
+                            </div>
+
+                            <dl>
+                                <div>
+                                    <dt>Sede</dt>
+                                    <dd>
+                                        @(item.IdSede?.ToString() ?? "General")
+                                    </dd>
+                                </div>
+
+                                <div>
+                                    <dt>Actualizado</dt>
+                                    <dd>
+                                        @item.FechaActualizacion.ToString("dd/MM/yyyy HH:mm")
+                                    </dd>
+                                </div>
+                            </dl>
+                        </a>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+</section>

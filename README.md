@@ -259,3 +259,26 @@ El frontend MFA todavia no forma parte de esta subfase.
 ## Estado actual
 
 **Subfase actual:** FASE 9.0.10 - Smoke y hardening. 9.0.9 Integracion MVC completada el 2026-10-20.
+
+<!-- PHASE10_README_FINAL_START -->
+## FASE 10 - Chat e IA
+
+Estado: COMPLETADA.
+
+Implementado:
+
+- conversaciones y mensajes persistidos;
+- chat REST Cliente y BackOffice;
+- WebSocket/STOMP backend;
+- IA basica mediante provider abstraction;
+- proveedor OpenAI-compatible opcional;
+- escalamiento a ENCARGADO_LOCAL por sede;
+- historial;
+- notificaciones realtime BackOffice;
+- MVC Cliente y BackOffice;
+- hardening de ownership, sede y STOMP.
+
+El browser no recibe JWT ni refresh token backend y no conecta directamente al WebSocket de Spring Boot.
+
+Siguiente fase planificada: FASE 11 - Mercado Pago.
+<!-- PHASE10_README_FINAL_END -->

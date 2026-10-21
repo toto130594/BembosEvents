@@ -966,3 +966,39 @@ Contratos:
 - rate limit puede responder HTTP 429 + Retry-After.
 - recursos cross-sede fuera de alcance pueden responder HTTP 404 para anti-enumeration.
 <!-- PHASE9_AUTH_API_FINAL_END -->
+
+<!-- PHASE10_API_FINAL_START -->
+# Chat e IA - API implementada en FASE 10
+
+## CLIENTE
+
+| Metodo | Endpoint | Uso |
+| --- | --- | --- |
+| POST | /api/chat/conversaciones | Crear conversacion |
+| GET | /api/chat/conversaciones | Listar conversaciones propias |
+| GET | /api/chat/conversaciones/{idConversacion} | Consultar conversacion propia |
+| POST | /api/chat/conversaciones/{idConversacion}/mensajes | Enviar mensaje y obtener turno IA si estado BOT |
+| POST | /api/chat/conversaciones/{idConversacion}/escalar | Solicitar ENCARGADO_LOCAL de la sede |
+| GET | /api/chat/conversaciones/{idConversacion}/historial | Historial propio |
+
+## BackOffice
+
+| Metodo | Endpoint | Uso |
+| --- | --- | --- |
+| GET | /api/backoffice/chat/conversaciones | Listar conversaciones accesibles |
+| GET | /api/backoffice/chat/conversaciones/{idConversacion} | Consultar conversacion accesible |
+| GET | /api/backoffice/chat/conversaciones/pendientes | Cola ESPERANDO_ENCARGADO |
+| POST | /api/backoffice/chat/conversaciones/{idConversacion}/tomar | ENCARGADO_LOCAL toma conversacion de su sede |
+| POST | /api/backoffice/chat/conversaciones/{idConversacion}/mensajes | ENCARGADO_LOCAL responde |
+| GET | /api/backoffice/chat/conversaciones/{idConversacion}/historial | Historial con scope BackOffice |
+
+## WebSocket/STOMP
+
+- Handshake: /ws/chat.
+- Application destination: /app/chat/conversaciones/{idConversacion}/mensajes.
+- Topic de conversacion: /topic/chat/conversaciones/{idConversacion}.
+- Topic global de notificacion BackOffice: /topic/backoffice/chat/notificaciones.
+- Topic de sede: /topic/backoffice/chat/sedes/{idSede}/notificaciones.
+
+El envio directo del cliente hacia /topic/** no esta permitido.
+<!-- PHASE10_API_FINAL_END -->

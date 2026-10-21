@@ -185,6 +185,31 @@ builder.Services
         BackendBearerHandler>();
 
 builder.Services
+    .AddHttpClient<
+        IChatApiClient,
+        ChatApiClient>(
+        (serviceProvider, httpClient) =>
+        {
+            var options =
+                serviceProvider
+                    .GetRequiredService<
+                        IOptions<BackendApiOptions>>()
+                    .Value;
+
+            var baseUrl =
+                options.BaseUrl.TrimEnd('/') + "/";
+
+            httpClient.BaseAddress =
+                new Uri(
+                    baseUrl,
+                    UriKind.Absolute);
+
+            httpClient.Timeout =
+                TimeSpan.FromSeconds(15);
+        })
+    .AddHttpMessageHandler<
+        BackendBearerHandler>();
+builder.Services
     .AddHealthChecks()
     .AddCheck<BackendApiHealthCheck>(
         "backend-api");

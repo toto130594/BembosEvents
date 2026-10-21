@@ -1,112 +1,163 @@
 @model BembosEvents.Web.ViewModels.SedesIndexViewModel
 
 @{
-    ViewData["Title"] = "Sedes";
+    ViewData["Title"] = "Locales";
 }
 
-<section class="be-catalog-hero">
-    <div class="be-container be-catalog-hero-content">
-        <span class="be-catalog-kicker">
-            Bembos Events
-        </span>
+<section class="be-editorial-banner be-editorial-locations">
+    <div class="be-container be-editorial-banner-inner">
+        <div class="be-editorial-copy">
+            <span class="be-editorial-eyebrow">
+                Encuentra tu Bembos
+            </span>
 
-        <h1>
-            Elige la sede para tu celebracion
-        </h1>
+            <h1>
+                ELIGE DONDE
+                <strong>CELEBRAR</strong>
+            </h1>
 
-        <p>
-            Consulta las sedes disponibles y entra a cada una
-            para conocer sus salones reales.
-        </p>
+            <p>
+                Revisa nuestras sedes disponibles y empieza
+                tu reserva desde el lugar ideal para tu evento.
+            </p>
+
+            <a asp-controller="Reserva"
+               asp-action="Index"
+               class="be-editorial-cta">
+                Reservar evento
+            </a>
+        </div>
+
+        <div class="be-editorial-art be-location-art-banner"
+             aria-hidden="true">
+            <div class="be-map-pin be-map-pin-a">
+                <span></span>
+            </div>
+
+            <div class="be-map-pin be-map-pin-b">
+                <span></span>
+            </div>
+
+            <div class="be-map-pin be-map-pin-c">
+                <span></span>
+            </div>
+
+            <strong class="be-location-banner-word">
+                LIMA
+            </strong>
+        </div>
     </div>
 </section>
 
-<section class="be-catalog-section"
-         id="salones-por-sede">
+<section class="be-store-section be-store-section-soft">
     <div class="be-container">
-
-        <div class="be-section-heading">
+        <div class="be-store-heading">
             <div>
-                <span class="be-catalog-kicker">
-                    Nuestras sedes
+                <span class="be-store-kicker">
+                    Locales Bembos Events
                 </span>
 
                 <h2>
-                    Encuentra el local ideal
+                    ENCUENTRA TU SEDE
                 </h2>
             </div>
-
-            <p>
-                Los salones se muestran segun la sede seleccionada.
-            </p>
         </div>
 
         @if (Model.Sedes.Count == 0)
         {
-            <div class="be-catalog-empty">
-                <h3>
-                    Aun no hay sedes disponibles
-                </h3>
+            <div class="be-designed-empty be-designed-empty-locations">
+                <span class="be-designed-empty-mark">
+                    ●
+                </span>
 
-                <p>
-                    Cuando existan sedes activas apareceran aqui.
-                </p>
+                <div>
+                    <h3>
+                        No hay locales activos por el momento
+                    </h3>
+
+                    <p>
+                        Cuando existan sedes disponibles apareceran aqui
+                        con direccion, distrito y datos de contacto.
+                    </p>
+
+                    <a asp-controller="Home"
+                       asp-action="Index">
+                        Volver al inicio
+                    </a>
+                </div>
             </div>
         }
         else
         {
-            <div class="be-catalog-grid">
+            <div class="be-location-grid">
                 @foreach (var sede in Model.Sedes)
                 {
-                    <article class="be-catalog-card">
-                        <div class="be-catalog-card-accent"></div>
-
-                        <div class="be-catalog-card-body">
-                            <span class="be-catalog-eyebrow">
+                    <article class="be-location-card be-location-card-premium">
+                        <div class="be-location-art">
+                            <span>
                                 @sede.Distrito
                             </span>
 
-                            <h3>
+                            <strong>
                                 @sede.Nombre
-                            </h3>
+                            </strong>
 
-                            <dl class="be-catalog-facts">
-                                <div>
-                                    <dt>
-                                        Direccion
-                                    </dt>
-
-                                    <dd>
-                                        @sede.Direccion
-                                    </dd>
-                                </div>
-
-                                @if (!string.IsNullOrWhiteSpace(sede.Telefono))
-                                {
-                                    <div>
-                                        <dt>
-                                            Telefono
-                                        </dt>
-
-                                        <dd>
-                                            @sede.Telefono
-                                        </dd>
-                                    </div>
-                                }
-                            </dl>
+                            <i class="be-location-ring"
+                               aria-hidden="true"></i>
                         </div>
 
-                        <div class="be-catalog-card-footer">
+                        <div class="be-location-copy">
+                            <div class="be-location-meta">
+                                <span>
+                                    Direccion
+                                </span>
+
+                                <p>
+                                    @sede.Direccion
+                                </p>
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(sede.Telefono))
+                            {
+                                <div class="be-location-meta">
+                                    <span>
+                                        Telefono
+                                    </span>
+
+                                    <p>
+                                        @sede.Telefono
+                                    </p>
+                                </div>
+                            }
+
                             <a asp-controller="Sedes"
                                asp-action="Details"
-                               asp-route-idSede="@sede.IdSede"
-                               class="be-btn be-btn-primary">
-                                Ver sede y salones
+                               asp-route-idSede="@sede.IdSede">
+                                Conocer local
                             </a>
                         </div>
                     </article>
                 }
             </div>
         }
+    </div>
+</section>
+
+<section class="be-explore-bottom-cta be-explore-bottom-cta-blue">
+    <div class="be-container">
+        <div>
+            <span>
+                Tu local ya esta
+            </span>
+
+            <strong>
+                Ahora arma tu evento
+            </strong>
+        </div>
+
+        <a asp-controller="Paquetes"
+           asp-action="Index">
+            Ver paquetes
+        </a>
     </div>
 </section>

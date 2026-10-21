@@ -207,3 +207,22 @@ Decisiones:
 - ENCARGADO_LOCAL usa resource hiding HTTP 404 fuera de su sede.
 - Frontend nunca accede directamente a SQL Server.
 <!-- PHASE9_ADR_FINAL_END -->
+
+<!-- PHASE10_DECISIONS_FINAL_START -->
+## Decisiones cerradas de FASE 10 - Chat e IA
+
+1. Conversacion y MensajeChat son la fuente persistente del historial de chat.
+2. La IA se integra mediante ChatAiProvider; no se acopla el dominio a un proveedor concreto.
+3. El proveedor basico es el default para que el sistema funcione sin credenciales externas.
+4. Un proveedor OpenAI-compatible puede habilitarse por configuracion.
+5. La IA responde solamente en estado BOT.
+6. El escalamiento de FASE 10 es explicito; no se inventan heuristicas de intent detection.
+7. Una conversacion escalada requiere sede.
+8. ENCARGADO_LOCAL solamente atiende conversaciones dentro de su UsuarioSede.
+9. ADMINISTRADOR conserva lectura global pero no toma conversaciones como ENCARGADO_LOCAL.
+10. Las notificaciones de FASE 10 son realtime y no una bandeja persistente.
+11. Browser no recibe JWT ni refresh token backend.
+12. Browser no conecta directamente al WebSocket Spring Boot; MVC usa polling same-origin.
+13. STOMP SEND directo al broker se bloquea; el envio de cliente pasa por /app y ownership.
+14. Funciones IA avanzadas permanecen en FASE 12.
+<!-- PHASE10_DECISIONS_FINAL_END -->

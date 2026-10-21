@@ -1,63 +1,378 @@
-@model BembosEvents.Web.Models.Api.PaquetePublicoDto
+﻿@model BembosEvents.Web.ViewModels.PaqueteDetailsViewModel
 
 @{
-    ViewData["Title"] = Model.Nombre;
+    ViewData["Title"] = Model.Paquete.Nombre;
+    var paquete = Model.Paquete;
+    var tone = paquete.IdPaquete % 3;
 }
 
-<section class="be-catalog-detail-hero">
+<section class="be-package-hero">
     <div class="be-container">
-
         <a asp-controller="Paquetes"
            asp-action="Index"
-           class="be-catalog-back">
-            Volver a paquetes
+           class="be-package-back">
+            ← Volver a paquetes
         </a>
 
-        <div class="be-catalog-detail-grid">
-            <div>
-                <span class="be-catalog-kicker">
-                    Paquete
+        <div class="be-package-hero-grid">
+            <div class="be-package-hero-copy">
+                <span class="be-store-kicker be-store-kicker-yellow">
+                    Paquete Bembos Events
                 </span>
 
                 <h1>
-                    @Model.Nombre
+                    @paquete.Nombre
                 </h1>
 
-                @if (!string.IsNullOrWhiteSpace(Model.Descripcion))
-                {
-                    <p class="be-catalog-detail-lead">
-                        @Model.Descripcion
-                    </p>
-                }
+                <p>
+                    @(string.IsNullOrWhiteSpace(paquete.Descripcion)
+                        ? "Una base lista para personalizar y convertirla en tu proxima celebracion Bembos."
+                        : paquete.Descripcion)
+                </p>
+
+                <div class="be-package-hero-actions">
+                    <a asp-controller="Reserva"
+                       asp-action="Index"
+                       class="be-package-primary-cta">
+                        Reservar este paquete
+                    </a>
+
+                    <a href="#incluye"
+                       class="be-package-secondary-cta">
+                        Ver detalles
+                    </a>
+                </div>
             </div>
 
-            <aside class="be-location-panel">
-                <span>
-                    Informacion del paquete
+            <div class="be-package-hero-visual be-tone-@tone">
+                <span class="be-package-visual-pill">
+                    Para @paquete.CantidadPersonasBase personas
                 </span>
 
-                <dl>
-                    <div>
-                        <dt>
-                            Precio base
-                        </dt>
+                <div class="be-package-big-burger"
+                     aria-hidden="true">
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                    <i></i>
+                </div>
 
-                        <dd>
-                            S/ @Model.PrecioBase.ToString("0.00")
-                        </dd>
-                    </div>
+                <div class="be-package-price-card">
+                    <small>
+                        Desde
+                    </small>
 
-                    <div>
-                        <dt>
-                            Personas base
-                        </dt>
+                    <strong>
+                        S/ @paquete.PrecioBase.ToString("0.00")
+                    </strong>
 
-                        <dd>
-                            @Model.CantidadPersonasBase
-                        </dd>
-                    </div>
-                </dl>
+                    <span>
+                        precio base
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="be-package-stats">
+    <div class="be-container be-package-stats-grid">
+        <article>
+            <span>Precio base</span>
+            <strong>S/ @paquete.PrecioBase.ToString("0.00")</strong>
+        </article>
+
+        <article>
+            <span>Personas base</span>
+            <strong>@paquete.CantidadPersonasBase</strong>
+        </article>
+
+        <article>
+            <span>Experiencia</span>
+            <strong>Personalizable</strong>
+        </article>
+
+        <article>
+            <span>Reserva</span>
+            <strong>100% online</strong>
+        </article>
+    </div>
+</section>
+
+<section id="incluye"
+         class="be-package-content">
+    <div class="be-container">
+        <div class="be-package-intro">
+            <div>
+                <span class="be-store-kicker">
+                    Tu evento, a tu manera
+                </span>
+
+                <h2>
+                    MAS QUE UN PAQUETE:
+                    <strong>ARMA TU EXPERIENCIA</strong>
+                </h2>
+
+                <p>
+                    Este paquete funciona como la base de tu reserva.
+                    Durante el proceso podras elegir la sede, el salon,
+                    la fecha y complementar tu celebracion con las opciones
+                    disponibles en Bembos Events.
+                </p>
+            </div>
+
+            <aside class="be-package-side-note">
+                <span>
+                    IMPORTANTE
+                </span>
+
+                <p>
+                    El precio mostrado es base. El total se calcula
+                    segun la configuracion final de tu reserva.
+                </p>
             </aside>
+        </div>
+
+        <div class="be-package-feature-grid">
+            <article>
+                <span class="be-feature-icon">01</span>
+                <h3>Base para @paquete.CantidadPersonasBase personas</h3>
+                <p>
+                    Empieza con la capacidad definida para este paquete
+                    y continua configurando tu evento.
+                </p>
+            </article>
+
+            <article>
+                <span class="be-feature-icon">02</span>
+                <h3>Elige sede y salon</h3>
+                <p>
+                    Selecciona una sede disponible y el espacio donde
+                    quieres realizar tu celebracion.
+                </p>
+            </article>
+
+            <article>
+                <span class="be-feature-icon">03</span>
+                <h3>Personaliza la tematica</h3>
+                <p>
+                    Agrega una tematica disponible para darle identidad
+                    a tu evento.
+                </p>
+            </article>
+
+            <article>
+                <span class="be-feature-icon">04</span>
+                <h3>Suma servicios adicionales</h3>
+                <p>
+                    Completa la experiencia con los servicios activos
+                    que aparezcan durante tu reserva.
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="be-package-process">
+    <div class="be-container">
+        <div class="be-store-heading be-store-heading-centered">
+            <div>
+                <span class="be-store-kicker">
+                    Asi funciona
+                </span>
+
+                <h2>
+                    RESERVA SIN COMPLICARTE
+                </h2>
+            </div>
+        </div>
+
+        <ol>
+            <li>
+                <span>1</span>
+                <strong>Elige local</strong>
+                <p>Selecciona la sede de tu evento.</p>
+            </li>
+
+            <li>
+                <span>2</span>
+                <strong>Selecciona fecha</strong>
+                <p>Escoge salon, fecha y horario disponibles.</p>
+            </li>
+
+            <li>
+                <span>3</span>
+                <strong>Personaliza</strong>
+                <p>Configura invitados, tematica y servicios.</p>
+            </li>
+
+            <li>
+                <span>4</span>
+                <strong>Confirma</strong>
+                <p>Revisa el resumen y registra tu reserva.</p>
+            </li>
+        </ol>
+    </div>
+</section>
+
+<section class="be-package-custom-banner">
+    <div class="be-container">
+        <div class="be-package-custom-banner-inner">
+            <div>
+                <span>
+                    Tu fiesta empieza aqui
+                </span>
+
+                <h2>
+                    HAZLO TUYO
+                </h2>
+
+                <p>
+                    Parte de @paquete.Nombre y personaliza el resto
+                    durante tu reserva.
+                </p>
+            </div>
+
+            <a asp-controller="Reserva"
+               asp-action="Index">
+                Empezar ahora
+            </a>
+        </div>
+    </div>
+</section>
+
+@if (Model.Relacionados.Count > 0)
+{
+    <section class="be-store-section">
+        <div class="be-container">
+            <div class="be-store-heading">
+                <div>
+                    <span class="be-store-kicker">
+                        Tambien te puede gustar
+                    </span>
+
+                    <h2>
+                        OTROS PAQUETES
+                    </h2>
+                </div>
+
+                <a asp-controller="Paquetes"
+                   asp-action="Index"
+                   class="be-store-heading-link">
+                    Ver todos
+                </a>
+            </div>
+
+            <div class="be-product-grid">
+                @foreach (var relacionado in Model.Relacionados)
+                {
+                    var relatedTone = relacionado.IdPaquete % 3;
+
+                    <article class="be-product-card">
+                        <div class="be-product-art be-tone-@relatedTone">
+                            <span class="be-product-pill">
+                                @relacionado.CantidadPersonasBase personas
+                            </span>
+
+                            <div class="be-product-mini-burger"
+                                 aria-hidden="true">
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                                <i></i>
+                            </div>
+
+                            <strong>
+                                BEMBOS
+                                <small>EVENTS</small>
+                            </strong>
+                        </div>
+
+                        <div class="be-product-body">
+                            <h3>
+                                @relacionado.Nombre
+                            </h3>
+
+                            <div class="be-product-price">
+                                <span>Desde</span>
+                                <strong>
+                                    S/ @relacionado.PrecioBase.ToString("0.00")
+                                </strong>
+                            </div>
+
+                            <a asp-controller="Paquetes"
+                               asp-action="Details"
+                               asp-route-idPaquete="@relacionado.IdPaquete"
+                               class="be-product-button">
+                                Ver paquete
+                            </a>
+                        </div>
+                    </article>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<section class="be-faq-section be-package-faq">
+    <div class="be-container">
+        <div class="be-store-heading be-store-heading-centered">
+            <div>
+                <span class="be-store-kicker">
+                    Preguntas frecuentes
+                </span>
+
+                <h2>
+                    SOBRE ESTE PAQUETE
+                </h2>
+            </div>
+        </div>
+
+        <div class="be-faq-grid">
+            <details>
+                <summary>
+                    ¿El precio incluye todas las opciones?
+                </summary>
+
+                <p>
+                    No necesariamente. S/ @paquete.PrecioBase.ToString("0.00")
+                    corresponde al precio base actual del paquete.
+                </p>
+            </details>
+
+            <details>
+                <summary>
+                    ¿Puedo elegir otra sede?
+                </summary>
+
+                <p>
+                    Durante la reserva podras seleccionar entre las sedes
+                    que se encuentren activas y disponibles.
+                </p>
+            </details>
+
+            <details>
+                <summary>
+                    ¿Puedo agregar una tematica?
+                </summary>
+
+                <p>
+                    Si existen tematicas activas, podras elegirlas dentro
+                    del flujo de reserva.
+                </p>
+            </details>
+
+            <details>
+                <summary>
+                    ¿Puedo agregar servicios?
+                </summary>
+
+                <p>
+                    Los servicios adicionales activos aparecen como parte
+                    de la personalizacion del evento.
+                </p>
+            </details>
         </div>
     </div>
 </section>

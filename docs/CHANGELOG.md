@@ -658,3 +658,49 @@ Backend, Flyway y base de datos no fueron modificados.
 - 9.0.11 documentacion sincronizada y lista para checkpoint commit.
 - Commit y push no ejecutados automaticamente.
 <!-- PHASE9_CHANGELOG_FINAL_END -->
+
+<!-- PHASE10_CHANGELOG_FINAL_START -->
+## 2026-10-21 - Cierre FASE 10 Chat e IA
+
+### Backend
+
+- Persistencia Conversacion/MensajeChat con Flyway V11.
+- REST Cliente con ownership.
+- REST BackOffice con alcance ADMIN global y ENCARGADO_LOCAL por sede.
+- WebSocket/STOMP realtime.
+- ChatAiProvider con proveedor basico y OpenAI-compatible opcional.
+- Persistencia de respuestas IA.
+- Escalamiento BOT -> ESPERANDO_ENCARGADO -> EN_ATENCION.
+- Mensajes humanos de ENCARGADO_LOCAL.
+- Historial y notificaciones realtime.
+
+### Frontend
+
+- MVC Cliente para crear, listar y operar conversaciones.
+- MVC BackOffice para cola pendiente, toma y respuesta.
+- Polling same-origin de historial.
+- JWT y refresh token backend permanecen server-side.
+
+### Hardening
+
+- STOMP CONNECT autenticado.
+- SUBSCRIBE autorizado por ownership, rol y sede.
+- SEND directo a broker y notificaciones bloqueado.
+- SEND /app valida ownership del CLIENTE.
+- limite de mensajes de 4000 caracteres.
+- MVC anti-forgery verificado.
+- chat DOM sin innerHTML.
+- IA sin acceso directo a SQL Server.
+
+### Validacion
+
+- backend tests: OK.
+- backend Docker build: OK.
+- backend startup: OK.
+- frontend Release build: OK.
+- runtime security smokes: OK.
+
+FASE 10 cerrada tecnicamente y documentalmente.
+Checkpoint commit pendiente de autorizacion explicita.
+Push automatico: NO.
+<!-- PHASE10_CHANGELOG_FINAL_END -->

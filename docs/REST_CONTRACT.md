@@ -747,3 +747,24 @@ Un endpoint no esta terminado hasta comprobar:
 - README si cambia el flujo general.
 - CHANGELOG.
 - validate-backend.ps1.
+
+<!-- PHASE10_REST_CONTRACT_FINAL_START -->
+# FASE 10 - Contrato Chat REST
+
+| Metodo | Ruta | Rol | Estado |
+| --- | --- | --- | --- |
+| POST | /api/chat/conversaciones | CLIENTE | IMPLEMENTADO |
+| GET | /api/chat/conversaciones | CLIENTE | IMPLEMENTADO |
+| GET | /api/chat/conversaciones/{idConversacion} | CLIENTE propietario | IMPLEMENTADO |
+| POST | /api/chat/conversaciones/{idConversacion}/mensajes | CLIENTE propietario | IMPLEMENTADO |
+| POST | /api/chat/conversaciones/{idConversacion}/escalar | CLIENTE propietario | IMPLEMENTADO |
+| GET | /api/chat/conversaciones/{idConversacion}/historial | CLIENTE propietario | IMPLEMENTADO |
+| GET | /api/backoffice/chat/conversaciones | ADMINISTRADOR / ENCARGADO_LOCAL | IMPLEMENTADO |
+| GET | /api/backoffice/chat/conversaciones/{idConversacion} | ADMINISTRADOR / ENCARGADO_LOCAL por sede | IMPLEMENTADO |
+| GET | /api/backoffice/chat/conversaciones/pendientes | ADMINISTRADOR / ENCARGADO_LOCAL por sede | IMPLEMENTADO |
+| POST | /api/backoffice/chat/conversaciones/{idConversacion}/tomar | ENCARGADO_LOCAL por sede | IMPLEMENTADO |
+| POST | /api/backoffice/chat/conversaciones/{idConversacion}/mensajes | ENCARGADO_LOCAL por sede | IMPLEMENTADO |
+| GET | /api/backoffice/chat/conversaciones/{idConversacion}/historial | ADMINISTRADOR / ENCARGADO_LOCAL por sede | IMPLEMENTADO |
+
+El contrato WebSocket/STOMP se documenta en AI_CHAT.md y API.md.
+<!-- PHASE10_REST_CONTRACT_FINAL_END -->

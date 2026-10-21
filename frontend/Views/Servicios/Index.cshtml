@@ -1,98 +1,127 @@
-@model IReadOnlyList<BembosEvents.Web.Models.Api.ServicioAdicionalPublicoDto>
+﻿@model IReadOnlyList<BembosEvents.Web.Models.Api.ServicioAdicionalPublicoDto>
 
 @{
     ViewData["Title"] = "Servicios";
 }
 
-<section class="be-catalog-hero">
-    <div class="be-container be-catalog-hero-content">
-        <span class="be-catalog-kicker">
-            Bembos Events
-        </span>
+<section class="be-editorial-banner be-editorial-services">
+    <div class="be-container be-editorial-banner-inner">
+        <div class="be-editorial-copy">
+            <span class="be-editorial-eyebrow">
+                Completa tu experiencia
+            </span>
 
-        <h1>
-            Servicios adicionales
-        </h1>
+            <h1>
+                AGREGA ESE
+                <strong>EXTRA</strong>
+            </h1>
 
-        <p>
-            Complementa tu celebracion con los servicios adicionales
-            disponibles en el catalogo.
-        </p>
+            <p>
+                Suma servicios adicionales y personaliza
+                cada detalle de tu celebracion.
+            </p>
+
+            <a asp-controller="Reserva"
+               asp-action="Index"
+               class="be-editorial-cta">
+                Armar mi evento
+            </a>
+        </div>
+
+        <div class="be-editorial-art be-service-art"
+             aria-hidden="true">
+            <div class="be-service-token be-service-token-a">+</div>
+            <div class="be-service-token be-service-token-b">★</div>
+            <div class="be-service-token be-service-token-c">!</div>
+
+            <div class="be-service-label">
+                <span>MAS</span>
+                <strong>EXPERIENCIA</strong>
+            </div>
+        </div>
     </div>
 </section>
 
-<section class="be-catalog-section">
+<section class="be-store-section">
     <div class="be-container">
-
-        <div class="be-section-heading">
+        <div class="be-store-heading">
             <div>
-                <span class="be-catalog-kicker">
-                    Servicios
+                <span class="be-store-kicker">
+                    Servicios adicionales
                 </span>
 
                 <h2>
-                    Agrega extras a tu evento
+                    COMPLETA TU RESERVA
                 </h2>
             </div>
-
-            <p>
-                Los servicios y precios mostrados provienen
-                directamente de Spring Boot.
-            </p>
         </div>
 
         @if (Model.Count == 0)
         {
-            <div class="be-catalog-empty">
-                <h3>
-                    Aun no hay servicios adicionales disponibles
-                </h3>
+            <div class="be-designed-empty be-designed-empty-services">
+                <span class="be-designed-empty-mark">
+                    +
+                </span>
 
-                <p>
-                    Cuando existan servicios activos apareceran aqui.
-                </p>
+                <div>
+                    <h3>
+                        Aun no hay servicios adicionales
+                    </h3>
+
+                    <p>
+                        Cuando existan opciones activas apareceran aqui
+                        para complementar los paquetes disponibles.
+                    </p>
+
+                    <a asp-controller="Paquetes"
+                       asp-action="Index">
+                        Ver paquetes
+                    </a>
+                </div>
             </div>
         }
         else
         {
-            <div class="be-catalog-grid">
+            <div class="be-explore-grid">
                 @foreach (var servicio in Model)
                 {
-                    <article class="be-catalog-card">
-                        <div class="be-catalog-card-accent"></div>
+                    var tone = servicio.IdServicioAdicional % 4;
 
-                        <div class="be-catalog-card-body">
-                            <span class="be-catalog-eyebrow">
-                                Servicio adicional
+                    <article class="be-explore-card be-explore-service be-explore-tone-@tone">
+                        <div class="be-explore-card-art">
+                            <span>
+                                SERVICIO
                             </span>
 
+                            <strong>
+                                @servicio.Nombre
+                            </strong>
+
+                            <b>+</b>
+                        </div>
+
+                        <div class="be-explore-card-body">
                             <h3>
                                 @servicio.Nombre
                             </h3>
 
-                            @if (!string.IsNullOrWhiteSpace(servicio.Descripcion))
-                            {
-                                <p>
-                                    @servicio.Descripcion
-                                </p>
-                            }
+                            <p>
+                                @(string.IsNullOrWhiteSpace(servicio.Descripcion)
+                                    ? "Servicio adicional disponible para complementar tu evento."
+                                    : servicio.Descripcion)
+                            </p>
 
-                            <div class="be-catalog-price">
-                                <small>
-                                    Precio
-                                </small>
+                            <div class="be-explore-card-footer">
+                                <span>Desde</span>
 
                                 <strong>
                                     S/ @servicio.Precio.ToString("0.00")
                                 </strong>
                             </div>
-                        </div>
 
-                        <div class="be-catalog-card-footer">
                             <a asp-controller="Servicios"
                                asp-action="Details"
-                               asp-route-idServicioAdicional="@servicio.IdServicioAdicional"
-                               class="be-btn be-btn-primary">
+                               asp-route-idServicioAdicional="@servicio.IdServicioAdicional">
                                 Ver servicio
                             </a>
                         </div>
@@ -100,5 +129,24 @@
                 }
             </div>
         }
+    </div>
+</section>
+
+<section class="be-explore-bottom-cta be-explore-bottom-cta-yellow">
+    <div class="be-container">
+        <div>
+            <span>
+                Combina y personaliza
+            </span>
+
+            <strong>
+                Haz que tu evento tenga mas
+            </strong>
+        </div>
+
+        <a asp-controller="Reserva"
+           asp-action="Index">
+            Empezar reserva
+        </a>
     </div>
 </section>

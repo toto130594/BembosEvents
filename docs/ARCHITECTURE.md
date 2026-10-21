@@ -447,3 +447,31 @@ Browser -> ASP.NET Core MVC -> Spring Boot REST API -> Service -> Repository -> 
 - Logout-all revoca sesiones persistentes y limpia la sesion MVC actual.
 - Multi-instancia ASP.NET requerira almacenamiento distribuido de Session; queda fuera del alcance de FASE 9.
 <!-- PHASE9_ARCH_FINAL_END -->
+
+<!-- PHASE10_ARCHITECTURE_FINAL_START -->
+## Arquitectura Chat e IA implementada - FASE 10
+
+```text
+Browser
+  -> ASP.NET Core MVC
+      -> IChatApiClient
+          -> BackendBearerHandler / token server-side
+              -> Spring Boot REST
+                  -> ChatClienteService / ChatBackofficeService
+                  -> ChatAiService / ChatAiProvider
+                  -> ChatEscalationService
+                  -> Repositories
+                      -> SQL Server
+
+Spring Boot WebSocket/STOMP
+  /ws/chat
+  /app/chat/conversaciones/{id}/mensajes
+  /topic/chat/conversaciones/{id}
+  /topic/backoffice/chat/notificaciones
+  /topic/backoffice/chat/sedes/{idSede}/notificaciones
+```
+
+El browser MVC no consume directamente el WebSocket de Spring Boot porque el JWT backend no se expone al cliente. La UI de FASE 10 utiliza polling same-origin hacia MVC para refrescar historial.
+
+El backend WebSocket queda preparado y protegido para integraciones server-mediated futuras sin debilitar el limite de seguridad de FASE 9.
+<!-- PHASE10_ARCHITECTURE_FINAL_END -->

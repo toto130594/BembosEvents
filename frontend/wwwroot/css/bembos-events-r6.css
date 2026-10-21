@@ -1,0 +1,687 @@
+﻿:root {
+    --r6-blue: #1600d8;
+    --r6-blue-dark: #0d009f;
+    --r6-yellow: #ffd400;
+    --r6-orange: #ffa13d;
+    --r6-white: #ffffff;
+    --r6-ink: #191622;
+}
+
+/* ============================================================
+   GLOBAL FONT WEIGHT CONTRACT
+   ============================================================ */
+
+body,
+body a,
+body p,
+body span,
+body small,
+body strong,
+body button,
+body input,
+body select,
+body textarea,
+body label,
+body li,
+body dt,
+body dd,
+body h1,
+body h2,
+body h3,
+body h4,
+body h5,
+body h6 {
+    font-family: "Montserrat", Arial, sans-serif;
+    font-weight: 500 !important;
+}
+
+.be-r6-banner,
+.be-r6-banner * {
+    font-weight: 700 !important;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.be-r6-header {
+    background: var(--r6-blue) !important;
+}
+
+.be-r6-header .be-header-main {
+    min-height: 58px !important;
+    background: var(--r6-blue) !important;
+    border: 0 !important;
+}
+
+.be-r6-header .be-navbar {
+    min-height: 58px !important;
+    padding: 0 !important;
+    gap: 24px !important;
+}
+
+.be-r6-brand {
+    min-width: 112px;
+    display: inline-flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    text-decoration: none !important;
+}
+
+.be-r6-brand-logo {
+    width: 94px;
+    height: 34px;
+    padding: 2px 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 2px;
+    transform: skew(-5deg);
+}
+
+.be-r6-logo-img {
+    width: 88px;
+    height: auto;
+    display: block;
+    transform: skew(5deg);
+}
+
+.be-r6-brand-events {
+    padding-left: 3px;
+    color: var(--r6-yellow) !important;
+    font-size: 8px !important;
+    line-height: 1 !important;
+    letter-spacing: 1.8px !important;
+}
+
+.be-r6-header .be-nav {
+    gap: 26px !important;
+}
+
+.be-r6-header .be-nav-link {
+    color: #fff !important;
+    opacity: 1 !important;
+    text-decoration: none !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    text-transform: uppercase;
+}
+
+.be-r6-header .be-nav-link:hover {
+    color: var(--r6-yellow) !important;
+}
+
+.be-r6-header-actions {
+    margin-left: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.be-r6-account {
+    min-width: 112px;
+    display: grid !important;
+    gap: 1px;
+    align-content: center;
+    color: #fff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    text-decoration: none !important;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.be-r6-account span {
+    display: block !important;
+    color: #fff !important;
+    opacity: 1 !important;
+    font-size: 9px !important;
+    line-height: 1.05 !important;
+}
+
+.be-r6-account strong {
+    display: block !important;
+    color: var(--r6-yellow) !important;
+    opacity: 1 !important;
+    font-size: 10px !important;
+    line-height: 1.05 !important;
+}
+
+.be-r6-simple-link,
+.be-r6-logout {
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+}
+
+.be-r6-logout-form {
+    margin: 0;
+}
+
+.be-r6-reserve {
+    min-height: 34px;
+    padding: 0 18px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border-radius: 999px;
+    background: var(--r6-yellow) !important;
+    color: var(--r6-blue) !important;
+    text-decoration: none !important;
+    font-size: 10px !important;
+}
+
+.be-r6-lightning {
+    width: 8px;
+    height: 14px;
+    display: inline-block;
+    background: var(--r6-blue);
+    clip-path: polygon(58% 0, 18% 53%, 47% 53%, 35% 100%, 82% 42%, 52% 42%);
+}
+
+.be-r6-menu-lines,
+.be-r6-menu-lines::before,
+.be-r6-menu-lines::after {
+    width: 22px;
+    height: 2px;
+    display: block;
+    background: #fff;
+    position: relative;
+}
+
+.be-r6-menu-lines::before,
+.be-r6-menu-lines::after {
+    content: "";
+    position: absolute;
+    left: 0;
+}
+
+.be-r6-menu-lines::before {
+    top: -7px;
+}
+
+.be-r6-menu-lines::after {
+    top: 7px;
+}
+
+.be-r6-subbar {
+    min-height: 38px !important;
+    background: #fff !important;
+    border-bottom: 1px solid #ece9f5 !important;
+}
+
+.be-r6-subbar .be-header-subbar-content {
+    min-height: 38px !important;
+}
+
+.be-r6-start-event {
+    min-height: 26px;
+    padding: 0 14px;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    background: var(--r6-yellow);
+    color: var(--r6-blue) !important;
+    text-decoration: none !important;
+    font-size: 9px !important;
+    text-transform: uppercase;
+}
+
+.be-r6-dot {
+    width: 6px;
+    height: 6px;
+    display: inline-block;
+    border-radius: 50%;
+    background: var(--r6-blue);
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.be-r6-hero {
+    min-height: 344px;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+        linear-gradient(90deg, rgba(22, 0, 216, .97) 0%, rgba(22, 0, 216, .87) 38%, rgba(22, 0, 216, .44) 72%, rgba(22, 0, 216, .22) 100%),
+        url('/images/bembos-events-r6/hero-party.jpg') center 44% / cover no-repeat,
+        linear-gradient(100deg, #1b00e0 0%, #6c55e6 100%);
+}
+
+.be-r6-hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(circle at 78% 25%, rgba(255,255,255,.08) 0 2px, transparent 3px),
+        linear-gradient(90deg, rgba(22,0,216,.2), transparent 58%);
+}
+
+.be-r6-hero-inner {
+    min-height: 344px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.be-r6-hero-copy {
+    width: min(610px, 58%);
+    padding: 32px 0;
+}
+
+.be-r6-hero-kicker {
+    min-height: 32px;
+    padding: 0 14px;
+    margin-bottom: 13px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: var(--r6-yellow);
+    color: var(--r6-blue) !important;
+    font-size: 10px !important;
+    letter-spacing: 1.6px !important;
+}
+
+.be-r6-hero h1 {
+    margin: 0 !important;
+    color: #fff !important;
+    font-size: clamp(44px, 5.2vw, 70px) !important;
+    line-height: .92 !important;
+    letter-spacing: -2px !important;
+    text-transform: uppercase;
+}
+
+.be-r6-hero h1 strong {
+    display: block;
+    color: var(--r6-yellow) !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+}
+
+.be-r6-hero p {
+    max-width: 570px;
+    margin: 16px 0 18px !important;
+    color: #fff !important;
+    font-size: 12px !important;
+    line-height: 1.55 !important;
+}
+
+.be-r6-hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.be-r6-hero-primary,
+.be-r6-hero-secondary {
+    min-height: 42px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    text-decoration: none !important;
+    font-size: 11px !important;
+}
+
+.be-r6-hero-primary {
+    background: var(--r6-yellow);
+    color: var(--r6-blue) !important;
+}
+
+.be-r6-hero-secondary {
+    border: 1px solid rgba(255,255,255,.85);
+    color: #fff !important;
+    background: rgba(255,255,255,.08);
+}
+
+.be-r6-hero-note {
+    position: absolute;
+    right: 5%;
+    bottom: 28px;
+    width: 235px;
+    min-height: 130px;
+    padding: 20px 20px 18px;
+    border-radius: 24px;
+    background: rgba(255,255,255,.95);
+    box-shadow: 0 16px 40px rgba(25,13,91,.18);
+    transform: rotate(-2deg);
+}
+
+.be-r6-hero-note-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 10px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--r6-yellow);
+    position: relative;
+}
+
+/* Safe CSS-only sparkle. No emoji/mojibake. */
+.be-r6-hero-note-icon::before {
+    content: "";
+    width: 18px;
+    height: 18px;
+    display: block;
+    background: var(--r6-blue);
+    clip-path: polygon(50% 0, 60% 37%, 100% 50%, 60% 63%, 50% 100%, 40% 63%, 0 50%, 40% 37%);
+}
+
+.be-r6-hero-note strong {
+    display: block;
+    color: var(--r6-blue) !important;
+    font-size: 13px !important;
+}
+
+.be-r6-hero-note small {
+    display: block;
+    margin-top: 4px;
+    color: #625d6b !important;
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+}
+
+/* If an old R3 float somehow survives in cached markup, hide its bad glyph. */
+.be-r3-star {
+    font-size: 0 !important;
+    color: transparent !important;
+    position: relative;
+}
+
+.be-r3-star::before {
+    content: "";
+    width: 18px;
+    height: 18px;
+    display: block;
+    background: var(--r6-blue);
+    clip-path: polygon(50% 0, 60% 37%, 100% 50%, 60% 63%, 50% 100%, 40% 63%, 0 50%, 40% 37%);
+}
+
+/* ============================================================
+   OFFICIAL EVENTS PROMO IMAGE
+   ============================================================ */
+
+.be-r6-official-promo {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: var(--r6-orange);
+}
+
+.be-r6-official-promo-link {
+    width: 100%;
+    display: block;
+    line-height: 0;
+}
+
+.be-r6-official-promo-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+/* ============================================================
+   FOOTER LOGO
+   ============================================================ */
+
+.be-r6-footer-brand {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    text-decoration: none !important;
+}
+
+.be-r6-footer-logo-box {
+    width: 116px;
+    min-height: 42px;
+    padding: 3px 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+}
+
+.be-r6-footer-logo {
+    width: 102px;
+    height: auto;
+    display: block;
+}
+
+.be-r6-footer-events {
+    color: var(--r6-yellow) !important;
+    font-size: 8px !important;
+    letter-spacing: 2px !important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 991px) {
+    .be-r6-header .be-navbar {
+        min-height: 62px !important;
+    }
+
+    .be-r6-header .be-nav-collapse {
+        padding: 15px 0 18px !important;
+        background: var(--r6-blue) !important;
+    }
+
+    .be-r6-header .be-nav {
+        gap: 0 !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .be-r6-header .be-nav-link {
+        display: block !important;
+        padding: 11px 0 !important;
+        border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .be-r6-header-actions {
+        margin: 14px 0 0 !important;
+        align-items: flex-start !important;
+        flex-wrap: wrap;
+    }
+
+    .be-r6-account {
+        text-align: left;
+    }
+
+    .be-r6-subbar {
+        display: none !important;
+    }
+
+    .be-r6-hero {
+        min-height: 410px;
+    }
+
+    .be-r6-hero-inner {
+        min-height: 410px;
+    }
+
+    .be-r6-hero-copy {
+        width: 68%;
+    }
+
+    .be-r6-hero-note {
+        right: 18px;
+        bottom: 22px;
+        width: 220px;
+    }
+}
+
+@media (max-width: 720px) {
+    .be-r6-hero {
+        min-height: auto;
+        background-position: 62% center;
+    }
+
+    .be-r6-hero-inner {
+        min-height: 520px;
+        align-items: flex-start;
+    }
+
+    .be-r6-hero-copy {
+        width: 100%;
+        padding: 28px 0 185px;
+    }
+
+    .be-r6-hero h1 {
+        font-size: 46px !important;
+    }
+
+    .be-r6-hero-note {
+        left: 18px;
+        right: auto;
+        bottom: 24px;
+        width: min(270px, calc(100% - 36px));
+    }
+
+    .be-r6-official-promo {
+        overflow: hidden;
+    }
+
+    .be-r6-official-promo-image {
+        min-height: 170px;
+        width: auto;
+        max-width: none;
+        object-fit: cover;
+        object-position: center;
+        transform: translateX(-18%);
+    }
+}
+
+/* R6.1 LOGIN VISIBILITY FIX */
+.be-r6-header .be-r6-login-link {
+    min-width: 132px !important;
+    min-height: 38px !important;
+    padding: 4px 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    gap: 2px !important;
+
+    color: #ffffff !important;
+    background: transparent !important;
+    border: 0 !important;
+
+    text-decoration: none !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: visible !important;
+
+    position: relative !important;
+    z-index: 999 !important;
+}
+
+.be-r6-header .be-r6-login-link .be-r6-login-hello {
+    display: block !important;
+
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+
+    font-family: "Montserrat", Arial, sans-serif !important;
+    font-size: 9px !important;
+    font-weight: 500 !important;
+    line-height: 1.05 !important;
+    letter-spacing: .2px !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.be-r6-header .be-r6-login-link .be-r6-login-text {
+    display: block !important;
+
+    color: #ffd400 !important;
+    -webkit-text-fill-color: #ffd400 !important;
+
+    font-family: "Montserrat", Arial, sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 1.15 !important;
+    letter-spacing: .35px !important;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: visible !important;
+}
+
+.be-r6-header .be-r6-login-link:hover .be-r6-login-text {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Neutralize old selectors that may collapse the login area. */
+.be-r6-header .be-header-login {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Keep the actions vertically centered and allow login text to render. */
+.be-r6-header .be-r6-header-actions {
+    min-height: 46px !important;
+    overflow: visible !important;
+}
+
+@media (max-width: 991px) {
+    .be-r6-header .be-r6-login-link {
+        align-items: flex-start !important;
+        text-align: left !important;
+        min-width: 160px !important;
+    }
+}
+
+/* R6.2 LOGIN CLICKABILITY + RUNTIME FIX */
+.be-r6-header .be-r6-login-link {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+    isolation: isolate !important;
+}
+
+.be-r6-header .be-r6-login-link,
+.be-r6-header .be-r6-login-link * {
+    position: relative !important;
+    z-index: 1001 !important;
+}
+
+.be-r6-header .be-r6-header-actions {
+    position: relative !important;
+    z-index: 1000 !important;
+    pointer-events: auto !important;
+}
+
+.be-r6-header .be-r6-reserve {
+    position: relative !important;
+    z-index: 1000 !important;
+}
+
+/* Prevent decorative header layers from intercepting account clicks. */
+.be-r6-header::before,
+.be-r6-header::after,
+.be-r6-header .be-header-main::before,
+.be-r6-header .be-header-main::after {
+    pointer-events: none !important;
+}

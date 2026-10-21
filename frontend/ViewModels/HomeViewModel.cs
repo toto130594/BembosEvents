@@ -7,11 +7,20 @@ public sealed class HomeViewModel
     public IReadOnlyList<SedePublicaDto> Sedes { get; init; } =
         Array.Empty<SedePublicaDto>();
 
-    public int PaquetesCount { get; init; }
+    public IReadOnlyList<PaquetePublicoDto> Paquetes { get; init; } =
+        Array.Empty<PaquetePublicoDto>();
 
-    public int TematicasCount { get; init; }
+    public IReadOnlyList<TematicaPublicaDto> Tematicas { get; init; } =
+        Array.Empty<TematicaPublicaDto>();
 
-    public int ServiciosAdicionalesCount { get; init; }
+    public IReadOnlyList<ServicioAdicionalPublicoDto> ServiciosAdicionales { get; init; } =
+        Array.Empty<ServicioAdicionalPublicoDto>();
+
+    public int PaquetesCount => Paquetes.Count;
+
+    public int TematicasCount => Tematicas.Count;
+
+    public int ServiciosAdicionalesCount => ServiciosAdicionales.Count;
 
     public bool SedesApiAvailable { get; init; }
 

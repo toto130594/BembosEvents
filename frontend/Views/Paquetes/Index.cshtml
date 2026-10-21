@@ -4,95 +4,143 @@
     ViewData["Title"] = "Paquetes";
 }
 
-<section class="be-catalog-hero">
-    <div class="be-container be-catalog-hero-content">
-        <span class="be-catalog-kicker">
-            Bembos Events
-        </span>
+<section class="be-editorial-banner be-editorial-packages">
+    <div class="be-container be-editorial-banner-inner">
+        <div class="be-editorial-copy">
+            <span class="be-editorial-eyebrow">
+                Elige tu favorito
+            </span>
 
-        <h1>
-            Paquetes para tu celebracion
-        </h1>
+            <h1>
+                PAQUETES PARA
+                <strong>TU EVENTO</strong>
+            </h1>
 
-        <p>
-            Conoce los paquetes disponibles y sus precios base
-            configurados directamente en Bembos Events.
-        </p>
+            <p>
+                Empieza con una base y personaliza tu experiencia
+                con sede, salon, tematica y servicios.
+            </p>
+
+            <a asp-controller="Reserva"
+               asp-action="Index"
+               class="be-editorial-cta">
+                Empezar mi reserva
+            </a>
+        </div>
+
+        <div class="be-editorial-art"
+             aria-hidden="true">
+            <div class="be-campaign-card be-campaign-card-a">
+                <small>01</small>
+                <strong>CUMPLE</strong>
+                <span>Celebra a tu manera</span>
+            </div>
+
+            <div class="be-campaign-card be-campaign-card-b">
+                <small>02</small>
+                <strong>AMIGOS</strong>
+                <span>Comparte + disfruta</span>
+            </div>
+
+            <div class="be-campaign-card be-campaign-card-c">
+                <small>03</small>
+                <strong>EVENTO</strong>
+                <span>Hazlo inolvidable</span>
+            </div>
+
+            <i class="be-campaign-dot be-dot-a"></i>
+            <i class="be-campaign-dot be-dot-b"></i>
+        </div>
     </div>
 </section>
 
-<section class="be-catalog-section">
+<section class="be-store-section">
     <div class="be-container">
-
-        <div class="be-section-heading">
+        <div class="be-store-heading">
             <div>
-                <span class="be-catalog-kicker">
-                    Paquetes
+                <span class="be-store-kicker">
+                    Bembos Events
                 </span>
 
                 <h2>
-                    Opciones disponibles
+                    ENCUENTRA EL PAQUETE IDEAL
                 </h2>
             </div>
 
-            <p>
-                El precio mostrado corresponde al precio base
-                configurado para cada paquete.
-            </p>
+            <a asp-controller="Reserva"
+               asp-action="Index"
+               class="be-store-heading-link">
+                Empezar reserva
+            </a>
         </div>
 
         @if (Model.Count == 0)
         {
-            <div class="be-catalog-empty">
-                <h3>
-                    Aun no hay paquetes disponibles
-                </h3>
+            <div class="be-designed-empty be-designed-empty-packages">
+                <span class="be-designed-empty-mark">
+                    P
+                </span>
 
-                <p>
-                    Cuando existan paquetes activos apareceran aqui.
-                </p>
+                <div>
+                    <h3>
+                        Pronto tendremos nuevos paquetes
+                    </h3>
+
+                    <p>
+                        Los paquetes activos apareceran aqui.
+                        Mientras tanto puedes revisar las sedes disponibles.
+                    </p>
+
+                    <a asp-controller="Sedes"
+                       asp-action="Index">
+                        Ver locales
+                    </a>
+                </div>
             </div>
         }
         else
         {
-            <div class="be-catalog-grid">
+            <div class="be-product-grid be-product-grid-catalog">
                 @foreach (var paquete in Model)
                 {
-                    <article class="be-catalog-card">
-                        <div class="be-catalog-card-accent"></div>
+                    var tone = paquete.IdPaquete % 3;
 
-                        <div class="be-catalog-card-body">
-                            <span class="be-catalog-eyebrow">
-                                @paquete.CantidadPersonasBase personas base
+                    <article class="be-product-card">
+                        <div class="be-product-art be-tone-@tone">
+                            <span class="be-product-pill">
+                                @paquete.CantidadPersonasBase personas
                             </span>
 
+                            <div class="be-product-label-stack"
+                                 aria-hidden="true">
+                                <span>EVENTO</span>
+                                <strong>@paquete.Nombre</strong>
+                            </div>
+                        </div>
+
+                        <div class="be-product-body">
                             <h3>
                                 @paquete.Nombre
                             </h3>
 
-                            @if (!string.IsNullOrWhiteSpace(paquete.Descripcion))
-                            {
-                                <p>
-                                    @paquete.Descripcion
-                                </p>
-                            }
+                            <p>
+                                @(string.IsNullOrWhiteSpace(paquete.Descripcion)
+                                    ? "Paquete base listo para personalizar durante la reserva."
+                                    : paquete.Descripcion)
+                            </p>
 
-                            <div class="be-catalog-price">
-                                <small>
-                                    Desde
-                                </small>
+                            <div class="be-product-price">
+                                <span>Desde</span>
 
                                 <strong>
                                     S/ @paquete.PrecioBase.ToString("0.00")
                                 </strong>
                             </div>
-                        </div>
 
-                        <div class="be-catalog-card-footer">
                             <a asp-controller="Paquetes"
                                asp-action="Details"
                                asp-route-idPaquete="@paquete.IdPaquete"
-                               class="be-btn be-btn-primary">
+                               class="be-product-button">
                                 Ver paquete
                             </a>
                         </div>
@@ -100,5 +148,24 @@
                 }
             </div>
         }
+    </div>
+</section>
+
+<section class="be-catalog-note">
+    <div class="be-container">
+        <div>
+            <span>
+                Personalizable
+            </span>
+
+            <strong>
+                Combina paquete + tematica + servicios
+            </strong>
+        </div>
+
+        <a asp-controller="Reserva"
+           asp-action="Index">
+            Armar mi evento
+        </a>
     </div>
 </section>

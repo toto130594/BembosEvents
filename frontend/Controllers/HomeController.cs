@@ -26,37 +26,29 @@ public sealed class HomeController : Controller
     {
         var sedes =
             await LoadOrDefaultAsync(
-                () =>
-                    _backendApiClient.GetSedesAsync(
-                        cancellationToken),
+                () => _backendApiClient.GetSedesAsync(cancellationToken),
                 Array.Empty<SedePublicaDto>(),
                 "sedes",
                 cancellationToken);
 
         var paquetes =
             await LoadOrDefaultAsync(
-                () =>
-                    _backendApiClient.GetPaquetesCountAsync(
-                        cancellationToken),
-                0,
+                () => _backendApiClient.GetPaquetesAsync(cancellationToken),
+                Array.Empty<PaquetePublicoDto>(),
                 "paquetes",
                 cancellationToken);
 
         var tematicas =
             await LoadOrDefaultAsync(
-                () =>
-                    _backendApiClient.GetTematicasCountAsync(
-                        cancellationToken),
-                0,
+                () => _backendApiClient.GetTematicasAsync(cancellationToken),
+                Array.Empty<TematicaPublicaDto>(),
                 "tematicas",
                 cancellationToken);
 
         var servicios =
             await LoadOrDefaultAsync(
-                () =>
-                    _backendApiClient.GetServiciosAdicionalesCountAsync(
-                        cancellationToken),
-                0,
+                () => _backendApiClient.GetServiciosAdicionalesAsync(cancellationToken),
+                Array.Empty<ServicioAdicionalPublicoDto>(),
                 "servicios adicionales",
                 cancellationToken);
 
@@ -66,13 +58,13 @@ public sealed class HomeController : Controller
                 Sedes = sedes.Value,
                 SedesApiAvailable = sedes.Success,
 
-                PaquetesCount = paquetes.Value,
+                Paquetes = paquetes.Value,
                 PaquetesApiAvailable = paquetes.Success,
 
-                TematicasCount = tematicas.Value,
+                Tematicas = tematicas.Value,
                 TematicasApiAvailable = tematicas.Success,
 
-                ServiciosAdicionalesCount = servicios.Value,
+                ServiciosAdicionales = servicios.Value,
                 ServiciosApiAvailable = servicios.Success
             };
 
@@ -107,8 +99,7 @@ public sealed class HomeController : Controller
     {
         try
         {
-            var value =
-                await loader();
+            var value = await loader();
 
             return new LoadResult<T>(
                 value,
