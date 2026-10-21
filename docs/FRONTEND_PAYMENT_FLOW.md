@@ -482,3 +482,55 @@ Spring Boot:
 SQL Server:
 
 - acceso exclusivo mediante backend/JPA
+
+<!-- PHASE11_MVC_MERCADOPAGO_START -->
+# FASE 11 - MVC Mercado Pago
+
+## Cliente
+
+Ruta MVC:
+
+```text
+/pagos/mercado-pago
+```
+
+Flujo:
+
+```text
+Browser
+  -> ASP.NET MVC
+  -> IMercadoPagoApiClient
+  -> BackendBearerHandler
+  -> Spring Boot
+  -> Mercado Pago
+```
+
+El JWT y refresh token permanecen en Session server-side.
+
+El browser nunca llama directamente a `api.mercadopago.com`.
+
+El `checkout_url` devuelto por Spring se valida como HTTPS y dominio Mercado Pago antes del redirect.
+
+## BackOffice
+
+Ruta MVC:
+
+```text
+/backoffice/mercado-pago
+```
+
+Acciones conectadas:
+
+- listar Pagos;
+- reembolso total;
+- reconciliacion individual;
+- reconciliacion por lote.
+
+Los POST MVC utilizan antiforgery.
+
+Spring Boot conserva la autorizacion final de operaciones financieras.
+
+Documento canonico:
+
+`docs/MERCADO_PAGO.md`
+<!-- PHASE11_MVC_MERCADOPAGO_END -->

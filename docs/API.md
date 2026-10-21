@@ -503,7 +503,7 @@ PATCH /api/pagos/{idPago}/estado
 
 El frontend no puede decidir libremente que un Pago fue aprobado.
 
-La aprobacion definitiva se integrara con el flujo seguro del proveedor de pagos en FASE 11.
+La aprobacion definitiva se origina en el flujo seguro del proveedor implementado en FASE 11.
 
 ## Mercado Pago
 
@@ -1002,3 +1002,19 @@ Contratos:
 
 El envio directo del cliente hacia /topic/** no esta permitido.
 <!-- PHASE10_API_FINAL_END -->
+
+<!-- PHASE11_MERCADOPAGO_START -->
+# Mercado Pago - FASE 11 COMPLETADA
+
+Endpoints:
+
+```http
+POST /api/reservas/{idReserva}/pagos/checkout
+POST /api/webhooks/pagos/mercado-pago
+POST /api/backoffice/pagos/{idPago}/reembolso
+POST /api/backoffice/pagos/mercado-pago/{idPago}/reconciliar
+POST /api/backoffice/pagos/mercado-pago/reconciliar
+```
+
+Detalle: `docs/MERCADO_PAGO.md`.
+<!-- PHASE11_MERCADOPAGO_END -->

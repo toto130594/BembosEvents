@@ -110,13 +110,13 @@ Tambien se implementaran codigos de recuperacion.
 
 ## ADR-017 - Pagos idempotentes
 
-La integracion futura con Mercado Pago debe soportar idempotencia.
+La integracion con Mercado Pago soporta idempotencia persistente; un evento procesado no debe procesarse dos veces.
 
 Un mismo evento del proveedor no debe procesarse dos veces.
 
 ## ADR-018 - Webhooks seguros
 
-Los webhooks futuros deben validar autenticidad o firma antes de modificar datos.
+Los webhooks de Mercado Pago validan firma HMAC-SHA256 antes de persistir eventos o modificar Pagos.
 
 ## ADR-019 - Eventos internos
 
@@ -226,3 +226,40 @@ Decisiones:
 13. STOMP SEND directo al broker se bloquea; el envio de cliente pasa por /app y ownership.
 14. Funciones IA avanzadas permanecen en FASE 12.
 <!-- PHASE10_DECISIONS_FINAL_END -->
+
+<!-- PHASE11_MERCADOPAGO_DECISIONS_START -->
+## ADR-020 - Mercado Pago mediante Checkout Pro Orders API
+
+Decision:
+
+- usar Checkout Pro sobre Orders API;
+- crear Orders desde Spring Boot;
+- mantener Access Token solo server-side;
+- guardar Order id en `Pago.referenciaExterna`;
+- utilizar `checkout_url` solo como redireccion del comprador;
+- nunca aprobar un Pago a partir de datos del navegador.
+
+La configuracion de Fase 11 es TEST y el provider permanece deshabilitado por defecto.
+
+## ADR-021 - Eventos de proveedor persistentes
+
+Decision:
+
+- persistir eventos verificados en `EventoPagoProveedor`;
+- unicidad por `proveedor + idEventoExterno`;
+- preferir notification id;
+- utilizar fingerprint SHA-256 como fallback;
+- permitir retry si el evento existe pero no esta procesado;
+- ignorar duplicados ya procesados.
+
+## ADR-022 - Reembolsos Fase 11
+
+Decision:
+
+- implementar solamente reembolso total;
+- requerir ADMINISTRADOR;
+- consultar Order antes del reembolso;
+- usar idempotency key deterministico;
+- actualizar localmente a REEMBOLSADO solamente luego de confirmacion externa;
+- postergar reembolsos parciales hasta que el dominio modele importes parciales.
+<!-- PHASE11_MERCADOPAGO_DECISIONS_END -->

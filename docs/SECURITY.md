@@ -270,15 +270,53 @@ Desde FASE 7.6G no existe un endpoint tecnico de transicion de Pago.
 `GET /api/pagos/{idPago}` permanece disponible exclusivamente para que un CLIENTE consulte un Pago propio.
 
 Las reglas de transicion permanecen encapsuladas en el backend.
-# 10. Pagos - seguridad futura
+# 10. Pagos - seguridad Mercado Pago
 
-La integracion con Mercado Pago debera:
+FASE 11 implementa la seguridad del proveedor de pagos.
 
-- validar webhooks.
-- verificar autenticidad.
-- utilizar idempotencia.
-- evitar procesar eventos duplicados.
-- no confiar en datos enviados solamente por el navegador.
+Reglas vigentes:
+
+- Spring Boot es la autoridad final.
+- Browser nunca recibe backend JWT ni refresh token.
+- Browser nunca recibe Mercado Pago Access Token ni Webhook Secret.
+- El Access Token se usa solo server-side.
+- El Webhook Secret se usa solo server-side.
+- `MERCADOPAGO_ENABLED=false` por defecto.
+- El checkout del Cliente requiere rol CLIENTE.
+- Los reembolsos requieren ADMINISTRADOR.
+- La reconciliacion requiere ADMINISTRADOR.
+- El webhook es anonimo solamente en su POST exacto.
+- El webhook valida `x-signature` antes de cualquier efecto.
+- Se utiliza HMAC-SHA256 y comparacion constante.
+- La firma completa no se persiste ni se loguea.
+- Los eventos del proveedor son idempotentes.
+- La unicidad se refuerza en SQL Server.
+- Un evento procesado no se procesa nuevamente.
+- Un evento no procesado puede reintentarse.
+- El estado definitivo se consulta desde la Order del proveedor.
+- El navegador no puede marcar un Pago como APROBADO.
+- Toda mutacion conserva las reglas de transicion de PagoService.
+- No se mantiene una transaccion JPA abierta durante HTTP externo.
+- En desarrollo, `live_mode=true` se reconoce e ignora sin efectos.
+- Topics distintos de `order` se reconocen e ignoran sin efectos.
+- No se detectaron secretos en los logs durante el smoke de 11.0.11.
+
+Persistencia de idempotencia:
+
+```text
+EventoPagoProveedor
+UNIQUE(proveedor, idEventoExterno)
+```
+
+Flyway:
+
+```text
+V12__mercadopago_provider_events.sql
+```
+
+Documento detallado:
+
+`docs/MERCADO_PAGO.md`
 
 # 11. IA
 

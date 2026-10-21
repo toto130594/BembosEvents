@@ -376,3 +376,41 @@ Secciones documentadas:
 - Reglas temporales: OK
 - Integridad referencial: OK
 - Historial y auditoría: OK
+
+<!-- PHASE11_PROVIDER_EVENTS_START -->
+## EventoPagoProveedor - FASE 11
+
+Migracion:
+
+`V12__mercadopago_provider_events.sql`
+
+Objetivo:
+
+persistir la recepcion idempotente de eventos verificados de Mercado Pago.
+
+Campos principales:
+
+- proveedor;
+- idEventoExterno;
+- idRecursoExterno;
+- tipoEvento;
+- accion;
+- requestId;
+- liveMode;
+- fechaRecepcion;
+- procesado;
+- fechaProcesamiento;
+- resultado.
+
+Restriccion critica:
+
+```text
+UNIQUE(proveedor, idEventoExterno)
+```
+
+No se persisten:
+
+- Access Token;
+- Webhook Secret;
+- firma `x-signature`.
+<!-- PHASE11_PROVIDER_EVENTS_END -->

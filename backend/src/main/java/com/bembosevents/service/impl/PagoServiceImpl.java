@@ -160,6 +160,105 @@ public class PagoServiceImpl implements PagoService {
     }
 
     @Override
+    @Transactional
+    public PagoResponse vincularReferenciaExterna(
+            Integer idPago,
+            String referenciaExterna) {
+
+        validarIdPago(idPago);
+
+        if (referenciaExterna == null
+                || referenciaExterna.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "La referencia externa es obligatoria");
+        }
+
+        String referenciaNormalizada =
+                referenciaExterna.trim();
+
+        if (referenciaNormalizada.length() > 150) {
+            throw new IllegalArgumentException(
+                    "La referencia externa no puede superar 150 caracteres");
+        }
+
+        Pago pago =
+                pagoRepository
+                        .findById(idPago)
+                        .orElseThrow(() ->
+                                new RecursoNoEncontradoException(
+                                        "Pago no encontrado"));
+
+        if (pago.getReferenciaExterna() != null
+                && !pago.getReferenciaExterna().isBlank()
+                && !pago.getReferenciaExterna()
+                        .equals(referenciaNormalizada)) {
+
+            throw new IllegalStateException(
+                    "El pago ya tiene una referencia externa diferente");
+        }
+
+        pago.setReferenciaExterna(
+                referenciaNormalizada);
+
+        return convertir(
+                pagoRepository.save(pago));
+    }
+
+    @Override
+    @Transactional
+    public PagoResponse actualizarEstadoDesdeProveedor(
+            String referenciaExterna,
+            EstadoPago nuevoEstado) {
+
+        if (referenciaExterna == null
+                || referenciaExterna.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "La referencia externa es obligatoria");
+        }
+
+        if (nuevoEstado == null) {
+            throw new IllegalArgumentException(
+                    "El nuevo estado es obligatorio");
+        }
+
+        Pago pago =
+                pagoRepository
+                        .findByReferenciaExterna(
+                                referenciaExterna.trim())
+                        .orElseThrow(() ->
+                                new RecursoNoEncontradoException(
+                                        "Pago Mercado Pago no encontrado"));
+
+        EstadoPago estadoActual =
+                EstadoPago.valueOf(
+                        pago.getEstadoPago());
+
+        if (estadoActual == nuevoEstado) {
+            return convertir(
+                    pago);
+        }
+
+        validarTransicionEstado(
+                estadoActual,
+                nuevoEstado);
+
+        pago.setEstadoPago(
+                nuevoEstado.name());
+
+        if (nuevoEstado == EstadoPago.APROBADO
+                && pago.getFechaPago() == null) {
+
+            pago.setFechaPago(
+                    LocalDateTime.now());
+        }
+
+        return convertir(
+                pagoRepository.save(
+                        pago));
+    }
+    @Override
     public void validarTransicionEstado(
             EstadoPago estadoActual,
             EstadoPago nuevoEstado) {

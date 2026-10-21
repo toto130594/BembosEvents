@@ -606,44 +606,117 @@ La aprobacion definitiva debera originarse en el flujo seguro del proveedor de p
 
 PagoService conservara la regla interna validarTransicionEstado.
 
-# 14. Mercado Pago - futuro
+# 14. Mercado Pago - FASE 11
 
 Estado:
 
-FUTURO - FASE 11.
+COMPLETADO.
 
-Flujo objetivo:
+## Checkout CLIENTE
+
+| Metodo | Endpoint | Acceso | Estado |
+|---|---|---|---|
+| POST | `/api/reservas/{idReserva}/pagos/checkout` | CLIENTE propietario | IMPLEMENTADO |
+
+Request:
+
+```json
+{
+  "monto": 150.00
+}
+```
+
+El backend controla:
 
 ```text
-CLIENTE
-   |
-   v
-iniciar pago
-   |
-   v
-Proveedor
-   |
-   v
+metodoPago = MERCADO_PAGO
+estado inicial = PENDIENTE
+```
+
+La respuesta incluye:
+
+- Pago local;
+- provider;
+- orderId;
+- orderStatus;
+- checkoutUrl.
+
+El navegador no decide el estado final.
+
+## Webhook
+
+```http
+POST /api/webhooks/pagos/mercado-pago
+```
+
+Acceso HTTP:
+
+- anonimo por necesidad de integracion;
+- firma obligatoria para procesamiento.
+
+Headers:
+
+```text
+x-signature
+x-request-id
+```
+
+El flujo es:
+
+```text
 Webhook
    |
    v
-validar autenticidad
+validar firma
    |
    v
-validar idempotencia
+hardening TEST / topic
+   |
+   v
+idempotencia persistente
+   |
+   v
+GET Order proveedor
    |
    v
 PagoService
    |
    v
-actualizar estado
+transicion valida de estado
 ```
 
-Endpoint futuro de webhook:
+## Reembolso total
 
 ```http
-POST /api/webhooks/pagos/mercado-pago
+POST /api/backoffice/pagos/{idPago}/reembolso
 ```
+
+Acceso:
+
+```text
+ADMINISTRADOR
+```
+
+No existe endpoint de reembolso parcial en Fase 11.
+
+## Reconciliacion
+
+```http
+POST /api/backoffice/pagos/mercado-pago/{idPago}/reconciliar
+POST /api/backoffice/pagos/mercado-pago/reconciliar
+```
+
+Acceso:
+
+```text
+ADMINISTRADOR
+```
+
+La reconciliacion consulta la Order actual del proveedor y solo aplica transiciones permitidas por el dominio.
+
+Documento canonico:
+
+`docs/MERCADO_PAGO.md`
 
 # 15. BackOffice Sedes
 

@@ -21,6 +21,13 @@ public interface PagoService {
             String correoCliente,
             Integer idPago);
 
+    PagoResponse vincularReferenciaExterna(
+            Integer idPago,
+            String referenciaExterna);
+
+    com.bembosevents.dto.pago.PagoResponse actualizarEstadoDesdeProveedor(
+            String referenciaExterna,
+            EstadoPago nuevoEstado);
     void validarTransicionEstado(
             EstadoPago estadoActual,
             EstadoPago nuevoEstado);

@@ -1,0 +1,79 @@
+@model BembosEvents.Web.ViewModels.MercadoPagoCheckoutViewModel
+
+@{
+    ViewData["Title"] = "Pagar con Mercado Pago";
+}
+
+<link rel="stylesheet"
+      href="~/css/mercadopago.css"
+      asp-append-version="true" />
+
+<section class="mp-page">
+    <div class="be-container">
+        <div class="mp-card">
+            <p class="mp-kicker">
+                Pago seguro
+            </p>
+
+            <h1>
+                Mercado Pago
+            </h1>
+
+            <p class="mp-lead">
+                El portal envia la solicitud a Spring Boot.
+                Tus credenciales del proveedor nunca llegan al navegador.
+            </p>
+
+            <div asp-validation-summary="ModelOnly"
+                 class="mp-error">
+            </div>
+
+            <form asp-controller="MercadoPago"
+                  asp-action="Checkout"
+                  method="post"
+                  class="mp-form">
+                @Html.AntiForgeryToken()
+
+                <div class="mp-field">
+                    <label asp-for="IdReserva"></label>
+                    <input asp-for="IdReserva"
+                           min="1"
+                           inputmode="numeric" />
+                    <span asp-validation-for="IdReserva"
+                          class="mp-error"></span>
+                </div>
+
+                <div class="mp-field">
+                    <label asp-for="Monto"></label>
+                    <input asp-for="Monto"
+                           min="0.01"
+                           step="0.01"
+                           inputmode="decimal" />
+                    <span asp-validation-for="Monto"
+                          class="mp-error"></span>
+                </div>
+
+                <button type="submit"
+                        class="mp-primary">
+                    Continuar a Mercado Pago
+                </button>
+            </form>
+
+            <div class="mp-note">
+                <strong>Entorno de desarrollo.</strong>
+                Si el provider TEST esta deshabilitado,
+                Spring Boot rechazara el checkout y no se realizara ningun cargo.
+            </div>
+
+            <a asp-controller="Reserva"
+               asp-action="MisReservas"
+               class="mp-link">
+                Volver a mis reservas
+            </a>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

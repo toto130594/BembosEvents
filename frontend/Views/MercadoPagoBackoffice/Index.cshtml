@@ -1,0 +1,166 @@
+@model BembosEvents.Web.ViewModels.MercadoPagoBackofficeViewModel
+
+@{
+    Layout = "_BackofficeLayout";
+    ViewData["Title"] = "Mercado Pago";
+}
+
+<link rel="stylesheet"
+      href="~/css/mercadopago.css"
+      asp-append-version="true" />
+
+<section class="backoffice-page-heading">
+    <div>
+        <p class="backoffice-eyebrow">
+            Pagos
+        </p>
+
+        <h1>
+            Mercado Pago
+        </h1>
+
+        <p>
+            Spring Boot conserva la autoridad final
+            sobre estados, reembolsos y reconciliacion.
+        </p>
+    </div>
+</section>
+
+@if (TempData["MercadoPagoMessage"] is string message)
+{
+    <div class="mp-admin-message">
+        @message
+    </div>
+}
+
+<section class="mp-admin-toolbar">
+    <div>
+        <strong>
+            Reconciliacion manual
+        </strong>
+
+        <p>
+            Consulta hasta los 100 pagos Mercado Pago mas recientes.
+        </p>
+    </div>
+
+    <form asp-controller="MercadoPagoBackoffice"
+          asp-action="ReconcileBatch"
+          method="post">
+        @Html.AntiForgeryToken()
+
+        <button type="submit"
+                class="mp-secondary">
+            Reconciliar lote
+        </button>
+    </form>
+</section>
+
+<div class="mp-admin-warning">
+    Los endpoints financieros de Spring Boot requieren
+    <strong>ADMINISTRADOR</strong>.
+    Un ENCARGADO_LOCAL puede tener acceso general al BackOffice,
+    pero Spring rechazara estas acciones con HTTP 403.
+</div>
+
+@if (!Model.BackendAvailable)
+{
+    <div class="mp-empty">
+        No fue posible cargar los pagos desde Spring Boot.
+    </div>
+}
+else if (Model.Pagos.Count == 0)
+{
+    <div class="mp-empty">
+        No hay pagos disponibles.
+    </div>
+}
+else
+{
+    <div class="mp-table-wrap">
+        <table class="mp-table">
+            <thead>
+                <tr>
+                    <th>Pago</th>
+                    <th>Reserva</th>
+                    <th>Monto</th>
+                    <th>Metodo</th>
+                    <th>Estado</th>
+                    <th>Order ID</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            @foreach (var pago in Model.Pagos)
+            {
+                var esMercadoPago =
+                    string.Equals(
+                        pago.MetodoPago,
+                        "MERCADO_PAGO",
+                        StringComparison.OrdinalIgnoreCase);
+
+                var puedeReembolsar =
+                    esMercadoPago &&
+                    string.Equals(
+                        pago.EstadoPago,
+                        "APROBADO",
+                        StringComparison.OrdinalIgnoreCase) &&
+                    !string.IsNullOrWhiteSpace(
+                        pago.ReferenciaExterna);
+
+                <tr>
+                    <td>#@pago.IdPago</td>
+                    <td>#@pago.IdReserva</td>
+                    <td>S/ @pago.Monto.ToString("N2")</td>
+                    <td>@pago.MetodoPago</td>
+                    <td>@pago.EstadoPago</td>
+                    <td>
+                        @(string.IsNullOrWhiteSpace(pago.ReferenciaExterna)
+                            ? "-"
+                            : pago.ReferenciaExterna)
+                    </td>
+                    <td>
+                        <div class="mp-actions">
+                            @if (
+                                esMercadoPago &&
+                                !string.IsNullOrWhiteSpace(
+                                    pago.ReferenciaExterna)
+                            )
+                            {
+                                <form asp-controller="MercadoPagoBackoffice"
+                                      asp-action="Reconcile"
+                                      asp-route-idPago="@pago.IdPago"
+                                      method="post">
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="mp-small">
+                                        Reconciliar
+                                    </button>
+                                </form>
+                            }
+
+                            @if (puedeReembolsar)
+                            {
+                                <form asp-controller="MercadoPagoBackoffice"
+                                      asp-action="Refund"
+                                      asp-route-idPago="@pago.IdPago"
+                                      method="post"
+                                      onsubmit="return confirm('¿Confirmar reembolso total?');">
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="mp-small mp-danger">
+                                        Reembolsar
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

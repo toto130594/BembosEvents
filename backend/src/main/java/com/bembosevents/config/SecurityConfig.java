@@ -150,6 +150,10 @@ public class SecurityConfig {
                                         "/api/auth/**",
                                         "/error")
                                 .permitAll()
+                                .requestMatchers(
+                                        HttpMethod.POST,
+                                        "/api/webhooks/pagos/mercado-pago")
+                                .permitAll()
 
                                 .requestMatchers(
                                         HttpMethod.GET,

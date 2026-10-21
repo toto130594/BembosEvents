@@ -704,3 +704,52 @@ FASE 10 cerrada tecnicamente y documentalmente.
 Checkpoint commit pendiente de autorizacion explicita.
 Push automatico: NO.
 <!-- PHASE10_CHANGELOG_FINAL_END -->
+
+<!-- PHASE11_MERCADOPAGO_CHANGELOG_START -->
+## 2026-10-21 - Cierre FASE 11 Mercado Pago
+
+FASE 11 - Mercado Pago: COMPLETADA.
+
+Incluye:
+
+- Checkout Pro mediante Orders API;
+- configuracion TEST;
+- provider server-side;
+- checkout CLIENTE;
+- `checkout_url`;
+- webhook;
+- firma HMAC-SHA256;
+- idempotencia;
+- Flyway V12;
+- `EventoPagoProveedor`;
+- sincronizacion de estado;
+- reembolso total;
+- reconciliacion individual;
+- reconciliacion por lote;
+- MVC Cliente;
+- MVC BackOffice;
+- hardening `live_mode=true`;
+- hardening de topics;
+- smokes de autorizacion;
+- validacion de no exposicion de secretos.
+
+Validaciones de cierre:
+
+- backend tests: OK;
+- backend Docker build: OK;
+- frontend Release build: OK;
+- backend runtime: OK;
+- frontend runtime: OK;
+- frontend -> backend health: OK;
+- checkout anonimo: bloqueado;
+- refund anonimo: bloqueado;
+- reconciliacion anonima: bloqueada;
+- webhook sin firma: HTTP 401;
+- provider default: deshabilitado;
+- cobros reales durante validacion: NO;
+- commit/push de cierre: pendiente de autorizacion explicita.
+
+Siguiente fase del roadmap:
+
+FASE 12 - IA avanzada.
+<!-- PHASE11_MERCADOPAGO_CHANGELOG_END -->

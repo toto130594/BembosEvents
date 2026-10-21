@@ -203,17 +203,40 @@ Reglas implementadas:
 - el frontend no envia `idCliente` ni `idSede` como fuente de autorizacion.
 - no existe un endpoint final generico para que el navegador marque un Pago como `APROBADO`.
 - `validar-transicion` continua temporalmente como endpoint tecnico hasta FASE 7.6G.
-- Mercado Pago permanece pendiente para FASE 11.
-# 7. Pagos externos - planeado
+- Mercado Pago fue implementado y cerrado en FASE 11.
+# 7. Pagos externos - Mercado Pago
 
-Cuando se integre Mercado Pago:
+Reglas implementadas en Fase 11:
 
-- El backend no confiara solamente en la respuesta del navegador.
-- Los webhooks deberan validarse.
-- La firma del proveedor debera comprobarse cuando corresponda.
-- Las operaciones deberan ser idempotentes.
-- Un mismo evento no podra procesarse dos veces.
-- El identificador externo del proveedor debera permitir detectar duplicados.
+- proveedor integrado: Mercado Pago Checkout Pro + Orders API;
+- configuracion de desarrollo/test;
+- un checkout crea un Pago local `PENDIENTE`;
+- el metodo del checkout es controlado por backend: `MERCADO_PAGO`;
+- `Pago.referenciaExterna` almacena el Order id;
+- el browser no aprueba pagos;
+- el webhook debe superar validacion de firma;
+- los eventos son idempotentes;
+- eventos ya procesados se ignoran;
+- eventos fallidos antes de procesarse pueden reintentarse;
+- el estado externo se consulta desde la Order;
+- solamente las transiciones validas del dominio modifican el Pago;
+- `processed/accredited` puede llevar `PENDIENTE -> APROBADO`;
+- `failed` puede llevar `PENDIENTE -> RECHAZADO`;
+- `canceled` puede llevar `PENDIENTE -> CANCELADO`;
+- un reembolso confirmado puede llevar `APROBADO -> REEMBOLSADO`;
+- estados externos no finales no fuerzan cambio;
+- un estado externo incompatible se reporta como conflicto durante reconciliacion;
+- reembolso total requiere Pago `APROBADO`;
+- reembolso total solamente puede ser solicitado por ADMINISTRADOR;
+- reembolso parcial queda fuera de Fase 11;
+- reconciliacion manual individual y lote maximo de 100;
+- no existe reconciliacion programada en Fase 11;
+- provider deshabilitado por defecto;
+- `live_mode=true` se ignora en este entorno de desarrollo.
+
+Documento detallado:
+
+`docs/MERCADO_PAGO.md`
 
 # 8. Acceso por sede
 

@@ -309,14 +309,37 @@ Limites deliberados de FASE 10:
 Commit y push no se ejecutan automaticamente.
 # FASE 11 - Mercado Pago
 
-Estado: PENDIENTE.
+Estado: COMPLETADA.
 
-- creacion de pago.
-- webhook.
-- validacion de firma.
-- idempotencia.
-- reembolsos.
-- reconciliacion.
+Avance:
+
+- 11.0.1 - Auditoria y diseno exacto: COMPLETADA.
+- 11.0.2 - Configuracion TEST + provider Orders API: COMPLETADA.
+- 11.0.3 - CLIENTE iniciar pago + Checkout Pro Orders API: COMPLETADA.
+- 11.0.4 - Webhook endpoint: COMPLETADA.
+- 11.0.5 - Validacion HMAC-SHA256 de webhook: COMPLETADA.
+- 11.0.6 - Idempotencia + eventos persistentes de proveedor: COMPLETADA.
+- 11.0.7 - Sincronizacion de estado desde Order: COMPLETADA.
+- 11.0.8 - Reembolso total: COMPLETADA.
+- 11.0.9 - Reconciliacion manual individual y por lote: COMPLETADA.
+- 11.0.10 - MVC Cliente + BackOffice: COMPLETADA.
+- 11.0.11 - Smoke + security hardening: COMPLETADA.
+- 11.0.12 - Documentacion + cierre formal: COMPLETADA.
+
+Alcance deliberado:
+
+- Checkout Pro + Orders API.
+- credenciales TEST solamente.
+- provider deshabilitado por defecto.
+- sin cargos reales durante validacion.
+- reembolso total solamente.
+- sin produccion.
+- sin reembolso parcial.
+- sin reconciliacion programada.
+
+Documento canonico:
+
+`docs/MERCADO_PAGO.md`
 
 # FASE 12 - IA avanzada
 

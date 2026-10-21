@@ -95,7 +95,7 @@ Pago previamente aprobado cuyo importe fue devuelto total o parcialmente según 
 Aclara:
 
 - Pago.estadoPago almacena el estado actual del pago.
-- no implementar todavía Mercado Pago;
+- Mercado Pago implementado en FASE 11 mediante Orders API;
 - no crear enum;
 - no crear tabla catálogo.
 

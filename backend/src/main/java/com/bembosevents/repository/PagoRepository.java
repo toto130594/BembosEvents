@@ -23,4 +23,6 @@ public interface PagoRepository extends JpaRepository<Pago, Integer> {
     Optional<Pago> findByIdPagoAndReserva_Sede_IdSede(
             Integer idPago,
             Integer idSede);
+    java.util.Optional<Pago> findByReferenciaExterna(
+            String referenciaExterna);
 }
