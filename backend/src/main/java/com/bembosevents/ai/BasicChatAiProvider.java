@@ -43,8 +43,9 @@ public class BasicChatAiProvider
                 || mensaje.contains("qué puedes hacer")) {
 
             return "Puedo orientarte sobre Bembos Events y mantener la conversacion. "
-                    + "Las consultas de disponibilidad, recomendaciones y reservas "
-                    + "se incorporaran en etapas posteriores.";
+                    + "El flujo conversacional puede consultar disponibilidad, recomendar "
+                    + "opciones, preparar un borrador de reserva y consultar informacion "
+                    + "verificada cuando el orquestador detecta esos pedidos.";
         }
 
         return "Gracias por tu mensaje. Puedo ayudarte con informacion general "

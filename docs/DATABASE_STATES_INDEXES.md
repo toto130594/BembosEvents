@@ -378,3 +378,27 @@ codigoReserva
 idSalon + fechaEvento
 idReserva + fechaCambio
 estadoPago
+
+<!-- PHASE12_AI_DATABASE_STATE_START -->
+## FASE 12 - estados y acceso IA
+
+`BorradorReservaConversacional`:
+
+```text
+ABIERTO -> CONFIRMADO
+```
+
+No existe transicion a CONFIRMADO si la creacion final de Reserva falla.
+
+`AiAnalyticsEvent` es append-only desde el flujo conversacional y se consume en modo read-only por el dashboard.
+
+Indices/consultas deben favorecer:
+
+- ventana temporal;
+- sede;
+- intent;
+- tool;
+- execution route.
+
+Detalle: `docs/AI_ADVANCED.md`.
+<!-- PHASE12_AI_DATABASE_STATE_END -->

@@ -93,6 +93,7 @@ public class ChatClienteController {
         MensajeChatResponse ia =
                 chatAiService
                         .responder(
+                                authentication.getName(),
                                 idConversacion,
                                 request.contenido())
                         .orElse(null);

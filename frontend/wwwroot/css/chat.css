@@ -375,3 +375,137 @@
         grid-template-columns: 1fr;
     }
 }
+/* FASE 12.0.10 - Conversational AI UX */
+.chat-ai-guide {
+    max-width: 980px;
+    margin: 0 auto 1rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(22, 0, 216, 0.12);
+    border-radius: 20px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(22, 0, 216, 0.06),
+            rgba(255, 240, 173, 0.42));
+}
+
+.chat-ai-guide__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.chat-ai-guide__heading h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.chat-ai-badge {
+    flex: 0 0 auto;
+    padding: 0.42rem 0.68rem;
+    border-radius: 999px;
+    background: #1600d8;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.chat-ai-guide__intro {
+    margin: 0.85rem 0 1rem;
+    color: #57556a;
+    line-height: 1.55;
+}
+
+.chat-ai-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.chat-suggestion {
+    border: 1px solid rgba(22, 0, 216, 0.18);
+    border-radius: 999px;
+    padding: 0.62rem 0.85rem;
+    background: #ffffff;
+    color: #251c72;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.chat-suggestion:hover,
+.chat-suggestion:focus-visible {
+    border-color: #1600d8;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(22, 0, 216, 0.08);
+}
+
+.chat-ai-formats {
+    margin-top: 1rem;
+    border-top: 1px solid rgba(22, 0, 216, 0.1);
+    padding-top: 0.85rem;
+}
+
+.chat-ai-formats summary {
+    cursor: pointer;
+    color: #1600d8;
+    font-weight: 800;
+}
+
+.chat-ai-formats__body {
+    margin-top: 0.75rem;
+    color: #555465;
+}
+
+.chat-ai-formats__body p {
+    margin: 0.65rem 0;
+}
+
+.chat-ai-formats code {
+    display: inline-block;
+    margin-top: 0.25rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+    background: rgba(22, 0, 216, 0.06);
+    color: #2a2177;
+    white-space: normal;
+}
+
+.chat-composer-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: #686776;
+    font-size: 0.78rem;
+}
+
+.chat-confirmation-notice {
+    padding: 0.8rem 0.9rem;
+    border-radius: 12px;
+    background: #fff4d4;
+    color: #6a4b00;
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
+.chat-confirmation-notice[hidden] {
+    display: none;
+}
+
+.chat-primary-button[disabled] {
+    cursor: wait;
+    opacity: 0.68;
+}
+
+@media (max-width: 720px) {
+    .chat-ai-guide__heading,
+    .chat-composer-meta {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .chat-ai-badge {
+        width: fit-content;
+    }
+}

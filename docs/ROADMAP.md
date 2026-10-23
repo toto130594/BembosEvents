@@ -343,14 +343,41 @@ Documento canonico:
 
 # FASE 12 - IA avanzada
 
-Estado: PENDIENTE.
+Estado: COMPLETADA.
 
-- disponibilidad conversacional.
-- recomendacion de paquetes.
-- borradores de reservas.
-- RAG.
-- analitica.
-- dashboard inteligente.
+Avance:
+
+- 12.0.1 - Audit + freeze: COMPLETADA.
+- 12.0.2 - Typed tools + availability: COMPLETADA.
+- 12.0.3 - Recommendation engine: COMPLETADA.
+- 12.0.4 - Server-side conversational drafts: COMPLETADA.
+- 12.0.5 - RAG knowledge + attribution: COMPLETADA.
+- 12.0.6 - Orchestration + safe tool execution: COMPLETADA.
+- 12.0.7 - Analytics event: COMPLETADA.
+- 12.0.8 - Intelligent BackOffice dashboard: COMPLETADA.
+- 12.0.9 - Prompt-injection + rate/cost/security hardening: COMPLETADA.
+- 12.0.10 - MVC conversational UX integration: COMPLETADA.
+- 12.0.11 - E2E + failure modes: COMPLETADA.
+- 12.0.12 - Documentation + formal close: COMPLETADA.
+
+Capacidades cerradas:
+
+- disponibilidad conversacional;
+- recomendaciones deterministicas;
+- borradores server-side;
+- confirmacion explicita con revalidacion del dominio;
+- RAG publico con source attribution;
+- orquestacion con typed tool allowlist;
+- analitica sin contenido sensible;
+- dashboard BackOffice read-only;
+- prompt-injection hardening;
+- rate limit y provider budget;
+- MVC conversacional seguro;
+- E2E de failure modes.
+
+Documento canonico:
+
+`docs/AI_ADVANCED.md`
 
 # Regla del roadmap
 

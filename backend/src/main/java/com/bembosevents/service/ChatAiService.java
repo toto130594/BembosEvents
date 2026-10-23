@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface ChatAiService {
 
     Optional<MensajeChatResponse> responder(
+            String correoCliente,
             Integer idConversacion,
-            String mensajeCliente
-    );
+            String mensajeCliente);
 }

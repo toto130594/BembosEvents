@@ -753,3 +753,48 @@ Siguiente fase del roadmap:
 
 FASE 12 - IA avanzada.
 <!-- PHASE11_MERCADOPAGO_CHANGELOG_END -->
+
+<!-- PHASE12_ADVANCED_AI_CHANGELOG_START -->
+## 2026-10-22 - Cierre FASE 12 IA avanzada
+
+FASE 12 - IA avanzada: COMPLETADA.
+
+Incluye:
+
+- typed tool layer;
+- disponibilidad conversacional;
+- recommendation engine;
+- server-side reservation drafts;
+- RAG con source attribution;
+- safe orchestration;
+- AI analytics;
+- intelligent BackOffice dashboard;
+- prompt-injection hardening;
+- turn rate limit;
+- provider invocation budget;
+- MVC conversational UX;
+- E2E + failure modes.
+
+Validaciones de cierre:
+
+- backend validator: OK;
+- frontend Release build: OK;
+- backend runtime: OK;
+- frontend runtime: OK;
+- anonymous chat: bloqueado;
+- RAG `kb://`: validado;
+- recommendation: validada;
+- availability: validada;
+- partial draft: validado;
+- ambiguous confirmation creates Reserva: NO;
+- prompt injection creates Reserva: NO;
+- message > 2000: bloqueado;
+- unknown/non-owned conversation: bloqueada;
+- E2E real Reservations created: 0;
+- payment operations during E2E: 0;
+- commit/push de cierre: pendiente de autorizacion explicita.
+
+Documento canonico:
+
+`docs/AI_ADVANCED.md`.
+<!-- PHASE12_ADVANCED_AI_CHANGELOG_END -->

@@ -1018,3 +1018,44 @@ POST /api/backoffice/pagos/mercado-pago/reconciliar
 
 Detalle: `docs/MERCADO_PAGO.md`.
 <!-- PHASE11_MERCADOPAGO_END -->
+
+<!-- PHASE12_ADVANCED_AI_API_START -->
+# IA avanzada - FASE 12
+
+La IA avanzada reutiliza el endpoint CLIENTE existente:
+
+```http
+POST /api/chat/conversaciones/{idConversacion}/mensajes
+```
+
+Respuesta de creacion del turno:
+
+```text
+HTTP 201 Created
+```
+
+El response contiene el mensaje CLIENTE y, cuando corresponde, la respuesta IA.
+
+Dashboard BackOffice:
+
+```http
+GET /api/backoffice/ai/dashboard
+```
+
+Parametros:
+
+- `desde`;
+- `hasta`;
+- `idSede` opcional para ADMINISTRADOR.
+
+Roles:
+
+- ADMINISTRADOR;
+- ENCARGADO_LOCAL.
+
+Ventana maxima: 31 dias.
+
+No se agregan endpoints publicos para ejecutar tools directamente.
+
+Detalle: `docs/AI_ADVANCED.md`.
+<!-- PHASE12_ADVANCED_AI_API_END -->

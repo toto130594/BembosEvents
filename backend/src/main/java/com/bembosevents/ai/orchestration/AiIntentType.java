@@ -1,0 +1,10 @@
+package com.bembosevents.ai.orchestration;
+
+public enum AiIntentType {
+    CONSULTAR_DISPONIBILIDAD,
+    RECOMENDAR_CATALOGO,
+    ACTUALIZAR_BORRADOR_RESERVA,
+    CONFIRMAR_BORRADOR_RESERVA,
+    CONSULTAR_CONOCIMIENTO,
+    CHAT_GENERAL
+}

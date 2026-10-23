@@ -6,6 +6,19 @@
     var stateClass =
         Model.Conversacion.Estado.ToLowerInvariant()
             .Replace("_", "-");
+
+    var isBot =
+        Model.Conversacion.Estado == "BOT";
+
+    var maxMessageLength =
+        isBot
+            ? 2000
+            : 4000;
+
+    var messagePlaceholder =
+        isBot
+            ? "Pregunta por disponibilidad, recomendaciones o tu reserva..."
+            : "Escribe aqui...";
 }
 
 <link rel="stylesheet"
@@ -52,6 +65,92 @@
             <div class="chat-alert chat-alert--success">@success</div>
         }
 
+        @if (isBot)
+        {
+            <section class="chat-ai-guide"
+                     data-chat-ai-guide>
+                <div class="chat-ai-guide__heading">
+                    <div>
+                        <span class="chat-kicker">
+                            Asistente inteligente
+                        </span>
+
+                        <h2>
+                            Puedo ayudarte dentro del flujo seguro de Bembos Events
+                        </h2>
+                    </div>
+
+                    <span class="chat-ai-badge">
+                        IA + reglas del backend
+                    </span>
+                </div>
+
+                <p class="chat-ai-guide__intro">
+                    Puedes consultar informacion, pedir recomendaciones,
+                    revisar disponibilidad y preparar una reserva.
+                    Los precios, disponibilidad y la creacion final
+                    siempre los valida Spring Boot.
+                </p>
+
+                <div class="chat-ai-suggestions"
+                     aria-label="Sugerencias de mensajes">
+                    <button type="button"
+                            class="chat-suggestion"
+                            data-chat-suggestion="¿Cómo funciona una reserva?">
+                        Como funciona una reserva
+                    </button>
+
+                    <button type="button"
+                            class="chat-suggestion"
+                            data-chat-suggestion="Recomiéndame un paquete para 30 invitados">
+                        Recomendar paquete
+                    </button>
+
+                    <button type="button"
+                            class="chat-suggestion"
+                            data-chat-suggestion="¿Qué necesito para preparar una reserva?">
+                        Que necesito para reservar
+                    </button>
+                </div>
+
+                <details class="chat-ai-formats">
+                    <summary>
+                        Ver formatos para consultas avanzadas
+                    </summary>
+
+                    <div class="chat-ai-formats__body">
+                        <p>
+                            <strong>Disponibilidad:</strong>
+                            <code>
+                                Hay disponibilidad en salon 8 el 20/11/2026 de 16:00 a 18:00?
+                            </code>
+                        </p>
+
+                        <p>
+                            <strong>Preparar borrador:</strong>
+                            <code>
+                                Para mi reserva sede 3 salon 8, 25 invitados,
+                                20/11/2026 de 16:00 a 18:00, paquete 2
+                            </code>
+                        </p>
+
+                        <p>
+                            La confirmacion de una reserva real requiere
+                            una solicitud explicita y el backend vuelve
+                            a validar las reglas de negocio.
+                        </p>
+
+                        <p>
+                            Cuando una respuesta incluye
+                            <code>Fuentes: kb://...</code>,
+                            corresponde a informacion recuperada
+                            de la base publica de conocimiento.
+                        </p>
+                    </div>
+                </details>
+            </section>
+        }
+
         <section class="chat-thread"
                  data-chat-history-url="@Url.Action(
                     "HistoryJson",
@@ -92,7 +191,9 @@
             <form asp-action="SendMessage"
                   asp-route-idConversacion="@Model.Conversacion.IdConversacion"
                   method="post"
-                  class="chat-composer">
+                  class="chat-composer"
+                  data-chat-composer
+                  data-chat-ai-mode="@isBot.ToString().ToLowerInvariant()">
                 @Html.AntiForgeryToken()
 
                 <label for="contenido">
@@ -101,13 +202,40 @@
 
                 <textarea id="contenido"
                           name="contenido"
-                          maxlength="4000"
+                          maxlength="@maxMessageLength"
                           rows="3"
                           required
-                          placeholder="Escribe aqui..."></textarea>
+                          data-chat-input
+                          placeholder="@messagePlaceholder"></textarea>
+
+                <div class="chat-composer-meta">
+                    <span data-chat-character-count
+                          aria-live="polite">
+                        0 / @maxMessageLength
+                    </span>
+
+                    @if (isBot)
+                    {
+                        <span>
+                            Las operaciones reales siguen sujetas
+                            a validacion del backend.
+                        </span>
+                    }
+                </div>
+
+                @if (isBot)
+                {
+                    <div class="chat-confirmation-notice"
+                         data-chat-confirmation-notice
+                         hidden>
+                        Una confirmacion explicita puede crear una
+                        reserva real si el borrador cumple todas las reglas.
+                    </div>
+                }
 
                 <button type="submit"
-                        class="chat-primary-button">
+                        class="chat-primary-button"
+                        data-chat-submit>
                     Enviar
                 </button>
             </form>

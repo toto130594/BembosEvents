@@ -176,3 +176,163 @@
         refresh,
         3000);
 })();
+
+/* FASE 12.0.10 - Conversational AI UX */
+(() => {
+    const form =
+        document.querySelector(
+            "[data-chat-composer]");
+
+    const input =
+        document.querySelector(
+            "[data-chat-input]");
+
+    if (!form || !input) {
+        return;
+    }
+
+    const submit =
+        form.querySelector(
+            "[data-chat-submit]");
+
+    const counter =
+        form.querySelector(
+            "[data-chat-character-count]");
+
+    const confirmationNotice =
+        form.querySelector(
+            "[data-chat-confirmation-notice]");
+
+    const aiMode =
+        form.getAttribute(
+            "data-chat-ai-mode") === "true";
+
+    const normalize = value =>
+        String(value || "")
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                "")
+            .toLowerCase()
+            .trim();
+
+    const isExplicitConfirmation = value => {
+        if (!aiMode) {
+            return false;
+        }
+
+        const normalized =
+            normalize(value);
+
+        return (
+            normalized.includes(
+                "confirmar borrador") ||
+            normalized.includes(
+                "confirmo mi reserva") ||
+            normalized.includes(
+                "confirmar mi reserva") ||
+            normalized.includes(
+                "confirmar reserva ahora") ||
+            normalized.includes(
+                "crear reserva ahora")
+        );
+    };
+
+    const updateCounter = () => {
+        if (!counter) {
+            return;
+        }
+
+        const max =
+            Number.parseInt(
+                input.getAttribute(
+                    "maxlength") || "0",
+                10);
+
+        const current =
+            input.value.length;
+
+        counter.textContent =
+            max > 0
+                ? `${current} / ${max}`
+                : String(current);
+    };
+
+    const updateConfirmationNotice = () => {
+        if (!confirmationNotice) {
+            return;
+        }
+
+        confirmationNotice.hidden =
+            !isExplicitConfirmation(
+                input.value);
+    };
+
+    const updateUi = () => {
+        updateCounter();
+        updateConfirmationNotice();
+    };
+
+    for (
+        const button of
+        document.querySelectorAll(
+            "[data-chat-suggestion]")
+    ) {
+        button.addEventListener(
+            "click",
+            () => {
+                const suggestion =
+                    button.getAttribute(
+                        "data-chat-suggestion");
+
+                if (!suggestion) {
+                    return;
+                }
+
+                input.value =
+                    suggestion;
+
+                input.dispatchEvent(
+                    new Event(
+                        "input",
+                        {
+                            bubbles: true
+                        }));
+
+                input.focus();
+            });
+    }
+
+    input.addEventListener(
+        "input",
+        updateUi);
+
+    form.addEventListener(
+        "submit",
+        event => {
+            if (
+                isExplicitConfirmation(
+                    input.value)
+            ) {
+                const accepted =
+                    window.confirm(
+                        "Este mensaje solicita confirmar o crear una reserva real. "
+                        + "El backend volvera a validar disponibilidad, capacidad "
+                        + "y reglas de negocio. ¿Deseas enviarlo?");
+
+                if (!accepted) {
+                    event.preventDefault();
+                    input.focus();
+                    return;
+                }
+            }
+
+            if (submit) {
+                submit.disabled = true;
+                submit.textContent =
+                    "Enviando...";
+            }
+        });
+
+    updateUi();
+})();

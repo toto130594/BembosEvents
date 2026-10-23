@@ -618,3 +618,41 @@ Controles implementados:
 
 Notificaciones de FASE 10 son realtime dentro de BackOffice; no existe una bandeja persistente read/unread.
 <!-- PHASE10_SECURITY_FINAL_END -->
+
+<!-- PHASE12_ADVANCED_AI_SECURITY_START -->
+# IA avanzada - seguridad FASE 12
+
+La IA no posee privilegios especiales.
+
+Controles implementados:
+
+- `AiSecurityGuard` antes del intent interpreter;
+- max message length: 2000 por defecto;
+- turn rate limit: 20 / 60 s por cliente + conversacion;
+- provider budget: 30 / 3600 s;
+- claves de rate/cost en SHA-256;
+- bloqueo de prompt-injection de alta confianza;
+- bloqueo de disclosure de system/developer prompt;
+- bloqueo de solicitudes shell/SQL/filesystem;
+- bloqueo de arbitrary-tool bypass.
+
+La IA nunca puede:
+
+- acceder directamente a SQL Server;
+- saltarse Spring Security;
+- saltarse ownership CLIENTE;
+- saltarse `SedeAccessService`;
+- inventar disponibilidad autoritativa;
+- crear una Reserva sin revalidacion deterministica;
+- aprobar, reembolsar o reconciliar Pagos;
+- obtener secrets de Mercado Pago;
+- ejecutar tool names arbitrarios.
+
+El browser nunca recibe backend JWT ni refresh token.
+
+Limitacion conocida:
+
+los rate/cost counters son in-memory y no distribuidos.
+
+Detalle: `docs/AI_ADVANCED.md`.
+<!-- PHASE12_ADVANCED_AI_SECURITY_END -->

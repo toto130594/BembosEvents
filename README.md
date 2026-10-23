@@ -282,3 +282,26 @@ El browser no recibe JWT ni refresh token backend y no conecta directamente al W
 
 Siguiente fase planificada: FASE 11 - Mercado Pago.
 <!-- PHASE10_README_FINAL_END -->
+
+<!-- PHASE12_ADVANCED_AI_START -->
+## FASE 12 - IA avanzada
+
+Estado: **COMPLETADA**.
+
+Incluye:
+
+- typed AI tools;
+- disponibilidad conversacional;
+- recomendaciones deterministicas;
+- borrador de reserva server-side;
+- confirmacion explicita con revalidacion;
+- RAG publico con `kb://` attribution;
+- analitica IA;
+- dashboard BackOffice;
+- prompt-injection hardening;
+- rate/cost controls;
+- MVC conversational UX;
+- E2E + failure modes.
+
+Documento canonico: `docs/AI_ADVANCED.md`.
+<!-- PHASE12_ADVANCED_AI_END -->

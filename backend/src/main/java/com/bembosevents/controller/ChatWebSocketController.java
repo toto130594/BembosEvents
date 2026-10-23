@@ -71,6 +71,7 @@ public class ChatWebSocketController {
 
         chatAiService
                 .responder(
+                        authentication.getName(),
                         idConversacion,
                         request.contenido())
                 .ifPresent(mensajeIa ->

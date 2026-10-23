@@ -39,22 +39,18 @@ class ChatWebSocketControllerTest {
     private SimpMessagingTemplate messagingTemplate;
 
     @Test
-    void mensajeClienteYRespuestaIaSePublicanAlTopic() {
-
+    void mensajeClienteYRespuestaIaSePublicanAlTopicConIdentidad() {
         UsernamePasswordAuthenticationToken authentication =
                 UsernamePasswordAuthenticationToken.authenticated(
                         "cliente@test.com",
                         null,
                         List.of(
                                 new SimpleGrantedAuthority(
-                                        "ROLE_CLIENTE")
-                        )
-                );
+                                        "ROLE_CLIENTE")));
 
         EnviarMensajeChatRequest request =
                 new EnviarMensajeChatRequest(
-                        "Hola Bembos"
-                );
+                        "Hola Bembos");
 
         MensajeChatResponse cliente =
                 new MensajeChatResponse(
@@ -67,8 +63,7 @@ class ChatWebSocketControllerTest {
                                 10,
                                 21,
                                 12,
-                                0)
-                );
+                                0));
 
         MensajeChatResponse ia =
                 new MensajeChatResponse(
@@ -82,61 +77,60 @@ class ChatWebSocketControllerTest {
                                 21,
                                 12,
                                 0,
-                                1)
-                );
+                                1));
 
-        when(
-                chatClienteService.enviarMensaje(
-                        "cliente@test.com",
-                        12,
-                        request)
-        ).thenReturn(cliente);
+        when(chatClienteService.enviarMensaje(
+                "cliente@test.com",
+                12,
+                request))
+                .thenReturn(
+                        cliente);
 
-        when(
-                chatAiService.responder(
-                        12,
-                        "Hola Bembos")
-        ).thenReturn(
-                Optional.of(ia));
+        when(chatAiService.responder(
+                "cliente@test.com",
+                12,
+                "Hola Bembos"))
+                .thenReturn(
+                        Optional.of(
+                                ia));
 
         ChatWebSocketController controller =
                 new ChatWebSocketController(
                         chatClienteService,
                         chatAiService,
                         authorizationService,
-                        messagingTemplate
-                );
+                        messagingTemplate);
 
         controller.enviarMensaje(
                 authentication,
                 12,
-                request
-        );
+                request);
 
-        verify(
-                authorizationService
-        ).validarEnvioCliente(
-                authentication,
-                12);
+        verify(authorizationService)
+                .validarEnvioCliente(
+                        authentication,
+                        12);
 
-        verify(
-                messagingTemplate
-        ).convertAndSend(
-                eq("/topic/chat/conversaciones/12"),
-                eq((Object)
-                        ChatRealtimeEvent.mensaje(
-                                12,
-                                cliente))
-        );
+        verify(chatAiService)
+                .responder(
+                        "cliente@test.com",
+                        12,
+                        "Hola Bembos");
 
-        verify(
-                messagingTemplate
-        ).convertAndSend(
-                eq("/topic/chat/conversaciones/12"),
-                eq((Object)
-                        ChatRealtimeEvent.mensaje(
-                                12,
-                                ia))
-        );
+        verify(messagingTemplate)
+                .convertAndSend(
+                        eq("/topic/chat/conversaciones/12"),
+                        eq((Object)
+                                ChatRealtimeEvent.mensaje(
+                                        12,
+                                        cliente)));
+
+        verify(messagingTemplate)
+                .convertAndSend(
+                        eq("/topic/chat/conversaciones/12"),
+                        eq((Object)
+                                ChatRealtimeEvent.mensaje(
+                                        12,
+                                        ia)));
     }
 }

@@ -475,3 +475,41 @@ El browser MVC no consume directamente el WebSocket de Spring Boot porque el JWT
 
 El backend WebSocket queda preparado y protegido para integraciones server-mediated futuras sin debilitar el limite de seguridad de FASE 9.
 <!-- PHASE10_ARCHITECTURE_FINAL_END -->
+
+<!-- PHASE12_ADVANCED_AI_ARCH_START -->
+# FASE 12 - Arquitectura IA avanzada
+
+```text
+MVC
+ |
+ v
+Spring Chat API
+ |
+ +--> AiSecurityGuard
+ |
+ +--> AiIntentInterpreter
+ |
+ +--> AiConversationOrchestrator
+        |
+        +--> AiToolExecutor -> AiToolRegistry -> deterministic domain services
+        |
+        +--> ChatAiProvider -> CHAT_GENERAL only
+```
+
+Invariantes:
+
+- Spring Security sigue siendo la autoridad de autenticacion/autorizacion;
+- `SedeAccessService` sigue siendo autoridad de alcance BackOffice;
+- `ReservaClienteService` sigue siendo autoridad para crear Reserva;
+- tools no ejecutan SQL/JDBC directo;
+- RAG es read-only;
+- provider no posee tool authority;
+- browser no posee backend JWT.
+
+Persistencia agregada:
+
+- V13: borrador conversacional;
+- V14: `AiAnalyticsEvent`.
+
+Detalle: `docs/AI_ADVANCED.md`.
+<!-- PHASE12_ADVANCED_AI_ARCH_END -->

@@ -263,3 +263,63 @@ Decision:
 - actualizar localmente a REEMBOLSADO solamente luego de confirmacion externa;
 - postergar reembolsos parciales hasta que el dominio modele importes parciales.
 <!-- PHASE11_MERCADOPAGO_DECISIONS_END -->
+
+<!-- PHASE12_ADVANCED_AI_DECISIONS_START -->
+## ADR-023 - Orquestacion deterministica con typed tools
+
+Decision:
+
+- usar `AiIntentInterpreter` deterministico;
+- ejecutar solo tools registrados en `AiToolRegistry`;
+- validar input/output types en runtime;
+- no requerir native function calling;
+- no aceptar nombres de tools provenientes del modelo.
+
+## ADR-024 - Borrador conversacional server-side
+
+Decision:
+
+- persistir un borrador por Conversacion;
+- no crear Reserva durante captura incremental;
+- confirmar solamente con frase explicita;
+- delegar creacion final a `ReservaClienteService`.
+
+## ADR-025 - RAG provider-agnostic
+
+Decision:
+
+- usar `KnowledgeRetriever`;
+- corpus publico allowlisted;
+- recuperacion lexica deterministica inicial;
+- source URI `kb://`;
+- no vector DB obligatorio en FASE 12.
+
+## ADR-026 - Analitica sin contenido sensible
+
+Decision:
+
+- persistir metadata operacional;
+- no persistir prompts/respuestas/email/payloads RAG;
+- usar transaccion independiente;
+- no romper chat si analytics falla.
+
+## ADR-027 - Seguridad y control de costo IA
+
+Decision:
+
+- security guard antes del intent interpreter;
+- rate limit por sujeto hasheado;
+- provider budget separado;
+- costo controlado por cantidad de invocaciones;
+- no afirmar token usage cuando provider no lo reporta.
+
+## ADR-028 - MVC como frontera del browser
+
+Decision:
+
+- reutilizar MVC existente;
+- mantener JWT/refresh token server-side;
+- no conectar browser directo al backend WebSocket;
+- sugerencias de UX no ejecutan acciones automaticamente;
+- Spring Boot conserva autoridad final.
+<!-- PHASE12_ADVANCED_AI_DECISIONS_END -->

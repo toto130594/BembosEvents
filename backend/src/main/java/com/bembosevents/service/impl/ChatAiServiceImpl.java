@@ -1,16 +1,17 @@
 package com.bembosevents.service.impl;
 
-import com.bembosevents.ai.ChatAiProvider;
-import com.bembosevents.ai.ChatAiRequest;
+import com.bembosevents.ai.orchestration.AiConversationOrchestrator;
+import com.bembosevents.ai.orchestration.AiConversationRequest;
+import com.bembosevents.dto.chat.ConversacionDetalleResponse;
 import com.bembosevents.dto.chat.MensajeChatResponse;
 import com.bembosevents.entity.Conversacion;
-import com.bembosevents.entity.EstadoConversacion;
 import com.bembosevents.entity.MensajeChat;
 import com.bembosevents.entity.TipoEmisorMensaje;
 import com.bembosevents.exception.RecursoNoEncontradoException;
 import com.bembosevents.repository.ConversacionRepository;
 import com.bembosevents.repository.MensajeChatRepository;
 import com.bembosevents.service.ChatAiService;
+import com.bembosevents.service.ChatClienteService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,24 +25,41 @@ public class ChatAiServiceImpl
 
     private static final int MAX_CONTENT_LENGTH = 4000;
 
-    private final ChatAiProvider chatAiProvider;
+    private final AiConversationOrchestrator orchestrator;
+    private final ChatClienteService chatClienteService;
     private final ConversacionRepository conversacionRepository;
     private final MensajeChatRepository mensajeChatRepository;
 
     public ChatAiServiceImpl(
-            ChatAiProvider chatAiProvider,
+            AiConversationOrchestrator orchestrator,
+            ChatClienteService chatClienteService,
             ConversacionRepository conversacionRepository,
             MensajeChatRepository mensajeChatRepository) {
 
-        this.chatAiProvider = chatAiProvider;
-        this.conversacionRepository = conversacionRepository;
-        this.mensajeChatRepository = mensajeChatRepository;
+        this.orchestrator =
+                orchestrator;
+
+        this.chatClienteService =
+                chatClienteService;
+
+        this.conversacionRepository =
+                conversacionRepository;
+
+        this.mensajeChatRepository =
+                mensajeChatRepository;
     }
 
     @Override
     public Optional<MensajeChatResponse> responder(
+            String correoCliente,
             Integer idConversacion,
             String mensajeCliente) {
+
+        if (correoCliente == null
+                || correoCliente.isBlank()) {
+            throw new IllegalArgumentException(
+                    "El correo del cliente es obligatorio");
+        }
 
         if (idConversacion == null) {
             throw new IllegalArgumentException(
@@ -50,43 +68,45 @@ public class ChatAiServiceImpl
 
         if (mensajeCliente == null
                 || mensajeCliente.isBlank()) {
-
             throw new IllegalArgumentException(
                     "El mensaje del cliente es obligatorio");
         }
 
-        Conversacion conversacion =
-                conversacionRepository
-                        .findById(idConversacion)
-                        .orElseThrow(() ->
-                                new RecursoNoEncontradoException(
-                                        "Conversacion no encontrada"));
+        ConversacionDetalleResponse detalle =
+                chatClienteService.obtenerPropia(
+                        correoCliente,
+                        idConversacion);
 
-        if (conversacion.getEstado()
-                != EstadoConversacion.BOT) {
+        if (!"BOT".equals(
+                detalle.estado())) {
 
             return Optional.empty();
         }
 
+        Conversacion conversacion =
+                conversacionRepository
+                        .findById(
+                                idConversacion)
+                        .orElseThrow(() ->
+                                new RecursoNoEncontradoException(
+                                        "Conversacion no encontrada"));
+
         String respuesta =
-                chatAiProvider.responder(
-                        new ChatAiRequest(
-                                conversacion.getIdConversacion(),
-                                conversacion.getSede() == null
-                                        ? null
-                                        : conversacion.getSede().getIdSede(),
-                                mensajeCliente.strip()
-                        )
-                );
+                orchestrator.responder(
+                        new AiConversationRequest(
+                                correoCliente,
+                                idConversacion,
+                                detalle.idSede(),
+                                mensajeCliente));
 
         if (respuesta == null
                 || respuesta.isBlank()) {
-
             throw new IllegalStateException(
-                    "El proveedor IA devolvio una respuesta vacia");
+                    "El orquestador IA devolvio una respuesta vacia");
         }
 
-        respuesta = respuesta.strip();
+        respuesta =
+                respuesta.strip();
 
         if (respuesta.length()
                 > MAX_CONTENT_LENGTH) {
@@ -103,12 +123,20 @@ public class ChatAiServiceImpl
         MensajeChat mensaje =
                 new MensajeChat();
 
-        mensaje.setConversacion(conversacion);
+        mensaje.setConversacion(
+                conversacion);
+
         mensaje.setTipoEmisor(
                 TipoEmisorMensaje.IA);
-        mensaje.setUsuarioEmisor(null);
-        mensaje.setContenido(respuesta);
-        mensaje.setFechaEnvio(ahora);
+
+        mensaje.setUsuarioEmisor(
+                null);
+
+        mensaje.setContenido(
+                respuesta);
+
+        mensaje.setFechaEnvio(
+                ahora);
 
         mensaje =
                 mensajeChatRepository.save(
@@ -121,7 +149,8 @@ public class ChatAiServiceImpl
                 conversacion);
 
         return Optional.of(
-                mapMensaje(mensaje));
+                mapMensaje(
+                        mensaje));
     }
 
     private MensajeChatResponse mapMensaje(
@@ -132,7 +161,6 @@ public class ChatAiServiceImpl
                 mensaje.getTipoEmisor().name(),
                 null,
                 mensaje.getContenido(),
-                mensaje.getFechaEnvio()
-        );
+                mensaje.getFechaEnvio());
     }
 }

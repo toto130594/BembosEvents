@@ -414,3 +414,43 @@ No se persisten:
 - Webhook Secret;
 - firma `x-signature`.
 <!-- PHASE11_PROVIDER_EVENTS_END -->
+
+<!-- PHASE12_AI_DATABASE_START -->
+## FASE 12 - persistencia IA
+
+### V13 - borrador conversacional
+
+Entidades:
+
+- `BorradorReservaConversacional`;
+- `BorradorReservaServicio`.
+
+Reglas:
+
+- un borrador por Conversacion;
+- ownership por CLIENTE + Conversacion;
+- estado ABIERTO hasta confirmacion exitosa;
+- servicios pertenecen al borrador;
+- borrar/reemplazar servicios es operacion deterministica.
+
+### V14 - analitica IA
+
+Entidad:
+
+- `AiAnalyticsEvent`.
+
+Persistir metadata operacional solamente:
+
+- conversacion;
+- sede;
+- intent;
+- tool;
+- execution route;
+- success/error;
+- duration;
+- error type.
+
+No persistir prompt, respuesta, email, secretos o token usage.
+
+Detalle: `docs/AI_ADVANCED.md`.
+<!-- PHASE12_AI_DATABASE_END -->

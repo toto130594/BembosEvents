@@ -352,3 +352,22 @@ Ejemplos:
 La fuente definitiva de verdad para las reglas de negocio es el backend.
 
 Ni frontend, Postman, IA ni una integracion externa pueden saltarse las validaciones de Services.
+
+<!-- PHASE12_ADVANCED_AI_BUSINESS_START -->
+# IA avanzada - reglas de negocio
+
+1. La IA no reemplaza reglas de dominio.
+2. Disponibilidad siempre se consulta mediante `DisponibilidadSalonService`.
+3. Recomendaciones son referenciales, no cotizaciones finales.
+4. Un borrador conversacional no es una Reserva.
+5. La confirmacion debe ser explicita.
+6. La confirmacion final delega en `ReservaClienteService`.
+7. Una falla de revalidacion deja el borrador abierto.
+8. La IA no puede aprobar Pagos.
+9. RAG solo aporta contexto publico read-only.
+10. Los resultados de tools de negocio se renderizan deterministicamente.
+11. `CHAT_GENERAL` es la unica ruta al provider.
+12. Los insights BackOffice se calculan desde metricas; no son texto inventado por un LLM.
+
+Detalle: `docs/AI_ADVANCED.md`.
+<!-- PHASE12_ADVANCED_AI_BUSINESS_END -->

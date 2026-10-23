@@ -841,3 +841,24 @@ Un endpoint no esta terminado hasta comprobar:
 
 El contrato WebSocket/STOMP se documenta en AI_CHAT.md y API.md.
 <!-- PHASE10_REST_CONTRACT_FINAL_END -->
+
+<!-- PHASE12_ADVANCED_AI_REST_START -->
+# IA avanzada - contrato REST FASE 12
+
+| Metodo | Endpoint | Rol | Estado |
+|---|---|---|---|
+| POST | `/api/chat/conversaciones/{idConversacion}/mensajes` | CLIENTE | IMPLEMENTADO / HTTP 201 |
+| GET | `/api/backoffice/ai/dashboard` | ADMINISTRADOR / ENCARGADO_LOCAL | IMPLEMENTADO |
+
+Reglas:
+
+- el chat valida ownership de Conversacion;
+- tools se ejecutan solo desde allowlist interna;
+- dashboard es read-only;
+- ENCARGADO_LOCAL queda limitado a su sede;
+- ADMINISTRADOR puede consultar global o filtrar sede;
+- no existe REST publico para invocar un tool por nombre;
+- no existe REST que otorgue autoridad financiera a la IA.
+
+Detalle: `docs/AI_ADVANCED.md`.
+<!-- PHASE12_ADVANCED_AI_REST_END -->

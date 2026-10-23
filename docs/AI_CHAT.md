@@ -335,3 +335,37 @@ app.chat.ai.temperature=${AI_CHAT_TEMPERATURE:0.2}
 - No se implemento bandeja persistente de notificaciones leido/no-leido.
 - Disponibilidad conversacional, recomendaciones, borradores de reserva, RAG, analitica y dashboard inteligente permanecen en FASE 12.
 <!-- PHASE10_AI_CHAT_FINAL_END -->
+
+<!-- PHASE12_AI_CHAT_START -->
+# FASE 12 - IA avanzada sobre Chat
+
+El chat de FASE 10 se conserva como canal y persistencia.
+
+FASE 12 agrega:
+
+- `AiConversationOrchestrator`;
+- `AiIntentInterpreter`;
+- `AiToolExecutor`;
+- `AiToolRegistry`;
+- availability;
+- recommendation;
+- conversational draft;
+- RAG;
+- analytics;
+- security guard.
+
+Regla:
+
+```text
+business tool result -> deterministic renderer
+general chat -> ChatAiProvider
+```
+
+El provider no selecciona tools.
+
+El envio REST de mensaje responde `201 Created`.
+
+La pantalla MVC conserva same-origin polling y no expone JWT/refresh token.
+
+Detalle completo: `docs/AI_ADVANCED.md`.
+<!-- PHASE12_AI_CHAT_END -->

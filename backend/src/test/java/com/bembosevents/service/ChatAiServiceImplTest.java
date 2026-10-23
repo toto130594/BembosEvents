@@ -1,18 +1,20 @@
 package com.bembosevents.service;
 
-import com.bembosevents.ai.ChatAiProvider;
-import com.bembosevents.entity.Cliente;
+import com.bembosevents.ai.orchestration.AiConversationOrchestrator;
+import com.bembosevents.ai.orchestration.AiConversationRequest;
+import com.bembosevents.dto.chat.ConversacionDetalleResponse;
 import com.bembosevents.entity.Conversacion;
-import com.bembosevents.entity.EstadoConversacion;
 import com.bembosevents.entity.MensajeChat;
 import com.bembosevents.repository.ConversacionRepository;
 import com.bembosevents.repository.MensajeChatRepository;
 import com.bembosevents.service.impl.ChatAiServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +28,10 @@ import static org.mockito.Mockito.when;
 class ChatAiServiceImplTest {
 
     @Mock
-    private ChatAiProvider chatAiProvider;
+    private AiConversationOrchestrator orchestrator;
+
+    @Mock
+    private ChatClienteService chatClienteService;
 
     @Mock
     private ConversacionRepository conversacionRepository;
@@ -35,98 +40,142 @@ class ChatAiServiceImplTest {
     private MensajeChatRepository mensajeChatRepository;
 
     @Test
-    void botGeneraYPersisteRespuestaIa() {
-
-        Cliente cliente =
-                new Cliente();
-
-        cliente.setIdCliente(4);
+    void botOrquestaConIdentidadYPersisteRespuestaIa() {
+        when(chatClienteService.obtenerPropia(
+                "cliente@test.com",
+                15))
+                .thenReturn(
+                        detalle(
+                                15,
+                                4,
+                                3,
+                                "BOT"));
 
         Conversacion conversacion =
                 new Conversacion();
 
-        conversacion.setIdConversacion(15);
-        conversacion.setCliente(cliente);
-        conversacion.setEstado(
-                EstadoConversacion.BOT);
+        conversacion.setIdConversacion(
+                15);
 
-        when(
-                conversacionRepository.findById(15)
-        ).thenReturn(
-                Optional.of(conversacion));
+        when(conversacionRepository.findById(
+                15))
+                .thenReturn(
+                        Optional.of(
+                                conversacion));
 
-        when(
-                chatAiProvider.responder(any())
-        ).thenReturn(
-                "Respuesta basica IA");
+        when(orchestrator.responder(
+                any(AiConversationRequest.class)))
+                .thenReturn(
+                        "Respuesta orquestada");
 
-        when(
-                mensajeChatRepository.save(
-                        any(MensajeChat.class))
-        ).thenAnswer(invocation -> {
-            MensajeChat mensaje =
-                    invocation.getArgument(0);
+        when(mensajeChatRepository.save(
+                any(MensajeChat.class)))
+                .thenAnswer(invocation -> {
+                    MensajeChat message =
+                            invocation.getArgument(0);
 
-            mensaje.setIdMensajeChat(30);
+                    message.setIdMensajeChat(
+                            30);
 
-            return mensaje;
-        });
+                    return message;
+                });
 
         ChatAiServiceImpl service =
-                new ChatAiServiceImpl(
-                        chatAiProvider,
-                        conversacionRepository,
-                        mensajeChatRepository
-                );
+                service();
 
         var response =
                 service.responder(
+                        "cliente@test.com",
                         15,
                         "Hola");
 
-        assertTrue(response.isPresent());
+        assertTrue(
+                response.isPresent());
+
         assertEquals(
                 "IA",
-                response.orElseThrow().tipoEmisor()
-        );
+                response.orElseThrow()
+                        .tipoEmisor());
+
         assertEquals(
-                "Respuesta basica IA",
-                response.orElseThrow().contenido()
-        );
+                "Respuesta orquestada",
+                response.orElseThrow()
+                        .contenido());
+
+        ArgumentCaptor<AiConversationRequest> captor =
+                ArgumentCaptor.forClass(
+                        AiConversationRequest.class);
+
+        verify(orchestrator)
+                .responder(
+                        captor.capture());
+
+        assertEquals(
+                "cliente@test.com",
+                captor.getValue()
+                        .correoCliente());
+
+        assertEquals(
+                3,
+                captor.getValue()
+                        .idSede());
     }
 
     @Test
-    void conversacionFueraDeBotNoInvocaProvider() {
-
-        Conversacion conversacion =
-                new Conversacion();
-
-        conversacion.setIdConversacion(22);
-        conversacion.setEstado(
-                EstadoConversacion.EN_ATENCION);
-
-        when(
-                conversacionRepository.findById(22)
-        ).thenReturn(
-                Optional.of(conversacion));
+    void conversacionFueraDeBotNoInvocaOrquestador() {
+        when(chatClienteService.obtenerPropia(
+                "cliente@test.com",
+                22))
+                .thenReturn(
+                        detalle(
+                                22,
+                                4,
+                                3,
+                                "EN_ATENCION"));
 
         ChatAiServiceImpl service =
-                new ChatAiServiceImpl(
-                        chatAiProvider,
-                        conversacionRepository,
-                        mensajeChatRepository
-                );
+                service();
 
         var response =
                 service.responder(
+                        "cliente@test.com",
                         22,
                         "Hola");
 
-        assertTrue(response.isEmpty());
+        assertTrue(
+                response.isEmpty());
 
-        verify(
-                chatAiProvider,
-                never()
-        ).responder(any());
+        verify(orchestrator, never())
+                .responder(
+                        any());
+
+        verify(conversacionRepository, never())
+                .findById(
+                        any());
+    }
+
+    private ChatAiServiceImpl service() {
+        return new ChatAiServiceImpl(
+                orchestrator,
+                chatClienteService,
+                conversacionRepository,
+                mensajeChatRepository);
+    }
+
+    private ConversacionDetalleResponse detalle(
+            Integer idConversacion,
+            Integer idCliente,
+            Integer idSede,
+            String estado) {
+
+        return new ConversacionDetalleResponse(
+                idConversacion,
+                idCliente,
+                idSede,
+                estado,
+                null,
+                null,
+                null,
+                List.of());
     }
 }
