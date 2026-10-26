@@ -8,7 +8,7 @@ public sealed class ChatApiClient
     : IChatApiClient
 {
     private static readonly JsonSerializerOptions JsonOptions =
-        new()
+        new(JsonSerializerDefaults.Web)
         {
             PropertyNameCaseInsensitive = true
         };
