@@ -103,8 +103,7 @@ public class ReservaClienteServiceImpl
                 .orElseThrow(() ->
                         new RecursoNoEncontradoException(
                                 "Sede no encontrada"));
-
-        Salon salon = salonRepository
+Salon salon = salonRepository
                 .findByIdSalonAndActivoTrueForUpdate(
                         request.idSalon())
                 .orElseThrow(() ->
@@ -114,6 +113,13 @@ public class ReservaClienteServiceImpl
         validarSalonPerteneceSede(
                 salon,
                 sede);
+        // RESERVA_SEDE_EVENTOS_GUARD
+        if (Boolean.FALSE.equals(
+                sede.getPermiteEventos())) {
+
+            throw new IllegalArgumentException(
+                    "El local seleccionado no se encuentra habilitado para eventos");
+        }
 
         reservaService.validarCapacidad(
                 salon.getIdSalon(),

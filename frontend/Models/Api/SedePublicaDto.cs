@@ -11,4 +11,10 @@ public sealed class SedePublicaDto
     public string Distrito { get; init; } = string.Empty;
 
     public string Telefono { get; init; } = string.Empty;
+
+    public string TipoLocal { get; init; } =
+        "RESTAURANTE";
+
+    public bool PermiteEventos { get; init; } =
+        true;
 }

@@ -14,7 +14,7 @@
     var referencia =
         string.IsNullOrWhiteSpace(
             pago.ReferenciaExterna)
-            ? "Sin referencia"
+            ? "No disponible"
             : pago.ReferenciaExterna;
 }
 
@@ -35,7 +35,7 @@
                 </h1>
 
                 <p>
-                    Informacion oficial devuelta por Spring Boot.
+                    Detalle del pago asociado a tu reserva.
                 </p>
             </div>
 
@@ -76,7 +76,7 @@
             </div>
 
             <div class="be-payment-detail-item">
-                <span>Referencia externa</span>
+                <span>Codigo de operacion</span>
                 <strong>@referencia</strong>
             </div>
 

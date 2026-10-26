@@ -1,8 +1,17 @@
-﻿@model BembosEvents.Web.ViewModels.ReservationSedeViewModel
+@model BembosEvents.Web.ViewModels.ReservationSedeViewModel
 
 @{
-    ViewData["Title"] = "Elige una sede";
+    ViewData["Title"] =
+        "Elige un local";
 }
+
+<link rel="stylesheet"
+      href="~/css/bembos-events-r3.css"
+      asp-append-version="true" />
+
+<link rel="stylesheet"
+      href="~/css/r4-catalog.css"
+      asp-append-version="true" />
 
 <section class="be-reservation-page">
     <div class="container">
@@ -11,74 +20,113 @@
                 Paso 1 de 9
             </span>
 
-            <h1>Elige la sede para tu fiesta</h1>
+            <h1>
+                Elige el local para tu evento
+            </h1>
 
             <p>
-                Primero dinos en que local quieres celebrar.
-                Los salones del siguiente paso dependeran de esta sede.
+                AquÃ­ solo mostramos locales habilitados para eventos.
+                En el siguiente paso podrÃ¡s elegir el espacio disponible.
             </p>
+
+            @if (Model.Sedes.Count > 0)
+            {
+                <div class="be-r4-reservation-count">
+                    <strong>
+                        @Model.Sedes.Count
+                    </strong>
+
+                    <span>
+                        locales disponibles para reservar
+                    </span>
+                </div>
+            }
         </header>
 
-        <div class="be-reservation-progress" aria-label="Progreso de reserva">
+        <div class="be-reservation-progress"
+             aria-label="Progreso de reserva">
             <span class="is-active">Sede</span>
-            <span>Salon</span>
+            <span>SalÃ³n</span>
             <span>Fecha</span>
             <span>Invitados</span>
             <span>Paquete</span>
-            <span>Tematica</span>
+            <span>TemÃ¡tica</span>
             <span>Servicios</span>
             <span>Resumen</span>
         </div>
 
         @if (Model.Sedes.Count == 0)
         {
-            <div class="be-reservation-empty" role="status">
-                <h2>No hay sedes disponibles</h2>
+            <div class="be-reservation-empty"
+                 role="status">
+                <h2>
+                    No hay locales disponibles para eventos
+                </h2>
+
                 <p>
-                    En este momento Spring Boot no tiene sedes publicadas
-                    para iniciar una reserva.
+                    En este momento no encontramos locales habilitados
+                    para iniciar una reserva. IntÃ©ntalo nuevamente mÃ¡s adelante.
                 </p>
+
+                <a asp-controller="Sedes"
+                   asp-action="Index"
+                   class="btn be-btn-primary">
+                    Ver todos los locales
+                </a>
             </div>
         }
         else
         {
-            <form
-                asp-controller="Reserva"
-                asp-action="Sede"
-                method="post"
-                class="be-reservation-form">
+            <form asp-controller="Reserva"
+                  asp-action="Sede"
+                  method="post"
+                  class="be-reservation-form">
 
                 @Html.AntiForgeryToken()
 
-                <div
-                    asp-validation-summary="ModelOnly"
-                    class="text-danger mb-3">
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
                 </div>
 
-                <span
-                    asp-validation-for="IdSede"
-                    class="text-danger d-block mb-3">
+                <span asp-validation-for="IdSede"
+                      class="text-danger d-block mb-3">
                 </span>
 
                 <div class="be-reservation-options">
-                    @foreach (var sede in Model.Sedes)
+                    @foreach (
+                        var sede in
+                        Model.Sedes
+                            .Where(
+                                sede =>
+                                    sede.PermiteEventos)
+                            .OrderBy(
+                                sede =>
+                                    sede.Distrito)
+                            .ThenBy(
+                                sede =>
+                                    sede.Nombre))
                     {
                         var selected =
-                            Model.IdSede == sede.IdSede;
+                            Model.IdSede ==
+                            sede.IdSede;
 
-                        <label
-                            for="sede-@sede.IdSede"
-                            class="be-reservation-option @(selected ? "is-selected" : string.Empty)">
+                        <label for="sede-@sede.IdSede"
+                               class="be-reservation-option @(selected ? "is-selected" : string.Empty)">
 
-                            <input
-                                id="sede-@sede.IdSede"
-                                type="radio"
-                                name="IdSede"
-                                value="@sede.IdSede"
-                                checked="@selected" />
+                            <input id="sede-@sede.IdSede"
+                                   type="radio"
+                                   name="IdSede"
+                                   value="@sede.IdSede"
+                                   checked="@selected" />
 
                             <span class="be-reservation-option-body">
-                                <strong>@sede.Nombre</strong>
+                                <span class="be-r4-reservation-status">
+                                    Disponible para eventos
+                                </span>
+
+                                <strong>
+                                    @sede.Nombre
+                                </strong>
 
                                 <span>
                                     @sede.Direccion
@@ -96,20 +144,21 @@
                 </div>
 
                 <div class="be-reservation-actions">
-                    <a
-                        asp-controller="Home"
-                        asp-action="Index"
-                        class="btn btn-outline-secondary">
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary">
                         Volver
                     </a>
 
-                    <button
-                        type="submit"
-                        class="btn be-btn-primary">
-                        Continuar con salon
+                    <button type="submit"
+                            class="btn be-btn-primary">
+                        Continuar con salÃ³n
                     </button>
                 </div>
             </form>
         }
     </div>
 </section>
+
+<script src="~/js/bembos-events-r3.js"
+        asp-append-version="true"></script>

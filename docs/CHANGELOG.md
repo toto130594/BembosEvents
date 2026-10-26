@@ -798,3 +798,20 @@ Documento canonico:
 
 `docs/AI_ADVANCED.md`.
 <!-- PHASE12_ADVANCED_AI_CHANGELOG_END -->
+
+### REFINAMIENTO R1-R6 - CATALOGO Y RESERVA E2E
+
+Fecha de cierre: 2026-10-26.
+
+- R1: catalogo demo consolidado con 75 sedes, 8 paquetes, 12 tematicas y 10 servicios.
+- R2: limpieza de lenguaje tecnico visible en experiencia de cliente, reserva y pagos.
+- R3: clasificacion de sedes por tipo de local y regla permiteEventos; 60 sedes reservables y 15 informativas.
+- R4: UX de catalogo de sedes con busqueda, filtros, badges y proteccion visual para locales no reservables.
+- R5: contenido comercial demo mejorado sin alterar precios ni cantidades base.
+- R6: flujo E2E validado desde reserva hasta checkout Mercado Pago TEST y webhook firmado.
+- Reserva controlada de cierre: BEM-2026-000151 (idReserva=3002).
+- Pago controlado de cierre: idPago=3002, monto S/ 929.50, estado PENDIENTE.
+- Order Mercado Pago TEST: ORDTST01M5WW41XT1V4AE1WEZSZJTNVT, validada en estado created.
+- Webhook firmado: RECEIVED_VERIFIED; reenvio identico: DUPLICATE_IGNORED.
+- No se simulo APROBADO: Mercado Pago se conserva como fuente externa de verdad.
+- Regresion final R6E: backend tests/build, frontend build, Docker, runtime, seguridad, ownership, secret leak smoke e invariantes de BD en estado OK.

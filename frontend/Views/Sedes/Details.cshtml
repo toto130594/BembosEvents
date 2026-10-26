@@ -1,67 +1,108 @@
-﻿@model BembosEvents.Web.ViewModels.SedeDetailsViewModel
+@model BembosEvents.Web.ViewModels.SedeDetailsViewModel
 
 @{
-    ViewData["Title"] = Model.Sede.Nombre;
+    ViewData["Title"] =
+        Model.Sede.Nombre;
+
+    var tipoLabel =
+        Model.Sede.TipoLocal switch
+        {
+            "FOOD_COURT" =>
+                "Food court",
+
+            "EXPRESS" =>
+                "Express",
+
+            "DARK_KITCHEN" =>
+                "Cocina de despacho",
+
+            "UNIVERSIDAD" =>
+                "Universidad",
+
+            _ =>
+                "Restaurante"
+        };
 }
 
-<section class="be-r5-sede-hero be-r5-banner">
+<link rel="stylesheet"
+      href="~/css/r4-catalog.css"
+      asp-append-version="true" />
+
+<section class="be-r4-detail-hero">
     <div class="be-container">
         <a asp-controller="Sedes"
            asp-action="Index"
-           class="be-r5-back-link">
-            ← VOLVER A LOCALES
+           class="be-r4-back">
+            â† Volver a locales
         </a>
 
-        <div class="be-r5-sede-hero-grid">
-            <div class="be-r5-sede-hero-copy">
-                <span class="be-r5-banner-kicker">
+        <div class="be-r4-detail-grid">
+            <div class="be-r4-detail-copy">
+                <div class="be-r4-detail-badges">
+                    <span class="be-r4-location-type">
+                        @tipoLabel
+                    </span>
+
+                    @if (Model.Sede.PermiteEventos)
+                    {
+                        <span class="be-r4-status be-r4-status-events">
+                            Disponible para eventos
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="be-r4-status be-r4-status-info">
+                            No habilitado para eventos
+                        </span>
+                    }
+                </div>
+
+                <span class="be-r4-eyebrow">
                     @Model.Sede.Distrito
                 </span>
 
                 <h1>
-                    TU FIESTA
-                    <span>EMPIEZA EN</span>
-                    <strong>@Model.Sede.Nombre</strong>
+                    @Model.Sede.Nombre
                 </h1>
 
-                <p>
-                    Conoce los datos del local y elige uno de sus salones
-                    disponibles para continuar con tu celebracion.
-                </p>
+                @if (Model.Sede.PermiteEventos)
+                {
+                    <p>
+                        Este local estÃ¡ habilitado para eventos.
+                        Revisa sus espacios disponibles y continÃºa
+                        con tu reserva.
+                    </p>
+
+                    <a asp-controller="Reserva"
+                       asp-action="Index"
+                       class="be-r4-primary-link">
+                        Iniciar reserva
+                    </a>
+                }
+                else
+                {
+                    <p>
+                        Este punto forma parte del catÃ¡logo de locales,
+                        pero actualmente no estÃ¡ habilitado para reservas
+                        de eventos en Bembos Events.
+                    </p>
+
+                    <a asp-controller="Sedes"
+                       asp-action="Index"
+                       class="be-r4-secondary-link">
+                        Buscar un local para eventos
+                    </a>
+                }
             </div>
 
-            <div class="be-r5-sede-hero-photo">
-                <span>@Model.Sede.Nombre</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="be-r5-sede-info">
-    <div class="be-container">
-        <div class="be-r5-section-heading">
-            <span>CONOCE ESTA SEDE</span>
-            <h2>@Model.Sede.Nombre</h2>
-        </div>
-
-        <div class="be-r5-sede-info-grid">
-            <div class="be-r5-sede-photo-card">
-                <div class="be-r5-sede-photo"></div>
-
-                <div class="be-r5-sede-photo-caption">
-                    <span>LOCAL BEMBOS EVENTS</span>
-                    <strong>@Model.Sede.Distrito</strong>
-                </div>
-            </div>
-
-            <aside class="be-r5-sede-data">
-                <span class="be-r5-data-eyebrow">
-                    INFORMACION DEL LOCAL
+            <aside class="be-r4-detail-info">
+                <span>
+                    InformaciÃ³n del local
                 </span>
 
                 <dl>
                     <div>
-                        <dt>Direccion</dt>
+                        <dt>DirecciÃ³n</dt>
                         <dd>@Model.Sede.Direccion</dd>
                     </div>
 
@@ -70,94 +111,117 @@
                         <dd>@Model.Sede.Distrito</dd>
                     </div>
 
+                    <div>
+                        <dt>Tipo</dt>
+                        <dd>@tipoLabel</dd>
+                    </div>
+
                     @if (!string.IsNullOrWhiteSpace(Model.Sede.Telefono))
                     {
                         <div>
-                            <dt>Telefono</dt>
+                            <dt>TelÃ©fono</dt>
                             <dd>@Model.Sede.Telefono</dd>
                         </div>
                     }
                 </dl>
-
-                <a asp-controller="Reserva"
-                   asp-action="Index"
-                   class="be-r5-reserve-cta">
-                    RESERVA AQUI
-                </a>
             </aside>
         </div>
     </div>
 </section>
 
-<section class="be-r5-salones">
-    <div class="be-container">
-        <div class="be-r5-section-heading be-r5-section-heading-row">
-            <div>
-                <span>SALONES DISPONIBLES</span>
-                <h2>ELIGE TU ESPACIO</h2>
-            </div>
+@if (Model.Sede.PermiteEventos)
+{
+    <section class="be-r4-spaces-section">
+        <div class="be-container">
+            <div class="be-r4-section-heading">
+                <div>
+                    <span>
+                        Espacios para tu celebraciÃ³n
+                    </span>
 
-            <p>
-                Revisa la capacidad y entra al detalle del salon
-                que mejor se adapte a tu celebracion.
-            </p>
-        </div>
+                    <h2>
+                        Salones disponibles
+                    </h2>
+                </div>
 
-        @if (Model.Salones.Count == 0)
-        {
-            <div class="be-r5-empty">
-                <h3>No hay salones disponibles</h3>
                 <p>
-                    Esta sede aun no tiene salones publicos disponibles.
+                    Elige el espacio que mejor se adapte
+                    a la cantidad de invitados de tu evento.
                 </p>
             </div>
-        }
-        else
-        {
-            <div class="be-r5-salon-list">
-                @foreach (var salon in Model.Salones)
-                {
-                    <article class="be-r5-salon-card">
-                        <div class="be-r5-salon-photo">
+
+            @if (Model.Salones.Count == 0)
+            {
+                <div class="be-r4-empty">
+                    <h3>
+                        AÃºn no hay espacios disponibles
+                    </h3>
+
+                    <p>
+                        Este local estÃ¡ habilitado para eventos,
+                        pero actualmente no tiene salones publicados.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="be-r4-space-grid">
+                    @foreach (var salon in Model.Salones)
+                    {
+                        <article class="be-r4-space-card">
                             <span>
-                                HASTA @salon.Capacidad PERSONAS
-                            </span>
-                        </div>
-
-                        <div class="be-r5-salon-copy">
-                            <span class="be-r5-salon-eyebrow">
-                                @Model.Sede.Distrito
+                                Hasta @salon.Capacidad personas
                             </span>
 
-                            <h3>@salon.Nombre</h3>
+                            <h3>
+                                @salon.Nombre
+                            </h3>
 
                             @if (!string.IsNullOrWhiteSpace(salon.Descripcion))
                             {
-                                <p>@salon.Descripcion</p>
+                                <p>
+                                    @salon.Descripcion
+                                </p>
                             }
                             else
                             {
                                 <p>
-                                    Un espacio preparado para celebrar en Bembos
-                                    con comodidad y una experiencia divertida.
+                                    Espacio disponible para celebrar
+                                    y personalizar tu evento.
                                 </p>
                             }
 
-                            <div class="be-r5-salon-footer">
-                                <span>
-                                    Capacidad: @salon.Capacidad personas
-                                </span>
+                            <a asp-controller="Salones"
+                               asp-action="Details"
+                               asp-route-idSalon="@salon.IdSalon">
+                                Ver salÃ³n
+                            </a>
+                        </article>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+}
+else
+{
+    <section class="be-r4-spaces-section">
+        <div class="be-container">
+            <div class="be-r4-info-notice">
+                <strong>
+                    Este local no estÃ¡ habilitado para reservas de eventos
+                </strong>
 
-                                <a asp-controller="Salones"
-                                   asp-action="Details"
-                                   asp-route-idSalon="@salon.IdSalon">
-                                    VER SALON →
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-                }
+                <p>
+                    Puedes consultar sus datos aquÃ­ o regresar al catÃ¡logo
+                    para encontrar uno de los locales disponibles para eventos.
+                </p>
+
+                <a asp-controller="Sedes"
+                   asp-action="Index">
+                    Ver locales
+                </a>
             </div>
-        }
-    </div>
-</section>
+        </div>
+    </section>
+}

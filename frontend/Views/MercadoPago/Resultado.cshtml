@@ -1,0 +1,276 @@
+@model BembosEvents.Web.ViewModels.MercadoPagoResultadoViewModel
+
+@{
+    // MP_APPROVED_HISTORY_ONLY
+    var pagosVisibles =
+        Model.Pagos
+            .Where(
+                pago =>
+                    string.Equals(
+                        pago.EstadoPago,
+                        "APROBADO",
+                        StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(
+                pago =>
+                    pago.FechaPago ??
+                    pago.FechaCreacion)
+            .ToArray();
+
+    var pagadoAplicadoResultado =
+        Model.Reserva is null
+            ? Model.TotalPagado
+            : Math.Min(
+                Model.TotalPagado,
+                Model.Reserva.MontoTotal);
+
+    var excesoResultado =
+        Model.Reserva is null
+            ? 0m
+            : Math.Max(
+                0m,
+                Model.TotalPagado -
+                Model.Reserva.MontoTotal);
+
+    ViewData["Title"] = "Resultado del pago";
+
+    var titulo =
+        Model.PagoAprobado
+            ? "Pago acreditado"
+            : Model.PagoPendiente
+                ? "Confirmando pago"
+                : "Estado del pago";
+
+    var claseEstado =
+        Model.PagoAprobado
+            ? "mp-result-success"
+            : Model.PagoPendiente
+                ? "mp-result-pending"
+                : "mp-result-neutral";
+}
+
+<link rel="stylesheet"
+      href="~/css/mercadopago.css"
+      asp-append-version="true" />
+
+<section class="mp-page">
+    <div class="be-container">
+        <div class="mp-card mp-result-card">
+
+            <div class="@claseEstado">
+                <div class="mp-result-icon">
+                    @(Model.PagoAprobado ? "✓" : "i")
+                </div>
+
+                <div>
+                    <p class="mp-kicker">
+                        Mercado Pago
+                    </p>
+
+                    <h1>
+                        @titulo
+                    </h1>
+
+                    @if (Model.PagoAprobado)
+                    {
+                        <p>
+                            El pago ya fue validado por Bembos Events.
+                        </p>
+                    }
+                    else if (Model.PagoPendiente)
+                    {
+                        <p>
+                            Mercado Pago termino el checkout.
+                            Estamos esperando la confirmacion definitiva del proveedor.
+                        </p>
+                    }
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+            {
+                <div class="mp-result-warning">
+                    @Model.Mensaje
+                </div>
+            }
+
+            @if (Model.Reserva is not null)
+            {
+                <div class="mp-result-reservation">
+                    <span>
+                        Reserva
+                    </span>
+
+                    <strong>
+                        @Model.Reserva.CodigoReserva
+                    </strong>
+
+                    <small>
+                        Estado de reserva:
+                        @Model.Reserva.Estado
+                    </small>
+                </div>
+
+                <div class="mp-result-summary">
+
+                    <div>
+                        <span>Total de la reserva</span>
+                        <strong>
+                            S/ @Model.Reserva.MontoTotal.ToString("N2")
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Pagado aplicado</span>
+                        <strong>
+                            S/ @pagadoAplicadoResultado.ToString("N2")
+                        </strong>
+                    </div>
+
+                    <div class="mp-result-balance">
+                        <span>Saldo pendiente</span>
+                        <strong>
+                            S/ @Model.SaldoPendiente.ToString("N2")
+                        </strong>
+                    </div>
+
+                </div>
+
+                @if (Model.Pago is not null)
+                {
+                    <div class="mp-result-current-payment">
+                        <span>Pago actual</span>
+
+                        <strong>
+                            S/ @Model.Pago.Monto.ToString("N2")
+                            ·
+                            @Model.Pago.EstadoPago
+                        </strong>
+                    </div>
+                }
+
+                <div class="mp-result-actions">
+
+                    @if (Model.SaldoPendiente > 0)
+                    {
+                        <a asp-controller="MercadoPago"
+                           asp-action="Index"
+                           asp-route-idReserva="@Model.Reserva.IdReserva"
+                           asp-route-monto="@Model.SaldoPendiente"
+                           class="mp-primary mp-result-button">
+                            Pagar saldo de
+                            S/ @Model.SaldoPendiente.ToString("N2")
+                        </a>
+                    }
+
+                    <a asp-controller="Reserva"
+                       asp-action="MisReservas"
+                       class="mp-secondary mp-result-button">
+                        Volver a mis reservas
+                    </a>
+
+                </div>
+
+                @if (excesoResultado > 0m)
+{
+    <div class="mp-result-warning">
+        Existe un exceso de pago registrado de
+        <strong>
+            S/ @excesoResultado.ToString("N2")
+        </strong>.
+        Corresponde a pagos ya aprobados y no se considera
+        saldo pendiente.
+    </div>
+}
+<div class="mp-result-history">
+
+                    <h2>
+                        Historial de pagos
+                    </h2>
+
+                    @if (pagosVisibles.Length == 0)
+                    {
+                        <p>
+                            Todavia no existen pagos registrados.
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="mp-result-table-wrap">
+                            <table class="mp-result-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pago</th>
+                                        <th>Fecha</th>
+                                        <th>Monto</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var pago in pagosVisibles)
+                                    {
+                                        <tr>
+                                            <td>
+                                                #@pago.IdPago
+                                            </td>
+
+                                            <td>
+                                                @(pago.FechaPago
+                                                    ?.ToString("dd/MM/yyyy HH:mm")
+                                                    ?? pago.FechaCreacion.ToString("dd/MM/yyyy HH:mm"))
+                                            </td>
+
+                                            <td>
+                                                S/ @pago.Monto.ToString("N2")
+                                            </td>
+
+                                            <td>
+                                                <strong>
+                                                    @pago.EstadoPago
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                </div>
+            }
+
+        </div>
+    </div>
+</section>
+
+@if (
+    Model.RetornoExitoso &&
+    Model.PagoPendiente &&
+    Model.Pago is not null &&
+    Model.Intento < 5
+)
+{
+    var siguienteUrl =
+        Url.Action(
+            "Resultado",
+            "MercadoPago",
+            new
+            {
+                pago =
+                    $"PAGO-{Model.Pago.IdPago}",
+
+                resultado =
+                    Model.ResultadoRetorno,
+
+                intento =
+                    Model.Intento + 1
+            });
+
+    <script>
+        window.setTimeout(
+            function () {
+                window.location.href = '@siguienteUrl';
+            },
+            2500);
+    </script>
+}

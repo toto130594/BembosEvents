@@ -2,162 +2,251 @@
 
 @{
     ViewData["Title"] = "Locales";
+
+    var totalLocales =
+        Model.Sedes.Count;
+
+    var totalReservables =
+        Model.Sedes.Count(
+            sede =>
+                sede.PermiteEventos);
+
+    var totalInformativos =
+        totalLocales -
+        totalReservables;
 }
 
-<section class="be-editorial-banner be-editorial-locations">
-    <div class="be-container be-editorial-banner-inner">
-        <div class="be-editorial-copy">
-            <span class="be-editorial-eyebrow">
-                Encuentra tu Bembos
+<link rel="stylesheet"
+      href="~/css/r4-catalog.css"
+      asp-append-version="true" />
+
+<section class="be-r4-locations-hero">
+    <div class="be-container be-r4-locations-hero-grid">
+        <div>
+            <span class="be-r4-eyebrow">
+                Locales Bembos
             </span>
 
             <h1>
-                ELIGE DONDE
-                <strong>CELEBRAR</strong>
+                Encuentra el local
+                <strong>ideal para ti</strong>
             </h1>
 
             <p>
-                Revisa nuestras sedes disponibles y empieza
-                tu reserva desde el lugar ideal para tu evento.
+                Consulta todos nuestros puntos publicados.
+                Los locales habilitados para eventos estÃ¡n identificados
+                para que puedas iniciar tu reserva con seguridad.
             </p>
 
             <a asp-controller="Reserva"
                asp-action="Index"
-               class="be-editorial-cta">
-                Reservar evento
+               class="be-r4-primary-link">
+                Reservar un evento
             </a>
         </div>
 
-        <div class="be-editorial-art be-location-art-banner"
-             aria-hidden="true">
-            <div class="be-map-pin be-map-pin-a">
-                <span></span>
+        <aside class="be-r4-location-summary"
+               aria-label="Resumen de locales">
+            <div>
+                <strong>@totalLocales</strong>
+                <span>locales publicados</span>
             </div>
 
-            <div class="be-map-pin be-map-pin-b">
-                <span></span>
+            <div>
+                <strong>@totalReservables</strong>
+                <span>habilitados para eventos</span>
             </div>
 
-            <div class="be-map-pin be-map-pin-c">
-                <span></span>
+            <div>
+                <strong>@totalInformativos</strong>
+                <span>otros puntos</span>
             </div>
-
-            <strong class="be-location-banner-word">
-                LIMA
-            </strong>
-        </div>
+        </aside>
     </div>
 </section>
 
-<section class="be-store-section be-store-section-soft">
+<section class="be-r4-locations-section">
     <div class="be-container">
-        <div class="be-store-heading">
-            <div>
-                <span class="be-store-kicker">
-                    Locales Bembos Events
-                </span>
+        <div class="be-r4-location-tools">
+            <div class="be-r4-search-wrap">
+                <label for="r4-location-search">
+                    Buscar local
+                </label>
 
-                <h2>
-                    ENCUENTRA TU SEDE
-                </h2>
+                <input id="r4-location-search"
+                       type="search"
+                       autocomplete="off"
+                       placeholder="Nombre, distrito o direcciÃ³n..." />
+            </div>
+
+            <div class="be-r4-filter-wrap">
+                <label for="r4-location-filter">
+                    Mostrar
+                </label>
+
+                <select id="r4-location-filter">
+                    <option value="all">
+                        Todos los locales
+                    </option>
+
+                    <option value="events">
+                        Disponibles para eventos
+                    </option>
+
+                    <option value="info">
+                        Otros puntos
+                    </option>
+                </select>
+            </div>
+
+            <div class="be-r4-result-count"
+                 aria-live="polite">
+                <strong id="r4-location-count">
+                    @totalLocales
+                </strong>
+
+                <span>
+                    resultados
+                </span>
             </div>
         </div>
 
         @if (Model.Sedes.Count == 0)
         {
-            <div class="be-designed-empty be-designed-empty-locations">
-                <span class="be-designed-empty-mark">
-                    ●
-                </span>
+            <div class="be-r4-empty">
+                <h2>No hay locales disponibles</h2>
 
-                <div>
-                    <h3>
-                        No hay locales activos por el momento
-                    </h3>
-
-                    <p>
-                        Cuando existan sedes disponibles apareceran aqui
-                        con direccion, distrito y datos de contacto.
-                    </p>
-
-                    <a asp-controller="Home"
-                       asp-action="Index">
-                        Volver al inicio
-                    </a>
-                </div>
+                <p>
+                    No pudimos encontrar locales publicados en este momento.
+                </p>
             </div>
         }
         else
         {
-            <div class="be-location-grid">
-                @foreach (var sede in Model.Sedes)
+            <div id="r4-location-grid"
+                 class="be-r4-location-grid">
+
+                @foreach (
+                    var sede in
+                    Model.Sedes
+                        .OrderByDescending(
+                            sede =>
+                                sede.PermiteEventos)
+                        .ThenBy(
+                            sede =>
+                                sede.Distrito)
+                        .ThenBy(
+                            sede =>
+                                sede.Nombre))
                 {
-                    <article class="be-location-card be-location-card-premium">
-                        <div class="be-location-art">
-                            <span>
+                    var tipoLabel =
+                        sede.TipoLocal switch
+                        {
+                            "FOOD_COURT" =>
+                                "Food court",
+
+                            "EXPRESS" =>
+                                "Express",
+
+                            "DARK_KITCHEN" =>
+                                "Cocina de despacho",
+
+                            "UNIVERSIDAD" =>
+                                "Universidad",
+
+                            _ =>
+                                "Restaurante"
+                        };
+
+                    <article class="be-r4-location-card"
+                             data-r4-location
+                             data-events="@(sede.PermiteEventos ? "true" : "false")"
+                             data-search="@($"{sede.Nombre} {sede.Distrito} {sede.Direccion}".ToLowerInvariant())">
+
+                        <div class="be-r4-location-top">
+                            <span class="be-r4-location-type">
+                                @tipoLabel
+                            </span>
+
+                            @if (sede.PermiteEventos)
+                            {
+                                <span class="be-r4-status be-r4-status-events">
+                                    Disponible para eventos
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="be-r4-status be-r4-status-info">
+                                    Solo informaciÃ³n
+                                </span>
+                            }
+                        </div>
+
+                        <div class="be-r4-location-main">
+                            <span class="be-r4-location-district">
                                 @sede.Distrito
                             </span>
 
-                            <strong>
+                            <h2>
                                 @sede.Nombre
-                            </strong>
+                            </h2>
 
-                            <i class="be-location-ring"
-                               aria-hidden="true"></i>
+                            <p>
+                                @sede.Direccion
+                            </p>
                         </div>
 
-                        <div class="be-location-copy">
-                            <div class="be-location-meta">
-                                <span>
-                                    Direccion
-                                </span>
-
-                                <p>
-                                    @sede.Direccion
-                                </p>
-                            </div>
-
+                        <div class="be-r4-location-footer">
                             @if (!string.IsNullOrWhiteSpace(sede.Telefono))
                             {
-                                <div class="be-location-meta">
-                                    <span>
-                                        Telefono
-                                    </span>
-
-                                    <p>
-                                        @sede.Telefono
-                                    </p>
-                                </div>
+                                <span>
+                                    Tel. @sede.Telefono
+                                </span>
                             }
 
                             <a asp-controller="Sedes"
                                asp-action="Details"
                                asp-route-idSede="@sede.IdSede">
-                                Conocer local
+                                @(sede.PermiteEventos
+                                    ? "Ver local"
+                                    : "Ver informaciÃ³n")
                             </a>
                         </div>
                     </article>
                 }
             </div>
+
+            <div id="r4-location-empty-filter"
+                 class="be-r4-empty"
+                 hidden>
+                <h2>No encontramos coincidencias</h2>
+
+                <p>
+                    Prueba con otro nombre, distrito o cambia el filtro.
+                </p>
+            </div>
         }
     </div>
 </section>
 
-<section class="be-explore-bottom-cta be-explore-bottom-cta-blue">
-    <div class="be-container">
+<section class="be-r4-catalog-cta">
+    <div class="be-container be-r4-catalog-cta-inner">
         <div>
             <span>
-                Tu local ya esta
+                60 locales habilitados
             </span>
 
             <strong>
-                Ahora arma tu evento
+                Elige uno y comienza a armar tu evento
             </strong>
         </div>
 
-        <a asp-controller="Paquetes"
+        <a asp-controller="Reserva"
            asp-action="Index">
-            Ver paquetes
+            Empezar reserva
         </a>
     </div>
 </section>
+
+<script src="~/js/r4-catalog.js"
+        asp-append-version="true"></script>

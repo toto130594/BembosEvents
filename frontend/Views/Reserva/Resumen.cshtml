@@ -81,7 +81,7 @@
                                 @if (Model.PaquetePrecioBase.HasValue)
                                 {
                                     <small>
-                                        - referencia S/
+                                        - estimado S/
                                         @Model.PaquetePrecioBase.Value.ToString("N2")
                                     </small>
                                 }
@@ -104,7 +104,7 @@
                                 @if (Model.TematicaPrecioAdicional.HasValue)
                                 {
                                     <small>
-                                        - referencia S/
+                                        - estimado S/
                                         @Model.TematicaPrecioAdicional.Value.ToString("N2")
                                     </small>
                                 }
@@ -133,7 +133,7 @@
                                 </span>
 
                                 <small>
-                                    Referencia S/
+                                    Estimado S/
                                     @servicio.PrecioUnitario.ToString("N2")
                                     c/u
                                 </small>
@@ -145,7 +145,7 @@
         </div>
 
         <div class="be-reservation-info mt-3">
-            Los precios anteriores son solo referencias del catalogo.
+            El monto final se calcula con las opciones seleccionadas.
             El monto total y el deposito son calculados exclusivamente
             por Spring Boot al crear la reserva.
         </div>

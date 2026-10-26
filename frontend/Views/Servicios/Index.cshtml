@@ -1,4 +1,4 @@
-﻿@model IReadOnlyList<BembosEvents.Web.Models.Api.ServicioAdicionalPublicoDto>
+@model IReadOnlyList<BembosEvents.Web.Models.Api.ServicioAdicionalPublicoDto>
 
 @{
     ViewData["Title"] = "Servicios";
@@ -17,8 +17,8 @@
             </h1>
 
             <p>
-                Suma servicios adicionales y personaliza
-                cada detalle de tu celebracion.
+                Completa tu celebraciÃ³n con opciones adicionales.
+                Cada servicio seleccionado se suma al total de la reserva.
             </p>
 
             <a asp-controller="Reserva"
@@ -112,7 +112,7 @@
                             </p>
 
                             <div class="be-explore-card-footer">
-                                <span>Desde</span>
+                                <span>Adicional</span>
 
                                 <strong>
                                     S/ @servicio.Precio.ToString("0.00")

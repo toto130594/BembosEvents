@@ -20,8 +20,8 @@
             </h1>
 
             <p class="mp-lead">
-                El portal envia la solicitud a Spring Boot.
-                Tus credenciales del proveedor nunca llegan al navegador.
+                Procesamos tu pago de forma segura con Mercado Pago.
+                Seras redirigido a Mercado Pago para completar la operacion.
             </p>
 
             <div asp-validation-summary="ModelOnly"
@@ -60,9 +60,9 @@
             </form>
 
             <div class="mp-note">
-                <strong>Entorno de desarrollo.</strong>
-                Si el provider TEST esta deshabilitado,
-                Spring Boot rechazara el checkout y no se realizara ningun cargo.
+                <strong>Pago protegido.</strong>
+                Si el servicio de pago no esta disponible,
+                te avisaremos antes de continuar y no se realizara ningun cargo.
             </div>
 
             <a asp-controller="Reserva"

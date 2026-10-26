@@ -8,9 +8,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +64,7 @@ public class MercadoPagoRestClientProvider implements MercadoPagoProvider {
         item.put("title",title);
         item.put("quantity",1);
         item.put("unit_price",totalAmount);
-        item.put("unit_measure","unit");
-        item.put("total_amount",totalAmount);
-
-        Map<String,Object> body = new LinkedHashMap<>();
+Map<String,Object> body = new LinkedHashMap<>();
         body.put("type","online");
         body.put("processing_mode","manual");
         body.put("total_amount",totalAmount);
@@ -78,6 +79,62 @@ public class MercadoPagoRestClientProvider implements MercadoPagoProvider {
             body.put("payer",Map.of("email",request.payerEmail().trim()));
         }
 
+        if (properties.hasReturnBaseUrl()
+                && request.externalReference() != null
+                && !request.externalReference().isBlank()) {
+
+            String returnBaseUrl =
+                    properties
+                            .getReturnBaseUrl()
+                            .trim();
+
+            while (returnBaseUrl.endsWith("/")) {
+                returnBaseUrl =
+                        returnBaseUrl.substring(
+                                0,
+                                returnBaseUrl.length() - 1);
+            }
+
+            String encodedReference =
+                    URLEncoder.encode(
+                            request.externalReference().trim(),
+                            StandardCharsets.UTF_8);
+
+            String resultUrl =
+                    returnBaseUrl
+                            + "/pagos/mercado-pago/resultado?pago="
+                            + encodedReference;
+
+            Map<String,Object> online =
+                    new LinkedHashMap<>();
+
+            online.put(
+                    "success_url",
+                    resultUrl + "&resultado=success");
+
+            online.put(
+                    "failure_url",
+                    resultUrl + "&resultado=failure");
+
+            online.put(
+                    "pending_url",
+                    resultUrl + "&resultado=pending");
+
+            online.put(
+                    "auto_return",
+                    "all");
+
+            body.put(
+                    "config",
+                    Map.of(
+                            "online",
+                            online));
+
+            log.info(
+                    "MP_RETURN_URLS_CONFIGURED externalReference={}",
+                    request.externalReference());
+        }
+
         body.put("items",List.of(item));
 
         log.info(
@@ -85,16 +142,44 @@ public class MercadoPagoRestClientProvider implements MercadoPagoProvider {
                 request.externalReference(),
                 idempotencyKey);
 
-        JsonNode response = restClient.post()
-                .uri("/v1/orders")
-                .header(
-                        HttpHeaders.AUTHORIZATION,
-                        "Bearer " + properties.getAccessToken())
-                .header("X-Idempotency-Key",idempotencyKey)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body)
-                .retrieve()
-                .body(JsonNode.class);
+        JsonNode response;
+
+        try {
+
+            response = restClient.post()
+                    .uri("/v1/orders")
+                    .header(
+                            HttpHeaders.AUTHORIZATION,
+                            "Bearer " + properties.getAccessToken())
+                    .header(
+                            "X-Idempotency-Key",
+                            idempotencyKey)
+                    .contentType(
+                            MediaType.APPLICATION_JSON)
+                    .body(body)
+                    .retrieve()
+                    .body(JsonNode.class);
+
+        }
+        catch (RestClientResponseException ex) {
+
+            log.error(
+                    "MP_ORDER_CREATE_HTTP_ERROR status={} responseBody={}",
+                    ex.getStatusCode(),
+                    safeResponseBody(
+                            ex.getResponseBodyAsString()));
+
+            throw ex;
+        }
+        catch (ResourceAccessException ex) {
+
+            log.error(
+                    "MP_ORDER_CREATE_CONNECTION_ERROR type={} message={}",
+                    ex.getClass().getSimpleName(),
+                    ex.getMessage());
+
+            throw ex;
+        }
 
         MercadoPagoOrderResult result = convertir(response);
 
@@ -230,5 +315,28 @@ public class MercadoPagoRestClientProvider implements MercadoPagoProvider {
         JsonNode value = node.get(field);
         if (value == null || value.isNull()) { return null; }
         return value.asText();
+    }
+    private String safeResponseBody(
+            String body) {
+
+        if (body == null
+                || body.isBlank()) {
+
+            return "-";
+        }
+
+        String normalized =
+                body
+                        .replace('\r', ' ')
+                        .replace('\n', ' ');
+
+        if (normalized.length() > 2000) {
+
+            return normalized.substring(
+                    0,
+                    2000);
+        }
+
+        return normalized;
     }
 }

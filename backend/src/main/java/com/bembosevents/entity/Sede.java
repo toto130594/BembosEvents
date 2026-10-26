@@ -33,6 +33,12 @@ public class Sede {
     @Column(name = "activo", nullable = false)
     private Boolean activo;
 
+    @Column(name = "tipoLocal", nullable = false, length = 30)
+    private String tipoLocal;
+
+    @Column(name = "permiteEventos", nullable = false)
+    private Boolean permiteEventos;
+
     @OneToMany(mappedBy = "sede")
     private List<Salon> salones;
 

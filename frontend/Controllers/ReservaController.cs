@@ -39,6 +39,13 @@ public sealed class ReservaController : Controller
 
         var sedes =
             await _backendApiClient.GetSedesAsync();
+        // R3_SEDES_EVENTOS_FILTER
+        sedes =
+            sedes
+                .Where(
+                    sede =>
+                        sede.PermiteEventos)
+                .ToArray();
 
         return View(
             new ReservationSedeViewModel
@@ -58,6 +65,13 @@ public sealed class ReservaController : Controller
     {
         var sedes =
             await _backendApiClient.GetSedesAsync();
+        // R3_SEDES_EVENTOS_FILTER
+        sedes =
+            sedes
+                .Where(
+                    sede =>
+                        sede.PermiteEventos)
+                .ToArray();
 
         model.Sedes =
             sedes;
@@ -1027,7 +1041,7 @@ public sealed class ReservaController : Controller
         if (createResult.StatusCode == 400)
         {
             TempData["ReservationError"] =
-                "Spring Boot rechazo los datos de la reserva. Revisa el resumen antes de intentar nuevamente.";
+                "No pudimos procesar los datos de la reserva. Revisa el resumen e intentalo nuevamente.";
 
             return RedirectToAction(
                 nameof(Resumen));

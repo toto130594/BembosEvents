@@ -287,6 +287,74 @@ class ReservaClienteServiceImplTest {
     }
 
     @Test
+    void debeRechazarSedeNoHabilitadaParaEventos() {
+
+        Usuario usuario =
+                mock(Usuario.class);
+
+        Cliente cliente =
+                mock(Cliente.class);
+
+        when(cliente.getUsuario())
+                .thenReturn(usuario);
+
+        when(clienteRepository
+                .findByUsuario_CorreoIgnoreCaseAndActivoTrue(
+                        CORREO))
+                .thenReturn(
+                        Optional.of(cliente));
+
+        Sede sede =
+                mock(Sede.class);
+
+        when(sede.getIdSede())
+                .thenReturn(1);
+
+        when(sede.getActivo())
+                .thenReturn(true);
+
+        when(sede.getPermiteEventos())
+                .thenReturn(false);
+
+        when(sedeRepository
+                .findByIdSedeAndActivoTrue(1))
+                .thenReturn(
+                        Optional.of(sede));
+
+        Salon salon =
+                mock(Salon.class);
+
+        when(salon.getSede())
+                .thenReturn(sede);
+
+        when(salonRepository
+                .findByIdSalonAndActivoTrueForUpdate(10))
+                .thenReturn(
+                        Optional.of(salon));
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () ->
+                                reservaClienteService.crear(
+                                        CORREO,
+                                        crearRequest(
+                                                List.of())));
+
+        assertEquals(
+                "El local seleccionado no se encuentra habilitado para eventos",
+                exception.getMessage());
+
+        verifyNoInteractions(
+                disponibilidadSalonService,
+                reservaService);
+
+        verify(
+                reservaRepository,
+                never())
+                .save(any(Reserva.class));
+    }
+    @Test
     void debeRechazarReservaCuandoHorarioNoEstaDisponible() {
 
         prepararEscenario(
@@ -462,6 +530,9 @@ class ReservaClienteServiceImplTest {
                 .thenReturn(1);
 
         when(sede.getActivo())
+                .thenReturn(true);
+
+        when(sede.getPermiteEventos())
                 .thenReturn(true);
 
         when(sedeRepository

@@ -11,6 +11,7 @@ public class MercadoPagoProperties {
     private String baseUrl = "https://api.mercadopago.com";
     private String accessToken = "";
     private String webhookSecret = "";
+    private String returnBaseUrl = "";
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
@@ -20,6 +21,8 @@ public class MercadoPagoProperties {
     public void setAccessToken(String accessToken) { this.accessToken = accessToken; }
     public String getWebhookSecret() { return webhookSecret; }
     public void setWebhookSecret(String webhookSecret) { this.webhookSecret = webhookSecret; }
+    public String getReturnBaseUrl() { return returnBaseUrl; }
+    public void setReturnBaseUrl(String returnBaseUrl) { this.returnBaseUrl = returnBaseUrl; }
 
     public boolean hasAccessToken() {
         return accessToken != null && !accessToken.isBlank();
@@ -27,5 +30,9 @@ public class MercadoPagoProperties {
 
     public boolean hasWebhookSecret() {
         return webhookSecret != null && !webhookSecret.isBlank();
+    }
+
+    public boolean hasReturnBaseUrl() {
+        return returnBaseUrl != null && !returnBaseUrl.isBlank();
     }
 }

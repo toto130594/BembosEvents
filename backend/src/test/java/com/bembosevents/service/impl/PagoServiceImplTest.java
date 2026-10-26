@@ -64,6 +64,9 @@ class PagoServiceImplTest {
 
         Reserva reserva =
                 new Reserva();
+        reserva.setMontoTotal(
+                new BigDecimal("500.00"));
+
 
         reserva.setIdReserva(20);
         reserva.setCliente(cliente);
@@ -82,6 +85,12 @@ class PagoServiceImplTest {
                                 10)
         ).thenReturn(
                 Optional.of(reserva));
+        when(pagoRepository
+                .sumarMontoAprobadoPorReserva(
+                        reserva.getIdReserva()))
+                .thenReturn(
+                        BigDecimal.ZERO);
+
 
         when(
                 pagoRepository.save(

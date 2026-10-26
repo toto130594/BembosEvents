@@ -1,6 +1,7 @@
 package com.bembosevents.service.impl;
 
 import com.bembosevents.domain.EstadoPago;
+import com.bembosevents.domain.EstadoReserva;
 import com.bembosevents.domain.ReglasTransicionPago;
 import com.bembosevents.dto.pago.CrearPagoRequest;
 import com.bembosevents.dto.pago.PagoResponse;
@@ -66,6 +67,36 @@ public class PagoServiceImpl implements PagoService {
                 buscarReservaPropia(
                         correoCliente,
                         idReserva);
+        // PAYMENT_BALANCE_GUARD
+        BigDecimal totalAprobado =
+                pagoRepository
+                        .sumarMontoAprobadoPorReserva(
+                                idReserva);
+
+        if (totalAprobado == null) {
+            totalAprobado =
+                    BigDecimal.ZERO;
+        }
+
+        BigDecimal saldoPendiente =
+                reserva
+                        .getMontoTotal()
+                        .subtract(
+                                totalAprobado);
+
+        if (saldoPendiente.compareTo(
+                BigDecimal.ZERO) <= 0) {
+
+            throw new IllegalArgumentException(
+                    "La reserva ya se encuentra pagada completamente");
+        }
+
+        if (request.monto().compareTo(
+                saldoPendiente) > 0) {
+
+            throw new IllegalArgumentException(
+                    "El monto solicitado supera el saldo pendiente de la reserva");
+        }
 
         LocalDateTime ahora =
                 LocalDateTime.now();
@@ -204,7 +235,6 @@ public class PagoServiceImpl implements PagoService {
         return convertir(
                 pagoRepository.save(pago));
     }
-
     @Override
     @Transactional
     public PagoResponse actualizarEstadoDesdeProveedor(
@@ -219,6 +249,7 @@ public class PagoServiceImpl implements PagoService {
         }
 
         if (nuevoEstado == null) {
+
             throw new IllegalArgumentException(
                     "El nuevo estado es obligatorio");
         }
@@ -235,7 +266,19 @@ public class PagoServiceImpl implements PagoService {
                 EstadoPago.valueOf(
                         pago.getEstadoPago());
 
+        /*
+         * Incluso si el Pago ya estaba APROBADO,
+         * volvemos a sincronizar la Reserva.
+         *
+         * Esto permite corregir pagos anteriores
+         * que se aprobaron antes de implementar
+         * PENDIENTE -> CONFIRMADA.
+         */
         if (estadoActual == nuevoEstado) {
+
+            sincronizarReservaDesdePago(
+                    pago);
+
             return convertir(
                     pago);
         }
@@ -254,10 +297,72 @@ public class PagoServiceImpl implements PagoService {
                     LocalDateTime.now());
         }
 
-        return convertir(
+        Pago pagoGuardado =
                 pagoRepository.save(
-                        pago));
+                        pago);
+
+        sincronizarReservaDesdePago(
+                pagoGuardado);
+
+        return convertir(
+                pagoGuardado);
     }
+
+    private void sincronizarReservaDesdePago(
+            Pago pago) {
+
+        if (pago == null
+                || !EstadoPago.APROBADO
+                        .name()
+                        .equalsIgnoreCase(
+                                pago.getEstadoPago())) {
+
+            return;
+        }
+
+        Reserva reserva =
+                pago.getReserva();
+
+        if (reserva == null
+                || reserva.getIdReserva() == null) {
+
+            return;
+        }
+
+        BigDecimal totalAprobado =
+                pagoRepository
+                        .sumarMontoAprobadoPorReserva(
+                                reserva.getIdReserva());
+
+        if (totalAprobado == null) {
+
+            totalAprobado =
+                    BigDecimal.ZERO;
+        }
+
+        BigDecimal depositoRequerido =
+                reserva.getMontoDeposito() == null
+                        ? BigDecimal.ZERO
+                        : reserva.getMontoDeposito();
+
+        if (EstadoReserva.PENDIENTE
+                    .name()
+                    .equalsIgnoreCase(
+                            reserva.getEstado())
+                && totalAprobado.compareTo(
+                        depositoRequerido) >= 0) {
+
+            reserva.setEstado(
+                    EstadoReserva.CONFIRMADA.name());
+
+            reserva.setFechaActualizacion(
+                    LocalDateTime.now());
+
+            reservaRepository.save(
+                    reserva);
+        }
+    }
+
     @Override
     public void validarTransicionEstado(
             EstadoPago estadoActual,

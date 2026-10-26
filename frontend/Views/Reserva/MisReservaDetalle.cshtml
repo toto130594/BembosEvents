@@ -1,6 +1,74 @@
 @model BembosEvents.Web.ViewModels.ReservaDetalleViewModel
+@inject BembosEvents.Web.Services.IBackendApiClient BackendApiClient
 
 @{
+    // RESERVA_PAYMENT_SUMMARY_DATA
+    var pagosResult =
+        await BackendApiClient.GetPagosReservaAsync(
+            Model.IdReserva);
+
+    var pagosAprobados =
+        (pagosResult.Data ??
+            Array.Empty<BembosEvents.Web.Models.Api.PagoDto>())
+        .Where(
+            pago =>
+                string.Equals(
+                    pago.EstadoPago,
+                    "APROBADO",
+                    StringComparison.OrdinalIgnoreCase))
+        .OrderByDescending(
+            pago =>
+                pago.FechaPago ??
+                pago.FechaCreacion)
+        .ToArray();
+
+    var totalAprobado =
+        pagosAprobados.Sum(
+            pago =>
+                pago.Monto);
+
+    var pagadoAplicado =
+        Math.Min(
+            Model.MontoTotal,
+            totalAprobado);
+
+    var saldoPendiente =
+        Math.Max(
+            0m,
+            Model.MontoTotal -
+            totalAprobado);
+
+    var excesoPagado =
+        Math.Max(
+            0m,
+            totalAprobado -
+            Model.MontoTotal);
+
+    var estadoFinanciero =
+        saldoPendiente <= 0m
+            ? "PAGADO"
+            : totalAprobado > 0m
+                ? "PAGO_PARCIAL"
+                : "SIN_PAGO";
+
+    var puedePagar =
+        saldoPendiente > 0m &&
+        (
+            string.Equals(
+                Model.Estado,
+                "PENDIENTE",
+                StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(
+                Model.Estado,
+                "CONFIRMADA",
+                StringComparison.OrdinalIgnoreCase)
+        );
+
+    var saldoHtml =
+        saldoPendiente.ToString(
+            "0.00",
+            System.Globalization.CultureInfo.InvariantCulture);
+
     ViewData["Title"] = "Detalle de reserva";
 
     var statusClass =
@@ -159,7 +227,7 @@
             </section>
 
             <section class="be-reservation-detail-card be-reservation-money-card">
-                <h2>Importes oficiales</h2>
+                <h2>Resumen de la reserva</h2>
 
                 <dl>
                     <div>
@@ -191,7 +259,7 @@
                     </div>
 
                     <div class="is-deposit">
-                        <dt>Deposito requerido</dt>
+                        <dt>Deposito minimo requerido para confirmar</dt>
                         <dd>
                             S/ @Model.MontoDeposito.ToString("N2")
                         </dd>
@@ -200,14 +268,225 @@
 
                 <p class="be-detail-authority-note">
                     Estos importes provienen de Spring Boot y son
-                    los valores oficiales de la reserva.
+                    el detalle actualizado de tu reserva.
                 </p>
             </section>
         </div>
 
         @if (puedeCancelar)
         {
-            <section class="be-reservation-cancel-panel">
+            <!-- RESERVA_PAYMENT_SUMMARY_UI -->
+<section class="be-reservation-finance">
+
+    <div class="be-reservation-finance-header">
+        <div>
+            <span class="be-finance-eyebrow">
+                Pagos
+            </span>
+
+            <h2>
+                Estado de cuenta
+            </h2>
+        </div>
+
+        @if (estadoFinanciero == "PAGADO")
+        {
+            <span class="be-finance-status be-finance-status-paid">
+                Pagado
+            </span>
+        }
+        else if (estadoFinanciero == "PAGO_PARCIAL")
+        {
+            <span class="be-finance-status be-finance-status-partial">
+                Pago parcial
+            </span>
+        }
+        else
+        {
+            <span class="be-finance-status">
+                Pendiente
+            </span>
+        }
+    </div>
+
+    <div class="be-finance-summary">
+
+        <div class="be-finance-summary-item">
+            <span>Total de la reserva</span>
+
+            <strong>
+                S/ @Model.MontoTotal.ToString("N2")
+            </strong>
+        </div>
+
+        <div class="be-finance-summary-item">
+            <span>Pagado aplicado</span>
+
+            <strong>
+                S/ @pagadoAplicado.ToString("N2")
+            </strong>
+        </div>
+
+        <div class="be-finance-summary-item be-finance-summary-balance">
+            <span>Saldo pendiente</span>
+
+            <strong>
+                S/ @saldoPendiente.ToString("N2")
+            </strong>
+        </div>
+
+    </div>
+
+    @if (excesoPagado > 0m)
+    {
+        <div class="be-finance-overpayment">
+            <strong>
+                Exceso registrado:
+                S/ @excesoPagado.ToString("N2")
+            </strong>
+
+            <span>
+                Este exceso corresponde a pagos de prueba ya
+                aprobados. No se contabiliza como deuda pendiente.
+            </span>
+        </div>
+    }
+
+    @if (puedePagar)
+    {
+        <div class="be-finance-pay">
+
+            <div class="be-finance-pay-copy">
+                <h3>
+                    Realizar un pago
+                </h3>
+
+                <p>
+                    Puedes abonar cualquier monto hasta el saldo
+                    pendiente de la reserva.
+                </p>
+            </div>
+
+            <form asp-controller="MercadoPago"
+                  asp-action="Checkout"
+                  method="post"
+                  class="be-finance-pay-form">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="IdReserva"
+                       value="@Model.IdReserva" />
+
+                <div class="be-finance-pay-field">
+                    <label for="Monto">
+                        Monto a pagar
+                    </label>
+
+                    <div class="be-finance-money-input">
+                        <span>S/</span>
+
+                        <input id="Monto"
+                               name="Monto"
+                               type="number"
+                               min="0.01"
+                               max="@saldoHtml"
+                               step="0.01"
+                               value="@saldoHtml"
+                               required />
+                    </div>
+
+                    <small>
+                        Máximo disponible:
+                        S/ @saldoPendiente.ToString("N2")
+                    </small>
+                </div>
+
+                <button type="submit"
+                        class="be-finance-pay-button">
+                    Realizar pago con Mercado Pago
+                </button>
+
+            </form>
+
+        </div>
+    }
+    else if (saldoPendiente <= 0m)
+    {
+        <div class="be-finance-complete">
+            <strong>
+                ✓ La reserva no tiene saldo pendiente.
+            </strong>
+        </div>
+    }
+
+    <div class="be-finance-history">
+
+        <h3>
+            Historial de pagos
+        </h3>
+
+        @if (pagosAprobados.Length == 0)
+        {
+            <p class="be-finance-empty">
+                Todavía no tienes pagos acreditados para esta reserva.
+            </p>
+        }
+        else
+        {
+            <div class="be-finance-table-wrap">
+
+                <table class="be-finance-table">
+
+                    <thead>
+                        <tr>
+                            <th>Pago</th>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var pago in pagosAprobados)
+                        {
+                            <tr>
+                                <td>
+                                    #@pago.IdPago
+                                </td>
+
+                                <td>
+                                    @(pago.FechaPago
+                                        ?.ToString("dd/MM/yyyy HH:mm")
+                                        ?? pago.FechaCreacion
+                                            .ToString("dd/MM/yyyy HH:mm"))
+                                </td>
+
+                                <td>
+                                    S/ @pago.Monto.ToString("N2")
+                                </td>
+
+                                <td>
+                                    <span class="be-finance-approved">
+                                        APROBADO
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
+</section>
+
+<section class="be-reservation-cancel-panel">
                 <div>
                     <h2>Cancelar reserva</h2>
 

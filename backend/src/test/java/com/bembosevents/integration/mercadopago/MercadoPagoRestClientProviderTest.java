@@ -44,9 +44,7 @@ class MercadoPagoRestClientProviderTest {
                           "items": [{
                             "title": "Reserva Bembos Events",
                             "quantity": 1,
-                            "unit_price": "150.00",
-                            "unit_measure": "unit",
-                            "total_amount": "150.00"
+                            "unit_price": "150.00"
                           }]
                         }
                         """))

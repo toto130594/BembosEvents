@@ -77,7 +77,15 @@ public class CatalogoPublicoServiceImpl
     public List<SalonPublicoResponse> listarSalonesPorSede(
             Integer idSede) {
 
-        buscarSedeActiva(idSede);
+        Sede sede =
+                buscarSedeActiva(idSede);
+
+        // SEDE_EVENTOS_GUARD
+        if (Boolean.FALSE.equals(
+                sede.getPermiteEventos())) {
+
+            return List.of();
+        }
 
         return salonRepository
                 .findBySede_IdSedeAndActivoTrueOrderByNombreAsc(
@@ -217,7 +225,10 @@ public class CatalogoPublicoServiceImpl
 
         if (salon.getSede() == null
                 || !Boolean.TRUE.equals(
-                        salon.getSede().getActivo())) {
+                        salon.getSede().getActivo())
+                // SALON_SEDE_EVENTOS_GUARD
+                || Boolean.FALSE.equals(
+                        salon.getSede().getPermiteEventos())) {
 
             throw new RecursoNoEncontradoException(
                     "Salon no encontrado");
@@ -234,7 +245,12 @@ public class CatalogoPublicoServiceImpl
                 sede.getNombre(),
                 sede.getDireccion(),
                 sede.getDistrito(),
-                sede.getTelefono());
+                sede.getTelefono(),
+                sede.getTipoLocal() == null
+                        ? "RESTAURANTE"
+                        : sede.getTipoLocal(),
+                !Boolean.FALSE.equals(
+                        sede.getPermiteEventos()));
     }
 
     private SalonPublicoResponse mapSalon(

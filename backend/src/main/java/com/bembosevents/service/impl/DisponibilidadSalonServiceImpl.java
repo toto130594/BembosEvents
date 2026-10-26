@@ -148,7 +148,10 @@ public class DisponibilidadSalonServiceImpl
 
         if (salon.getSede() == null
                 || !Boolean.TRUE.equals(
-                        salon.getSede().getActivo())) {
+                        salon.getSede().getActivo())
+                // DISPONIBILIDAD_SEDE_EVENTOS_GUARD
+                || Boolean.FALSE.equals(
+                        salon.getSede().getPermiteEventos())) {
 
             throw new RecursoNoEncontradoException(
                     "Salon no encontrado");

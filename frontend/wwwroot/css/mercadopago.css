@@ -141,3 +141,150 @@
         flex-direction: column;
     }
 }
+
+/* MP_RESULT_START */
+
+.mp-result-card {
+    max-width: 900px;
+}
+
+.mp-result-success,
+.mp-result-pending,
+.mp-result-neutral {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    background: #f5f5f5;
+}
+
+.mp-result-success {
+    background: #edf9f1;
+}
+
+.mp-result-pending {
+    background: #fff8e5;
+}
+
+.mp-result-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.mp-result-warning {
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background: #fff3cd;
+}
+
+.mp-result-reservation {
+    display: grid;
+    gap: 4px;
+    padding: 18px 0;
+    border-bottom: 1px solid #e7e7e7;
+}
+
+.mp-result-reservation strong {
+    font-size: 1.3rem;
+}
+
+.mp-result-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 22px 0;
+}
+
+.mp-result-summary > div {
+    display: grid;
+    gap: 6px;
+    padding: 18px;
+    border-radius: 14px;
+    background: #f6f6f6;
+}
+
+.mp-result-summary span {
+    font-size: .88rem;
+}
+
+.mp-result-summary strong {
+    font-size: 1.35rem;
+}
+
+.mp-result-balance {
+    border: 1px solid #d7d7d7;
+}
+
+.mp-result-current-payment {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px 0;
+    border-top: 1px solid #e7e7e7;
+    border-bottom: 1px solid #e7e7e7;
+}
+
+.mp-result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 24px 0;
+}
+
+.mp-result-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.mp-result-history {
+    margin-top: 30px;
+}
+
+.mp-result-history h2 {
+    margin-bottom: 16px;
+}
+
+.mp-result-table-wrap {
+    overflow-x: auto;
+}
+
+.mp-result-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mp-result-table th,
+.mp-result-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e7e7e7;
+    text-align: left;
+    white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+    .mp-result-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .mp-result-current-payment {
+        display: grid;
+    }
+
+    .mp-result-actions {
+        display: grid;
+    }
+}
+
+/* MP_RESULT_END */
