@@ -7,7 +7,7 @@ BEGIN TRY
     -- Preservar relaciones existentes de las dos sedes DEV originales.
     UPDATE dbo.Sede
     SET nombre = N'Megaplaza FC',
-        direccion = N'Av. Alfredo Mendiola con Av. PacÃ­fico, CC Mega Plaza Lima Norte',
+        direccion = N'Av. Alfredo Mendiola con Av. Pacífico, CC Mega Plaza Lima Norte',
         distrito = N'Independencia',
         telefono = N'419-1919',
         activo = 1
@@ -22,8 +22,8 @@ BEGIN TRY
     WHERE nombre = N'DEV - San Miguel';
 
     UPDATE dbo.Salon
-    SET nombre = N'Ãrea de celebraciones',
-        descripcion = N'Espacio preparado para celebraciones, cumpleaÃ±os y reuniones.',
+    SET nombre = N'Área de celebraciones',
+        descripcion = N'Espacio preparado para celebraciones, cumpleaños y reuniones.',
         activo = 1
     WHERE nombre IN (N'DEV - Salon Norte', N'DEV - Salon Marina');
 
@@ -32,7 +32,7 @@ BEGIN TRY
     BEGIN
         INSERT INTO dbo.Sede (nombre, direccion, distrito, telefono, activo)
         VALUES (N'Megaplaza FC',
-                N'Av. Alfredo Mendiola con Av. PacÃ­fico, CC Mega Plaza Lima Norte',
+                N'Av. Alfredo Mendiola con Av. Pacífico, CC Mega Plaza Lima Norte',
                 N'Independencia',
                 N'419-1919',
                 1);
@@ -60,73 +60,73 @@ BEGIN TRY
     (N'Las Gardenias', N'Av. Benavides 5350, Miraflores, Lima', N'Miraflores', N'419-1919'),
     (N'La Fontana', N'Av. La Molina Lt. 11 Mz. A Urb. Residencial Monterrico, La Molina, Lima', N'La Molina', N'419-1919'),
     (N'Larco', N'Av. Larco 461, Miraflores, Lima', N'Miraflores', N'1231321'),
-    (N'AviaciÃ³n', N'Av. AviaciÃ³n 2800, San Borja, Lima', N'San Borja', N'419-1919'),
+    (N'Aviación', N'Av. Aviación 2800, San Borja, Lima', N'San Borja', N'419-1919'),
     (N'Mall Del Sur', N'Centro Comercial Mall del Sur, Av. Los Lirios 301, Local PCS-4058', N'San Juan de Miraflores', N'419-1919'),
-    (N'Sucre', N'Av. Antonio JosÃ© de Sucre 499', N'Pueblo Libre', N'419-1919'),
+    (N'Sucre', N'Av. Antonio José de Sucre 499', N'Pueblo Libre', N'419-1919'),
     (N'Caminos del Inca', N'Av. Caminos del Inca 215', N'Santiago de Surco', N'419-1919'),
     (N'Mega Plaza Chorrillos', N'Av. Alameda Sur esq. con Av. San Marcos, Mz. II Local L201, 2do nivel', N'Chorrillos', N'419-1919'),
-    (N'Metro CanadÃ¡', N'Av. CanadÃ¡ 1110 esq. con NicolÃ¡s Arriola', N'La Victoria', N'419-1919'),
+    (N'Metro Canadá', N'Av. Canadá 1110 esq. con Nicolás Arriola', N'La Victoria', N'419-1919'),
     (N'Mall Aventura SJL', N'Av. Lurigancho 997', N'San Juan de Lurigancho', N'419-1919'),
     (N'Jockey Plaza', N'Av. Javier Prado Este 4200', N'Santiago de Surco', N'419-1919'),
     (N'Plaza San Miguel', N'Av. de la Marina 2000', N'San Miguel', N'419-1919'),
     (N'Monterrico', N'Av. Primavera 1701, Monterrico', N'Santiago de Surco', N'419-1919'),
-    (N'Ã“valo GutiÃ©rrez', N'Av. Santa Cruz 808', N'San Isidro', N'419-1919'),
+    (N'Óvalo Gutiérrez', N'Av. Santa Cruz 808', N'San Isidro', N'419-1919'),
     (N'Aurora', N'Av. Alfredo Benavides 1821', N'Miraflores', N'419-1919'),
     (N'Royal Plaza Express', N'Av. Carlos Izaguirre 287-289, Urb. Panamericana Norte', N'Independencia', N'419-1919'),
     (N'Dos de Mayo', N'Av. Dos de Mayo 1599', N'San Isidro', N'419-1919'),
-    (N'Centro CÃ­vico', N'CC Real Plaza Centro CÃ­vico, Av. Paseo de la RepÃºblica, Local P-02', N'Lima', N'419-1919'),
+    (N'Centro Cívico', N'CC Real Plaza Centro Cívico, Av. Paseo de la República, Local P-02', N'Lima', N'419-1919'),
     (N'Javier Prado - Magdalena', N'Av. Javier Prado, Lts. 10B', N'Magdalena del Mar', N'419-1919'),
-    (N'Real Plaza Puruchuco', N'Local Comercial 132, Av. NicolÃ¡s AyllÃ³n', N'Ate', N'419-1919'),
-    (N'Plaza Center SMP Rex', N'Av. Alfredo Mendiola s/n esq. con TomÃ¡s Valle, LCE-105', N'San MartÃ­n de Porres', N'419-1919'),
-    (N'JesÃºs MarÃ­a', N'Av. HÃºsares de JunÃ­n 187', N'JesÃºs MarÃ­a', N'419-1919'),
+    (N'Real Plaza Puruchuco', N'Local Comercial 132, Av. Nicolás Ayllón', N'Ate', N'419-1919'),
+    (N'Plaza Center SMP Rex', N'Av. Alfredo Mendiola s/n esq. con Tomás Valle, LCE-105', N'San Martín de Porres', N'419-1919'),
+    (N'Jesús María', N'Av. Húsares de Junín 187', N'Jesús María', N'419-1919'),
     (N'Strip La Mar', N'Av. Manuel Cipriano Dulanto & Av. Universitaria', N'San Miguel', N'419-1919'),
     (N'Larco 2', N'Av. Larco 1080', N'Miraflores', N'419-1919'),
-    (N'Vea Higuereta', N'Av. AviaciÃ³n 5051', N'Santiago de Surco', N'419-1919'),
-    (N'Plaza Lima Sur', N'CC Plaza Lima Sur 147 y 149, Prol. Paseo de la RepÃºblica s/n, Urb. Matellini', N'Chorrillos', N'419-1919'),
+    (N'Vea Higuereta', N'Av. Aviación 5051', N'Santiago de Surco', N'419-1919'),
+    (N'Plaza Lima Sur', N'CC Plaza Lima Sur 147 y 149, Prol. Paseo de la República s/n, Urb. Matellini', N'Chorrillos', N'419-1919'),
     (N'Wong Camacho', N'CC Plaza Camacho Tienda 50, Av. Javier Prado Este', N'La Molina', N'419-1919'),
     (N'Real Plaza Primavera', N'Av. Angamos Este 2681', N'San Borja', N'419-1919'),
-    (N'JirÃ³n de La UniÃ³n', N'JirÃ³n de la UniÃ³n 839-841, Cercado de Lima', N'Lima', N'419-1919'),
-    (N'Venturosa Chorrillos', N'Av. Guardia Civil 927, Urb. La CampiÃ±a, Local Comercial 102', N'Chorrillos', N'419-1919'),
-    (N'Real Plaza Pro', N'Av. Alfredo Mendiola, PNC-01, 1er nivel del Centro Comercial', N'San MartÃ­n de Porres', N'419-1919'),
+    (N'Jirón de La Unión', N'Jirón de la Unión 839-841, Cercado de Lima', N'Lima', N'419-1919'),
+    (N'Venturosa Chorrillos', N'Av. Guardia Civil 927, Urb. La Campiña, Local Comercial 102', N'Chorrillos', N'419-1919'),
+    (N'Real Plaza Pro', N'Av. Alfredo Mendiola, PNC-01, 1er nivel del Centro Comercial', N'San Martín de Porres', N'419-1919'),
     (N'Saga', N'Av. Las Begonias 730', N'San Isidro', N'419-1919'),
-    (N'Vargas Machuca IL', N'Av. RamÃ³n Vargas Machuca 475, pasaje Pedro Bertonelli 535, Urb. San Juan', N'San Juan de Miraflores', N'419-1919'),
+    (N'Vargas Machuca IL', N'Av. Ramón Vargas Machuca 475, pasaje Pedro Bertonelli 535, Urb. San Juan', N'San Juan de Miraflores', N'419-1919'),
     (N'Plaza Center VES', N'Av. Solidaridad, Plaza Center, Villa El Salvador', N'Villa El Salvador', N'419-1919'),
     (N'UTP Lima Centro', N'Av. Petit Thouars 116', N'Lima', N'419-1919'),
     (N'San Borja Plaza FC', N'Av. Javier Prado Este 2010', N'San Borja', N'419-1919'),
-    (N'U Lima', N'Universidad de Lima, PabellÃ³n F1, Centro de Bienestar Universitario', N'Santiago de Surco', N'419-1919'),
-    (N'San Juan', N'Av. CircunvalaciÃ³n 1801', N'San Juan de Miraflores', N'419-1919'),
-    (N'Santa Anita FC', N'Av. NicolÃ¡s AyllÃ³n, Santa Anita', N'Santa Anita', N'419-1919'),
+    (N'U Lima', N'Universidad de Lima, Pabellón F1, Centro de Bienestar Universitario', N'Santiago de Surco', N'419-1919'),
+    (N'San Juan', N'Av. Circunvalación 1801', N'San Juan de Miraflores', N'419-1919'),
+    (N'Santa Anita FC', N'Av. Nicolás Ayllón, Santa Anita', N'Santa Anita', N'419-1919'),
     (N'DK Magdalena (Cocina oculta)', N'Jr. Amazonas 635', N'Magdalena del Mar', N'419-1919'),
     (N'PUCP Express', N'Av. Universitaria 1801', N'San Miguel', N'419-1919'),
-    (N'Callao', N'Av. SÃ¡enz PeÃ±a 1250, Tienda 2', N'Callao', N'419-1919'),
-    (N'Santa Clara', N'Av. NicolÃ¡s AyllÃ³n 8694, Local Comercial 132, 2do piso', N'Ate', N'419-1919'),
-    (N'Mall Plaza Santa Anita', N'Av. NicolÃ¡s AyllÃ³n, Mall Plaza Santa Anita', N'Santa Anita', N'419-1919'),
+    (N'Callao', N'Av. Sáenz Peña 1250, Tienda 2', N'Callao', N'419-1919'),
+    (N'Santa Clara', N'Av. Nicolás Ayllón 8694, Local Comercial 132, 2do piso', N'Ate', N'419-1919'),
+    (N'Mall Plaza Santa Anita', N'Av. Nicolás Ayllón, Mall Plaza Santa Anita', N'Santa Anita', N'419-1919'),
     (N'Bembos Asia', N'Boulevard de Asia, Km 97.5 Panamericana Sur, Local 76 Block N', N'Asia', N'419-1919'),
-    (N'Bembos Ventanilla', N'Av. NÃ©stor Gambetta 7036', N'Ventanilla', N'419-1919'),
-    (N'Ate', N'Av. NicolÃ¡s AyllÃ³n, Sector B, Mz. B Lt. 4, Zona A - Baja, Tienda 7', N'Ate', N'419-1919'),
+    (N'Bembos Ventanilla', N'Av. Néstor Gambetta 7036', N'Ventanilla', N'419-1919'),
+    (N'Ate', N'Av. Nicolás Ayllón, Sector B, Mz. B Lt. 4, Zona A - Baja, Tienda 7', N'Ate', N'419-1919'),
     (N'Dark Kitchen La Molina', N'Av. La Molina 2880, Mz. E Lt. 1, Urb. El Sauce de La Rinconada', N'La Molina', N'419-1919'),
-    (N'Minka', N'Av. Argentina 3257-3093, Local 38, Pasaje 3, PabellÃ³n 3', N'Callao', N'419-1919'),
-    (N'Bellavista', N'Mallplaza Bellavista, Av. Ã“scar R. Benavides 3866', N'Bellavista', N'419-1919'),
-    (N'DK Surquillo', N'GonzÃ¡les Prada 1025', N'Surquillo', N'419-1919'),
-    (N'Cencosud La Molina FC', N'Av. RaÃºl Ferrero Rebagliati 1355, Local 5519, Urb. Sirius II Etapa', N'La Molina', N'419-1919'),
-    (N'Bembos Rambla Brasil FC', N'Av. Brasil 778, Local LC-301', N'BreÃ±a', N'419-1919'),
-    (N'Villa MarÃ­a del Triunfo FC', N'Av. PachacÃºtec 3721-3781, CÃ©sar Vallejo - Nueva Esperanza', N'Villa MarÃ­a del Triunfo', N'419-1919'),
-    (N'Megaplaza FC', N'Av. Alfredo Mendiola con Av. PacÃ­fico, CC Mega Plaza Lima Norte', N'Independencia', N'419-1919'),
+    (N'Minka', N'Av. Argentina 3257-3093, Local 38, Pasaje 3, Pabellón 3', N'Callao', N'419-1919'),
+    (N'Bellavista', N'Mallplaza Bellavista, Av. Óscar R. Benavides 3866', N'Bellavista', N'419-1919'),
+    (N'DK Surquillo', N'Gonzáles Prada 1025', N'Surquillo', N'419-1919'),
+    (N'Cencosud La Molina FC', N'Av. Raúl Ferrero Rebagliati 1355, Local 5519, Urb. Sirius II Etapa', N'La Molina', N'419-1919'),
+    (N'Bembos Rambla Brasil FC', N'Av. Brasil 778, Local LC-301', N'Breña', N'419-1919'),
+    (N'Villa María del Triunfo FC', N'Av. Pachacútec 3721-3781, César Vallejo - Nueva Esperanza', N'Villa María del Triunfo', N'419-1919'),
+    (N'Megaplaza FC', N'Av. Alfredo Mendiola con Av. Pacífico, CC Mega Plaza Lima Norte', N'Independencia', N'419-1919'),
     (N'ESAN Monterrico', N'Jr. Alonso de Molina 1652', N'Santiago de Surco', N'419-1919'),
     (N'Barranco', N'Av. Pedro de Osma 108', N'Barranco', N'633-3333'),
     (N'Real Plaza Chiclayo', N'Miguel de Cervantes 300', N'Chiclayo', N'419-1919'),
-    (N'Mall Aventura Chiclayo', N'Av. JosemarÃ­a EscrivÃ¡ de Balaguer 700', N'Chiclayo', N'419-1919'),
-    (N'Mall Plaza Cayma', N'Av. EjÃ©rcito 795', N'Cayma', N'419-1919'),
-    (N'Arequipa Cerro Colorado', N'Av. AviaciÃ³n 602', N'Cerro Colorado', N'419-1919'),
-    (N'Arequipa Real Plaza', N'Av. EjÃ©rcito 1009', N'Arequipa', N'419-1919'),
+    (N'Mall Aventura Chiclayo', N'Av. Josemaría Escrivá de Balaguer 700', N'Chiclayo', N'419-1919'),
+    (N'Mall Plaza Cayma', N'Av. Ejército 795', N'Cayma', N'419-1919'),
+    (N'Arequipa Cerro Colorado', N'Av. Aviación 602', N'Cerro Colorado', N'419-1919'),
+    (N'Arequipa Real Plaza', N'Av. Ejército 1009', N'Arequipa', N'419-1919'),
     (N'Lambramani', N'Av. Los Incas, Parque Lambramani', N'Arequipa', N'419-1919'),
-    (N'Trujillo Real Plaza', N'Av. FÃ¡tima 1345', N'Trujillo', N'419-1919'),
+    (N'Trujillo Real Plaza', N'Av. Fátima 1345', N'Trujillo', N'419-1919'),
     (N'Real Plaza Cusco', N'Av. Collasuyo 2964', N'Cusco', N'419-1919'),
-    (N'Real Plaza Piura', N'Av. SÃ¡nchez Cerro 234', N'Piura', N'419-1919'),
+    (N'Real Plaza Piura', N'Av. Sánchez Cerro 234', N'Piura', N'419-1919'),
     (N'Vea Tacna', N'Parcela 9 s/n, Sector Pago Silpay', N'Tacna', N'419-1919'),
     (N'Real Plaza Cajamarca', N'Av. Evitamiento Norte, Lote 1, Barrio San Antonio', N'Cajamarca', N'419-1919'),
     (N'El Quinde Ica', N'CC El Quinde Shopping Plaza, Av. Los Maestros 206, Local PC-202/204', N'Ica', N'419-1919'),
-    (N'Real Plaza Juliaca', N'JirÃ³n Tumbes 391', N'Juliaca', N'419-1919'),
+    (N'Real Plaza Juliaca', N'Jirón Tumbes 391', N'Juliaca', N'419-1919'),
     (N'Real Plaza Puno', N'Los Incas 208', N'Puno', N'419-1919'),
     (N'Mall Plaza Huancayo FC', N'Av. Ferrocarril 146, Mall Plaza Huancayo, Local LC-63', N'Huancayo', N'419-1919'),
     (N'Real Plaza Huancayo', N'Av. Ferrocarril s/n', N'Huancayo', N'419-1919'),
@@ -189,8 +189,8 @@ BEGIN TRY
     INSERT INTO dbo.Salon (idSede, nombre, descripcion, capacidad, activo)
     SELECT
         s.idSede,
-        N'Ãrea de celebraciones',
-        N'Espacio preparado para celebraciones, cumpleaÃ±os y reuniones.',
+        N'Área de celebraciones',
+        N'Espacio preparado para celebraciones, cumpleaños y reuniones.',
         CASE
             WHEN s.nombre LIKE N'%Express%'
               OR s.nombre LIKE N'%DK %'
@@ -258,10 +258,10 @@ BEGIN TRY
     )
     UPDATE p
        SET nombre = CASE d.rn
-            WHEN 1 THEN N'Cumple ClÃ¡sico'
+            WHEN 1 THEN N'Cumple Clásico'
             WHEN 2 THEN N'Cumple Plus'
             WHEN 3 THEN N'Cumple Full'
-            ELSE CONCAT(N'CelebraciÃ³n Especial ', d.rn)
+            ELSE CONCAT(N'Celebración Especial ', d.rn)
        END,
        activo = 1
     FROM dbo.Paquete p
@@ -277,9 +277,9 @@ BEGIN TRY
     UPDATE t
        SET nombre = CASE d.rn
             WHEN 1 THEN N'Bembos Party'
-            WHEN 2 THEN N'HÃ©roes en AcciÃ³n'
+            WHEN 2 THEN N'Héroes en Acción'
             WHEN 3 THEN N'Aventura Espacial'
-            ELSE CONCAT(N'TemÃ¡tica Especial ', d.rn)
+            ELSE CONCAT(N'Temática Especial ', d.rn)
        END,
        activo = 1
     FROM dbo.Tematica t
@@ -309,12 +309,12 @@ BEGIN TRY
     INSERT INTO @Paquetes
         (nombre, descripcion, precioBase, cantidadPersonasBase)
     VALUES
-    (N'Cumple ClÃ¡sico', N'Una celebraciÃ³n prÃ¡ctica para grupos pequeÃ±os, con una base sencilla para personalizar sede, horario y temÃ¡tica.', 399.00, 10),
-    (N'Cumple Plus', N'MÃ¡s espacio para compartir y una base flexible para sumar temÃ¡tica y servicios adicionales.', 549.00, 15),
-    (N'Cumple Full', N'Una opciÃ³n completa para cumpleaÃ±os con mayor capacidad y mÃ¡s posibilidades de personalizaciÃ³n.', 749.00, 20),
-    (N'Fiesta Infantil', N'Pensado para celebraciones infantiles con espacio para juegos, decoraciÃ³n y servicios adicionales.', 899.00, 25),
-    (N'Fiesta Teen', N'Una propuesta para adolescentes con ambientaciÃ³n moderna y opciones de mÃºsica, fotografÃ­a y temÃ¡tica.', 999.00, 25),
-    (N'CelebraciÃ³n Familiar', N'Ideal para reuniones familiares, cumpleaÃ±os y fechas especiales con un grupo amplio.', 1199.00, 30),
+    (N'Cumple Clásico', N'Una celebración práctica para grupos pequeños, con una base sencilla para personalizar sede, horario y temática.', 399.00, 10),
+    (N'Cumple Plus', N'Más espacio para compartir y una base flexible para sumar temática y servicios adicionales.', 549.00, 15),
+    (N'Cumple Full', N'Una opción completa para cumpleaños con mayor capacidad y más posibilidades de personalización.', 749.00, 20),
+    (N'Fiesta Infantil', N'Pensado para celebraciones infantiles con espacio para juegos, decoración y servicios adicionales.', 899.00, 25),
+    (N'Fiesta Teen', N'Una propuesta para adolescentes con ambientación moderna y opciones de música, fotografía y temática.', 999.00, 25),
+    (N'Celebración Familiar', N'Ideal para reuniones familiares, cumpleaños y fechas especiales con un grupo amplio.', 1199.00, 30),
     (N'Evento Escolar', N'Una base para promociones, reuniones de aula y celebraciones escolares.', 1499.00, 40),
     (N'Evento Corporativo', N'Formato para reuniones de equipo, integraciones y celebraciones empresariales.', 1799.00, 40);
 
@@ -346,18 +346,18 @@ BEGIN TRY
     INSERT INTO @Tematicas
         (nombre, descripcion, precioAdicional)
     VALUES
-    (N'Bembos Party', N'AmbientaciÃ³n inspirada en una fiesta urbana, alegre y colorida.', 0.00),
-    (N'HÃ©roes en AcciÃ³n', N'DecoraciÃ³n de hÃ©roes originales, ciudad, rayos y colores intensos.', 120.00),
-    (N'Aventura Espacial', N'Planetas, estrellas, cohetes y una ambientaciÃ³n galÃ¡ctica.', 140.00),
-    (N'Mundo Dinosaurio', N'Selva, huellas y dinosaurios para una celebraciÃ³n de aventura.', 150.00),
-    (N'Princesas y Castillos', N'Castillos, coronas y tonos festivos para una celebraciÃ³n de cuento.', 160.00),
-    (N'PasiÃ³n por el FÃºtbol', N'Cancha, balones y ambiente deportivo para fanÃ¡ticos del fÃºtbol.', 120.00),
-    (N'Gamer Party', N'Controles, pixeles, luces y estÃ©tica de videojuegos.', 170.00),
-    (N'NeÃ³n Party', N'Luces, colores fluorescentes y estilo moderno para fiestas juveniles.', 190.00),
-    (N'Safari Aventurero', N'Animales, vegetaciÃ³n y exploraciÃ³n en una ambientaciÃ³n de safari.', 150.00),
+    (N'Bembos Party', N'Ambientación inspirada en una fiesta urbana, alegre y colorida.', 0.00),
+    (N'Héroes en Acción', N'Decoración de héroes originales, ciudad, rayos y colores intensos.', 120.00),
+    (N'Aventura Espacial', N'Planetas, estrellas, cohetes y una ambientación galáctica.', 140.00),
+    (N'Mundo Dinosaurio', N'Selva, huellas y dinosaurios para una celebración de aventura.', 150.00),
+    (N'Princesas y Castillos', N'Castillos, coronas y tonos festivos para una celebración de cuento.', 160.00),
+    (N'Pasión por el Fútbol', N'Cancha, balones y ambiente deportivo para fanáticos del fútbol.', 120.00),
+    (N'Gamer Party', N'Controles, pixeles, luces y estética de videojuegos.', 170.00),
+    (N'Neón Party', N'Luces, colores fluorescentes y estilo moderno para fiestas juveniles.', 190.00),
+    (N'Safari Aventurero', N'Animales, vegetación y exploración en una ambientación de safari.', 150.00),
     (N'Piratas del Tesoro', N'Mapas, cofres y aventura pirata para buscar el tesoro.', 150.00),
-    (N'Unicornio ArcoÃ­ris', N'ArcoÃ­ris, nubes y colores suaves para una fiesta fantÃ¡stica.', 160.00),
-    (N'Ciencia Divertida', N'Laboratorio creativo, experimentos visuales y decoraciÃ³n cientÃ­fica.', 180.00);
+    (N'Unicornio Arcoíris', N'Arcoíris, nubes y colores suaves para una fiesta fantástica.', 160.00),
+    (N'Ciencia Divertida', N'Laboratorio creativo, experimentos visuales y decoración científica.', 180.00);
 
     MERGE dbo.Tematica AS target
     USING @Tematicas AS source
@@ -385,16 +385,16 @@ BEGIN TRY
     INSERT INTO @Servicios
         (nombre, descripcion, precio)
     VALUES
-    (N'Torta personalizada', N'Torta temÃ¡tica para complementar la celebraciÃ³n.', 180.00),
-    (N'DecoraciÃ³n con globos', N'Arco y composiciÃ³n de globos de acuerdo con la temÃ¡tica elegida.', 150.00),
-    (N'Animador', N'AnimaciÃ³n guiada con dinÃ¡micas y juegos para los invitados.', 220.00),
-    (N'FotografÃ­a del evento', N'Cobertura fotogrÃ¡fica durante la celebraciÃ³n.', 250.00),
+    (N'Torta personalizada', N'Torta temática para complementar la celebración.', 180.00),
+    (N'Decoración con globos', N'Arco y composición de globos de acuerdo con la temática elegida.', 150.00),
+    (N'Animador', N'Animación guiada con dinámicas y juegos para los invitados.', 220.00),
+    (N'Fotografía del evento', N'Cobertura fotográfica durante la celebración.', 250.00),
     (N'Video recuerdo', N'Video corto con los mejores momentos del evento.', 180.00),
-    (N'PiÃ±ata temÃ¡tica', N'PiÃ±ata preparada de acuerdo con la temÃ¡tica seleccionada.', 120.00),
+    (N'Piñata temática', N'Piñata preparada de acuerdo con la temática seleccionada.', 120.00),
     (N'Pinta caritas', N'Servicio de pintado facial para invitados.', 140.00),
-    (N'Mesa dulce', N'Mesa con dulces y presentaciÃ³n decorativa para la celebraciÃ³n.', 250.00),
-    (N'Invitaciones digitales', N'DiseÃ±o de invitaciÃ³n digital personalizada para compartir.', 60.00),
-    (N'Sonido y DJ', N'MÃºsica y ambientaciÃ³n sonora durante el evento.', 300.00);
+    (N'Mesa dulce', N'Mesa con dulces y presentación decorativa para la celebración.', 250.00),
+    (N'Invitaciones digitales', N'Diseño de invitación digital personalizada para compartir.', 60.00),
+    (N'Sonido y DJ', N'Música y ambientación sonora durante el evento.', 300.00);
 
     MERGE dbo.ServicioAdicional AS target
     USING @Servicios AS source
@@ -428,31 +428,31 @@ BEGIN TRY
     UPDATE dbo.Paquete
     SET descripcion =
         CASE nombre
-            WHEN N'Cumple ClÃ¡sico' THEN
-                N'Una opciÃ³n prÃ¡ctica para una celebraciÃ³n pequeÃ±a y cercana. Parte de una base para 10 personas y permite sumar temÃ¡tica y servicios adicionales durante la reserva.'
+            WHEN N'Cumple Clásico' THEN
+                N'Una opción práctica para una celebración pequeña y cercana. Parte de una base para 10 personas y permite sumar temática y servicios adicionales durante la reserva.'
             WHEN N'Cumple Plus' THEN
-                N'Pensado para compartir con un grupo mediano sin complicarte. Su base para 15 personas te permite personalizar la experiencia con temÃ¡tica y servicios adicionales.'
+                N'Pensado para compartir con un grupo mediano sin complicarte. Su base para 15 personas te permite personalizar la experiencia con temática y servicios adicionales.'
             WHEN N'Cumple Full' THEN
-                N'Una alternativa mÃ¡s amplia para celebrar con comodidad. Su base para 20 personas funciona como punto de partida para una experiencia con mayor personalizaciÃ³n.'
+                N'Una alternativa más amplia para celebrar con comodidad. Su base para 20 personas funciona como punto de partida para una experiencia con mayor personalización.'
             WHEN N'Fiesta Infantil' THEN
-                N'Creado para celebraciones infantiles con una base para 25 personas. Combina el paquete con temÃ¡ticas coloridas y servicios adicionales para darle personalidad al evento.'
+                N'Creado para celebraciones infantiles con una base para 25 personas. Combina el paquete con temáticas coloridas y servicios adicionales para darle personalidad al evento.'
             WHEN N'Fiesta Teen' THEN
-                N'Una propuesta para celebraciones juveniles con base para 25 personas. Ideal para complementar con ambientaciones modernas, mÃºsica, fotografÃ­a y otros servicios disponibles.'
-            WHEN N'CelebraciÃ³n Familiar' THEN
-                N'Pensado para reunir a la familia en cumpleaÃ±os y fechas especiales. Su base para 30 personas ofrece espacio para personalizar la celebraciÃ³n segÃºn el estilo del grupo.'
+                N'Una propuesta para celebraciones juveniles con base para 25 personas. Ideal para complementar con ambientaciones modernas, música, fotografía y otros servicios disponibles.'
+            WHEN N'Celebración Familiar' THEN
+                N'Pensado para reunir a la familia en cumpleaños y fechas especiales. Su base para 30 personas ofrece espacio para personalizar la celebración según el estilo del grupo.'
             WHEN N'Evento Escolar' THEN
-                N'Una opciÃ³n para promociones, reuniones de aula y celebraciones escolares. Parte de una base para 40 personas y permite complementar la experiencia durante la reserva.'
+                N'Una opción para promociones, reuniones de aula y celebraciones escolares. Parte de una base para 40 personas y permite complementar la experiencia durante la reserva.'
             WHEN N'Evento Corporativo' THEN
                 N'Formato pensado para integraciones, celebraciones de equipo y encuentros empresariales. Su base para 40 personas puede complementarse con servicios adicionales.'
             ELSE descripcion
         END
     WHERE nombre IN (
-        N'Cumple ClÃ¡sico',
+        N'Cumple Clásico',
         N'Cumple Plus',
         N'Cumple Full',
         N'Fiesta Infantil',
         N'Fiesta Teen',
-        N'CelebraciÃ³n Familiar',
+        N'Celebración Familiar',
         N'Evento Escolar',
         N'Evento Corporativo'
     );
@@ -461,43 +461,43 @@ BEGIN TRY
     SET descripcion =
         CASE nombre
             WHEN N'Bembos Party' THEN
-                N'La ambientaciÃ³n base de Bembos Events: colores intensos, energÃ­a de fiesta y un estilo alegre que combina con cualquier tipo de celebraciÃ³n.'
-            WHEN N'HÃ©roes en AcciÃ³n' THEN
-                N'Una ambientaciÃ³n de aventura con ciudad, rayos, emblemas y hÃ©roes originales. Ideal para una celebraciÃ³n dinÃ¡mica y llena de energÃ­a.'
+                N'La ambientación base de Bembos Events: colores intensos, energía de fiesta y un estilo alegre que combina con cualquier tipo de celebración.'
+            WHEN N'Héroes en Acción' THEN
+                N'Una ambientación de aventura con ciudad, rayos, emblemas y héroes originales. Ideal para una celebración dinámica y llena de energía.'
             WHEN N'Aventura Espacial' THEN
-                N'Planetas, estrellas, cohetes y detalles galÃ¡cticos transforman el espacio en una misiÃ³n por el universo.'
+                N'Planetas, estrellas, cohetes y detalles galácticos transforman el espacio en una misión por el universo.'
             WHEN N'Mundo Dinosaurio' THEN
-                N'VegetaciÃ³n, huellas y dinosaurios crean una experiencia prehistÃ³rica pensada para pequeÃ±os exploradores.'
+                N'Vegetación, huellas y dinosaurios crean una experiencia prehistórica pensada para pequeños exploradores.'
             WHEN N'Princesas y Castillos' THEN
-                N'Castillos, coronas y detalles de cuento crean una celebraciÃ³n elegante, fantÃ¡stica y llena de color.'
-            WHEN N'PasiÃ³n por el FÃºtbol' THEN
-                N'Cancha, balones y detalles deportivos para celebrar con la emociÃ³n de un gran partido.'
+                N'Castillos, coronas y detalles de cuento crean una celebración elegante, fantástica y llena de color.'
+            WHEN N'Pasión por el Fútbol' THEN
+                N'Cancha, balones y detalles deportivos para celebrar con la emoción de un gran partido.'
             WHEN N'Gamer Party' THEN
-                N'Controles, pÃ­xeles y referencias al mundo de los videojuegos para una fiesta con estÃ©tica gamer y mucha energÃ­a.'
-            WHEN N'NeÃ³n Party' THEN
-                N'Colores fluorescentes, contrastes intensos y una estÃ©tica moderna para una celebraciÃ³n juvenil con personalidad.'
+                N'Controles, píxeles y referencias al mundo de los videojuegos para una fiesta con estética gamer y mucha energía.'
+            WHEN N'Neón Party' THEN
+                N'Colores fluorescentes, contrastes intensos y una estética moderna para una celebración juvenil con personalidad.'
             WHEN N'Safari Aventurero' THEN
-                N'Animales, vegetaciÃ³n y detalles de exploraciÃ³n convierten el espacio en una aventura inspirada en la naturaleza.'
+                N'Animales, vegetación y detalles de exploración convierten el espacio en una aventura inspirada en la naturaleza.'
             WHEN N'Piratas del Tesoro' THEN
-                N'Mapas, cofres y sÃ­mbolos piratas preparan el escenario para una celebraciÃ³n llena de aventura y bÃºsqueda del tesoro.'
-            WHEN N'Unicornio ArcoÃ­ris' THEN
-                N'ArcoÃ­ris, nubes y tonos suaves crean una ambientaciÃ³n fantÃ¡stica, luminosa y llena de detalles mÃ¡gicos.'
+                N'Mapas, cofres y símbolos piratas preparan el escenario para una celebración llena de aventura y búsqueda del tesoro.'
+            WHEN N'Unicornio Arcoíris' THEN
+                N'Arcoíris, nubes y tonos suaves crean una ambientación fantástica, luminosa y llena de detalles mágicos.'
             WHEN N'Ciencia Divertida' THEN
-                N'Elementos de laboratorio, fÃ³rmulas y experimentos visuales dan forma a una celebraciÃ³n creativa inspirada en la ciencia.'
+                N'Elementos de laboratorio, fórmulas y experimentos visuales dan forma a una celebración creativa inspirada en la ciencia.'
             ELSE descripcion
         END
     WHERE nombre IN (
         N'Bembos Party',
-        N'HÃ©roes en AcciÃ³n',
+        N'Héroes en Acción',
         N'Aventura Espacial',
         N'Mundo Dinosaurio',
         N'Princesas y Castillos',
-        N'PasiÃ³n por el FÃºtbol',
+        N'Pasión por el Fútbol',
         N'Gamer Party',
-        N'NeÃ³n Party',
+        N'Neón Party',
         N'Safari Aventurero',
         N'Piratas del Tesoro',
-        N'Unicornio ArcoÃ­ris',
+        N'Unicornio Arcoíris',
         N'Ciencia Divertida'
     );
 
@@ -505,34 +505,34 @@ BEGIN TRY
     SET descripcion =
         CASE nombre
             WHEN N'Torta personalizada' THEN
-                N'Torta decorada para complementar la celebraciÃ³n y mantener una lÃ­nea visual acorde con el estilo elegido para el evento.'
-            WHEN N'DecoraciÃ³n con globos' THEN
-                N'ComposiciÃ³n decorativa con globos para reforzar la ambientaciÃ³n y crear un punto visual destacado dentro de la celebraciÃ³n.'
+                N'Torta decorada para complementar la celebración y mantener una línea visual acorde con el estilo elegido para el evento.'
+            WHEN N'Decoración con globos' THEN
+                N'Composición decorativa con globos para reforzar la ambientación y crear un punto visual destacado dentro de la celebración.'
             WHEN N'Animador' THEN
-                N'AnimaciÃ³n guiada con dinÃ¡micas y juegos para acompaÃ±ar a los invitados y mantener activa la celebraciÃ³n.'
-            WHEN N'FotografÃ­a del evento' THEN
-                N'Cobertura fotogrÃ¡fica para registrar momentos importantes de la celebraciÃ³n y conservar un recuerdo del evento.'
+                N'Animación guiada con dinámicas y juegos para acompañar a los invitados y mantener activa la celebración.'
+            WHEN N'Fotografía del evento' THEN
+                N'Cobertura fotográfica para registrar momentos importantes de la celebración y conservar un recuerdo del evento.'
             WHEN N'Video recuerdo' THEN
-                N'Registro en video de momentos destacados de la celebraciÃ³n, preparado como un recuerdo breve del evento.'
-            WHEN N'PiÃ±ata temÃ¡tica' THEN
-                N'PiÃ±ata preparada para complementar la temÃ¡tica seleccionada y sumar una actividad clÃ¡sica a la celebraciÃ³n.'
+                N'Registro en video de momentos destacados de la celebración, preparado como un recuerdo breve del evento.'
+            WHEN N'Piñata temática' THEN
+                N'Piñata preparada para complementar la temática seleccionada y sumar una actividad clásica a la celebración.'
             WHEN N'Pinta caritas' THEN
-                N'Servicio de pintado facial con diseÃ±os recreativos para aÃ±adir una actividad divertida durante el evento.'
+                N'Servicio de pintado facial con diseños recreativos para añadir una actividad divertida durante el evento.'
             WHEN N'Mesa dulce' THEN
-                N'PresentaciÃ³n decorativa de dulces para complementar la ambientaciÃ³n y aÃ±adir un punto especial dentro de la celebraciÃ³n.'
+                N'Presentación decorativa de dulces para complementar la ambientación y añadir un punto especial dentro de la celebración.'
             WHEN N'Invitaciones digitales' THEN
-                N'DiseÃ±o de invitaciÃ³n digital personalizada para compartir fÃ¡cilmente los datos principales de la celebraciÃ³n.'
+                N'Diseño de invitación digital personalizada para compartir fácilmente los datos principales de la celebración.'
             WHEN N'Sonido y DJ' THEN
-                N'MÃºsica y ambientaciÃ³n sonora para acompaÃ±ar distintos momentos del evento y mantener una atmÃ³sfera de celebraciÃ³n.'
+                N'Música y ambientación sonora para acompañar distintos momentos del evento y mantener una atmósfera de celebración.'
             ELSE descripcion
         END
     WHERE nombre IN (
         N'Torta personalizada',
-        N'DecoraciÃ³n con globos',
+        N'Decoración con globos',
         N'Animador',
-        N'FotografÃ­a del evento',
+        N'Fotografía del evento',
         N'Video recuerdo',
-        N'PiÃ±ata temÃ¡tica',
+        N'Piñata temática',
         N'Pinta caritas',
         N'Mesa dulce',
         N'Invitaciones digitales',

@@ -52,7 +52,7 @@ const txt = el => (el && el.textContent ? el.textContent : '').replace(/\s+/g,' 
         <div class="be-r3-copy">
           <span class="be-r3-kicker">BEMBOS EVENTS</span>
           <h1>Tu fiesta.<br><em>Tu momento.</em></h1>
-          <p>Celebra en grande con espacios, temÃ¡ticas y paquetes preparados para convertir cada momento en una experiencia inolvidable.</p>
+          <p>Celebra en grande con espacios, temáticas y paquetes preparados para convertir cada momento en una experiencia inolvidable.</p>
           <div class="be-r3-actions">
             <a class="be-r3-btn be-r3-btn-primary" href="${esc(sedesHref)}">Comienza tu evento</a>
             <a class="be-r3-btn be-r3-btn-secondary" href="${esc(packsHref)}">Ver paquetes</a>
@@ -84,7 +84,7 @@ const txt = el => (el && el.textContent ? el.textContent : '').replace(/\s+/g,' 
   }
   function venueLooksRelevant(){
     const t = pageText();
-    return (t.includes('VOLVER A SEDES') || t.includes('INFORMACION DE LA SEDE') || t.includes('INFORMACIÃ“N DE LA SEDE')) &&
+    return (t.includes('VOLVER A SEDES') || t.includes('INFORMACION DE LA SEDE') || t.includes('INFORMACIÓN DE LA SEDE')) &&
            (t.includes('SALONES') || t.includes('SALON'));
   }
   function locateVenueRoot(){
@@ -108,15 +108,15 @@ const txt = el => (el && el.textContent ? el.textContent : '').replace(/\s+/g,' 
     const original = titleEl ? txt(titleEl) : 'Bembos Events';
     const clean = original.replace(/^DEV\s*-\s*/i,'').replace(/^Bembos\s+/i,'').trim();
     const venueTitle = /^Bembos\s/i.test(original) ? original : `Bembos ${clean || 'Events'}`;
-    const address = afterLabel(lines,/^Direcci[oÃ³]n$/i) || 'Av. Alfredo Mendiola 1400';
+    const address = afterLabel(lines,/^Direcci[oó]n$/i) || 'Av. Alfredo Mendiola 1400';
     const district = afterLabel(lines,/^Distrito$/i) || 'Independencia';
-    const phone = afterLabel(lines,/^Tel[eÃ©]fono$/i) || '999 111 111';
+    const phone = afterLabel(lines,/^Tel[eé]fono$/i) || '999 111 111';
     const cap = (raw.match(/Capacidad\s*:\s*([^\n\r]+)/i) || [,'40 personas'])[1].trim();
     const back = findLink(root,/volver.*sede/i);
-    const salon = findLink(root,/ver.*sal[oÃ³]n/i);
-    const salonHeading = [...root.querySelectorAll('h2,h3,h4')].map(txt).find(x=>/sal[oÃ³]n/i.test(x) && !/^salones/i.test(x));
-    const salonName = salonHeading ? salonHeading.replace(/^DEV\s*-\s*/i,'') : 'SalÃ³n Norte';
-    const p = [...root.querySelectorAll('p')].map(txt).find(x=>x.length>25 && /sal[oÃ³]n|reserva|celebr|fiesta/i.test(x));
+    const salon = findLink(root,/ver.*sal[oó]n/i);
+    const salonHeading = [...root.querySelectorAll('h2,h3,h4')].map(txt).find(x=>/sal[oó]n/i.test(x) && !/^salones/i.test(x));
+    const salonName = salonHeading ? salonHeading.replace(/^DEV\s*-\s*/i,'') : 'Salón Norte';
+    const p = [...root.querySelectorAll('p')].map(txt).find(x=>x.length>25 && /sal[oó]n|reserva|celebr|fiesta/i.test(x));
     const desc = p || 'Un espacio preparado para celebrar y disfrutar una experiencia Bembos con familia y amigos.';
 
     root.id = 'be-r3-venue';
@@ -128,21 +128,21 @@ const txt = el => (el && el.textContent ? el.textContent : '').replace(/\s+/g,' 
         <section class="be-r3-venue-hero">
           <div class="be-r3-venue-photo"><span class="be-r3-location">â— ${esc(district)}</span></div>
           <div class="be-r3-venue-content">
-            <span class="be-r3-kicker2">Tu prÃ³xima celebraciÃ³n</span>
+            <span class="be-r3-kicker2">Tu próxima celebración</span>
             <h1>${esc(venueTitle)}</h1>
-            <p class="be-r3-desc">Encuentra el espacio ideal para celebrar tu evento con una experiencia Bembos cÃ³moda, divertida y lista para compartir.</p>
+            <p class="be-r3-desc">Encuentra el espacio ideal para celebrar tu evento con una experiencia Bembos cómoda, divertida y lista para compartir.</p>
             <div class="be-r3-meta">
-              <div class="be-r3-meta-item"><div class="be-r3-meta-icon">âŒ–</div><div class="be-r3-meta-copy"><small>DirecciÃ³n</small><strong>${esc(address)}</strong></div></div>
+              <div class="be-r3-meta-item"><div class="be-r3-meta-icon">âŒ–</div><div class="be-r3-meta-copy"><small>Dirección</small><strong>${esc(address)}</strong></div></div>
               <div class="be-r3-meta-item"><div class="be-r3-meta-icon">â—†</div><div class="be-r3-meta-copy"><small>Distrito</small><strong>${esc(district)}</strong></div></div>
-              <div class="be-r3-meta-item"><div class="be-r3-meta-icon">â˜Ž</div><div class="be-r3-meta-copy"><small>TelÃ©fono</small><strong>${esc(phone)}</strong></div></div>
+              <div class="be-r3-meta-item"><div class="be-r3-meta-icon">â˜Ž</div><div class="be-r3-meta-copy"><small>Teléfono</small><strong>${esc(phone)}</strong></div></div>
             </div>
           </div>
         </section>
         <section class="be-r3-salons">
-          <div class="be-r3-section-head"><div><span class="be-r3-kicker2">Nuestros espacios</span><h2>Elige tu salÃ³n</h2></div><p>Revisa la capacidad y conoce el espacio disponible para tu celebraciÃ³n.</p></div>
+          <div class="be-r3-section-head"><div><span class="be-r3-kicker2">Nuestros espacios</span><h2>Elige tu salón</h2></div><p>Revisa la capacidad y conoce el espacio disponible para tu celebración.</p></div>
           <article class="be-r3-salon-card">
             <div class="be-r3-salon-photo"><span class="be-r3-capacity">â— Hasta ${esc(cap)}</span></div>
-            <div class="be-r3-salon-body"><span class="be-r3-kicker2">${esc(clean || district)}</span><h3>${esc(salonName)}</h3><p>${esc(desc)}</p><div class="be-r3-salon-footer"><span class="be-r3-salon-note">Ideal para cumpleaÃ±os y celebraciones</span><a class="be-r3-salon-btn" href="${esc(salon ? salon.getAttribute('href') : '#')}">Ver salÃ³n â†’</a></div></div>
+            <div class="be-r3-salon-body"><span class="be-r3-kicker2">${esc(clean || district)}</span><h3>${esc(salonName)}</h3><p>${esc(desc)}</p><div class="be-r3-salon-footer"><span class="be-r3-salon-note">Ideal para cumpleaños y celebraciones</span><a class="be-r3-salon-btn" href="${esc(salon ? salon.getAttribute('href') : '#')}">Ver salón â†’</a></div></div>
           </article>
         </section>
       </div>`;

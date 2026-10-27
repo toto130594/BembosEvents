@@ -55,8 +55,8 @@
                         <em>Tu momento.</em>
                     </h1>
                     <p class="be-hero-text">
-                        Convierte tu celebraciÃ³n en una experiencia inolvidable con espacios,
-                        temÃ¡ticas y paquetes preparados para disfrutar en grande.
+                        Convierte tu celebración en una experiencia inolvidable con espacios,
+                        temáticas y paquetes preparados para disfrutar en grande.
                     </p>
                     <div class="be-hero-actions">
                         <a class="be-hero-button be-hero-button--primary" href="${escapeHtml(sedesHref)}">
@@ -121,29 +121,29 @@
             ? `Bembos ${cleanTitle}`
             : 'Bembos Events';
 
-        const address = captureLineAfterLabel(raw, /^Direcci[oÃ³]n$/i) || 'Av. Alfredo Mendiola 1400';
+        const address = captureLineAfterLabel(raw, /^Direcci[oó]n$/i) || 'Av. Alfredo Mendiola 1400';
         const district = captureLineAfterLabel(raw, /^Distrito$/i) || 'Independencia';
-        const phone = captureLineAfterLabel(raw, /^Tel[eÃ©]fono$/i) || '999 111 111';
+        const phone = captureLineAfterLabel(raw, /^Tel[eé]fono$/i) || '999 111 111';
 
         const capacityMatch = raw.match(/Capacidad\s*:\s*([^\n\r]+)/i);
         const capacity = capacityMatch ? normalize(capacityMatch[1]) : '40 personas';
 
         const salonHeading = [...root.querySelectorAll('h2, h3, h4')]
             .map(x => textOf(x))
-            .find(x => /sal[oÃ³]n/i.test(x) && !/^salones/i.test(x));
+            .find(x => /sal[oó]n/i.test(x) && !/^salones/i.test(x));
 
         const salonName = salonHeading
             ? salonHeading.replace(/^DEV\s*-\s*/i, '')
-            : 'SalÃ³n Norte';
+            : 'Salón Norte';
 
         const backLink = findLinkByText(root, /volver.*sede/i);
-        const salonLink = findLinkByText(root, /ver.*sal[oÃ³]n/i);
+        const salonLink = findLinkByText(root, /ver.*sal[oó]n/i);
         const backHref = backLink?.getAttribute('href') || '/sedes';
         const salonHref = salonLink?.getAttribute('href') || '#';
 
         const descriptiveParagraph = [...root.querySelectorAll('p')]
             .map(p => textOf(p))
-            .find(t => /sal[oÃ³]n|reserva|celebr|fiesta/i.test(t) && t.length > 25);
+            .find(t => /sal[oó]n|reserva|celebr|fiesta/i.test(t) && t.length > 25);
 
         const salonDescription = descriptiveParagraph ||
             'Un espacio preparado para celebrar, compartir y disfrutar una experiencia Bembos con familia y amigos.';
@@ -162,18 +162,18 @@
                     </div>
 
                     <div class="be-venue-content">
-                        <span class="be-venue-kicker">Tu prÃ³xima celebraciÃ³n</span>
+                        <span class="be-venue-kicker">Tu próxima celebración</span>
                         <h1 class="be-venue-title">${escapeHtml(venueTitle)}</h1>
                         <p class="be-venue-description">
                             Encuentra el espacio ideal para celebrar tu evento y vivir una experiencia
-                            Bembos cÃ³moda, divertida y lista para compartir.
+                            Bembos cómoda, divertida y lista para compartir.
                         </p>
 
                         <div class="be-venue-meta">
                             <div class="be-meta-item">
                                 <div class="be-meta-icon">âŒ–</div>
                                 <div class="be-meta-copy">
-                                    <small>DirecciÃ³n</small>
+                                    <small>Dirección</small>
                                     <strong>${escapeHtml(address)}</strong>
                                 </div>
                             </div>
@@ -189,7 +189,7 @@
                             <div class="be-meta-item">
                                 <div class="be-meta-icon">â˜Ž</div>
                                 <div class="be-meta-copy">
-                                    <small>TelÃ©fono</small>
+                                    <small>Teléfono</small>
                                     <strong>${escapeHtml(phone)}</strong>
                                 </div>
                             </div>
@@ -201,10 +201,10 @@
                     <header class="be-section-head">
                         <div>
                             <span class="be-section-kicker">Nuestros espacios</span>
-                            <h2>Elige tu salÃ³n</h2>
+                            <h2>Elige tu salón</h2>
                         </div>
                         <p>
-                            Revisa la capacidad y conoce el espacio disponible para tu celebraciÃ³n.
+                            Revisa la capacidad y conoce el espacio disponible para tu celebración.
                         </p>
                     </header>
 
@@ -219,8 +219,8 @@
                             <p>${escapeHtml(salonDescription)}</p>
 
                             <div class="be-salon-footer">
-                                <span class="be-salon-note">Ideal para cumpleaÃ±os y celebraciones</span>
-                                <a href="${escapeHtml(salonHref)}" class="be-salon-button">Ver salÃ³n â†’</a>
+                                <span class="be-salon-note">Ideal para cumpleaños y celebraciones</span>
+                                <a href="${escapeHtml(salonHref)}" class="be-salon-button">Ver salón â†’</a>
                             </div>
                         </div>
                     </article>

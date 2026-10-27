@@ -68,8 +68,8 @@
                 @if (Model.Sede.PermiteEventos)
                 {
                     <p>
-                        Este local estÃ¡ habilitado para eventos.
-                        Revisa sus espacios disponibles y continÃºa
+                        Este local está habilitado para eventos.
+                        Revisa sus espacios disponibles y continúa
                         con tu reserva.
                     </p>
 
@@ -82,8 +82,8 @@
                 else
                 {
                     <p>
-                        Este punto forma parte del catÃ¡logo de locales,
-                        pero actualmente no estÃ¡ habilitado para reservas
+                        Este punto forma parte del catálogo de locales,
+                        pero actualmente no está habilitado para reservas
                         de eventos en Bembos Events.
                     </p>
 
@@ -97,12 +97,12 @@
 
             <aside class="be-r4-detail-info">
                 <span>
-                    InformaciÃ³n del local
+                    Información del local
                 </span>
 
                 <dl>
                     <div>
-                        <dt>DirecciÃ³n</dt>
+                        <dt>Dirección</dt>
                         <dd>@Model.Sede.Direccion</dd>
                     </div>
 
@@ -119,7 +119,7 @@
                     @if (!string.IsNullOrWhiteSpace(Model.Sede.Telefono))
                     {
                         <div>
-                            <dt>TelÃ©fono</dt>
+                            <dt>Teléfono</dt>
                             <dd>@Model.Sede.Telefono</dd>
                         </div>
                     }
@@ -136,7 +136,7 @@
             <div class="be-r4-section-heading">
                 <div>
                     <span>
-                        Espacios para tu celebraciÃ³n
+                        Espacios para tu celebración
                     </span>
 
                     <h2>
@@ -154,11 +154,11 @@
             {
                 <div class="be-r4-empty">
                     <h3>
-                        AÃºn no hay espacios disponibles
+                        Aún no hay espacios disponibles
                     </h3>
 
                     <p>
-                        Este local estÃ¡ habilitado para eventos,
+                        Este local está habilitado para eventos,
                         pero actualmente no tiene salones publicados.
                     </p>
                 </div>
@@ -194,7 +194,7 @@
                             <a asp-controller="Salones"
                                asp-action="Details"
                                asp-route-idSalon="@salon.IdSalon">
-                                Ver salÃ³n
+                                Ver salón
                             </a>
                         </article>
                     }
@@ -209,11 +209,11 @@ else
         <div class="be-container">
             <div class="be-r4-info-notice">
                 <strong>
-                    Este local no estÃ¡ habilitado para reservas de eventos
+                    Este local no está habilitado para reservas de eventos
                 </strong>
 
                 <p>
-                    Puedes consultar sus datos aquÃ­ o regresar al catÃ¡logo
+                    Puedes consultar sus datos aquí o regresar al catálogo
                     para encontrar uno de los locales disponibles para eventos.
                 </p>
 

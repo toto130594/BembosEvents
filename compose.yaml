@@ -114,7 +114,7 @@ services:
           -C \
           -b \
           -d BembosEventsDB \
-          -i /scripts/10-seed-catalog.sql
+          -f 65001 -i /scripts/10-seed-catalog.sql
     volumes:
       - ./database/dev:/scripts:ro
   frontend:
